@@ -23,8 +23,13 @@ export PS2="\[\033[0;31m\]▶▶ \[\033[0;m\]"               # red
 export CLICOLOR=1
 
 alias ghc="ghc -O2 -fforce-recomp -Wall -Werror"
-alias ls="ls -laFh"     # "h" for human readable ouput 
-alias rm="rm -i"        # "i" for confirmation before removal
+alias ls="ls -laFh"            # "h" for human readable ouput 
+alias rm="rm -i"               # "i" for confirmation before removal
+
+alias lf="ls | grep '^-'"      # list only files
+alias ll="ls | grep '^l'"      # list only symlinks
+alias lp="ls | grep '^[-l]'"   # list only files + symlinks
+alias ld="ls | grep '^d'"      # list only directories
 
 # clear terminal tabs @ start-up
 #     2 ways to get this done:
