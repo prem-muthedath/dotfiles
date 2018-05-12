@@ -3,8 +3,13 @@
 # 1. set GHC & haskell binaries paths
 # 2. PS1, PS2 prompt colored -- see taylor mcgann @ 
 #    http://blog.taylormcgann.com/tag/prompt-color/
-# 3. to load this file right after changes, type . !$
+# 3. to load this file RIGHT AFTER any changes, type:
+#              . !$
 #    ref: see /u/ hyper_st8 @ https://goo.gl/tU3PFr (so)
+# 4. to quickly show/hide this & other hidden files 
+#    in Finder, use: 
+#              CMD + SHIFT + .
+#    ref: see https://goo.gl/G2eCwA (ian lunn)
 #########################################################################
 export PATH="${HOME}/bin:${HOME}/.local/bin:${HOME}/.cabal/bin:${PATH}"
 export HOMEBREW_GITHUB_API_TOKEN=46ed2e0ca787be20944b88c8a3d63dd0491dcd7f
