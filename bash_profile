@@ -26,6 +26,9 @@ alias ghc="ghc -O2 -fforce-recomp -Wall -Werror"
 alias ls="ls -laFh"            # "h" for human readable ouput 
 alias rm="rm -i"               # "i" for confirmation before removal
 
+# alias for listing files, links, directories
+# ref: /u/ kenorb @ https://goo.gl/4b9p9s (unix.se)
+#      /u/ kleinfreund @ https://goo.gl/32P4vQ (superuser)
 alias lf="ls | grep '^-'"      # list only files
 alias ll="ls | grep '^l'"      # list only symlinks
 alias lp="ls | grep '^[-l]'"   # list only files + symlinks
