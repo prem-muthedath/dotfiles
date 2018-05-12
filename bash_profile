@@ -10,6 +10,9 @@
 #    in Finder, use: 
 #              CMD + SHIFT + .
 #    ref: see https://goo.gl/G2eCwA (ian lunn)
+# 5. ~/.bash_profile is symlinked to ~/dotfiles/bash-profile
+#    so that we can git version this and other key dotfiles.
+#    ref: /u/ sehe comments on /u/ tuxdude @ https://goo.gl/hjXAkw (so)
 #########################################################################
 export PATH="${HOME}/bin:${HOME}/.local/bin:${HOME}/.cabal/bin:${PATH}"
 export HOMEBREW_GITHUB_API_TOKEN=46ed2e0ca787be20944b88c8a3d63dd0491dcd7f
