@@ -11,4 +11,4 @@ filetype plugin on
 " .gitignore ft   -> git -> more readable  
 " bash_profile ft -> sh  -> ~ .bash_profile  
 au BufNewFile,BufRead .gitignore set ft=git  
-au BufNewFile,BufRead bash_profile set ft=sh  
+au BufNewFile,BufRead bash_profile set ft=sh
