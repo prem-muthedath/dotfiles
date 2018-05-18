@@ -8,9 +8,9 @@ filetype plugin on
 
 " customized file type settings
 " see https://goo.gl/A8CCWo (ian langworth)
-" .gitignore ft   -> git -> more readable  
-" bash_profile ft -> sh  -> ~ .bash_profile  
-au BufNewFile,BufRead .gitignore set ft=git  
+" .gitignore ft   -> git -> more readable
+" bash_profile ft -> sh  -> ~ .bash_profile
+au BufNewFile,BufRead .gitignore set ft=git
 au BufNewFile,BufRead bash_profile set ft=sh
 
 
@@ -29,29 +29,36 @@ au BufNewFile,BufRead bash_profile set ft=sh
 "       fixed it using fnameescape() -- see code below.
 "       for info on fnameescape, see /u/ evergreentree, /u/ sato
 "       katsura @ https://goo.gl/cS8eKk (vi.stackexchange)
-"    2. in exec command argument string, added space before & 
+"
+"       escape(), instead of fnameescape(), works as well.
+"       in our case, escape(url-string, "?%!#") works just fine.
+"       ref: see /u/ konstantin, /u/ tim @ https://goo.gl/hJHFDs
+"       (vim.1045645.n5.nabble.com)
+"
+"    2. in exec command argument string, added space before &
 "       after . (string concatenation operator), for easier read
 "    3. removed redundant quotes in the exec command argument string:
 "       changed " '" . url . "'" to " " . url, as url is already
 "       a string, so it doesn't need to be quoted again
 "
 " few comments on the code:
-"    1. exec -- a vim command -- takes a string argument, 
-"       and . operator just concatenates strings.
+"    1. exec -- a vim command -- takes a string argument, sometimes
+"       written using the . operator, a string concatenater.
 "       exec uses . operator to create one single string argument.
-"       so if your url is "google.com", you'll get:
+"       for example, if your url is "google.com", you'll get:
 "           exec "open -a" . "/Applications/Safari.app" . "google.com"
 "       which will become:
 "           exec "open -a /Applications/Safari.app google.com"
 "    2. open -a -> open is an OS X command; -a option opens an application
-"    3. silent prevents the external command run by exec from 
+"    3. silent prevents the external command run by exec from
 "       triggering the "Hit Enter" prompt to redraw vim screen
 "       see https://goo.gl/z21rDQ (vim.wikia) for details
-"    4. with silent, there is no "Hit Enter" prompt to redraw the vim screen, 
-"       so you've to manually refresh the screen once you return to vim. 
-"       that means each time you browse an url, when you return to vim, 
+"    4. with silent, there is no "Hit Enter" prompt to redraw the vim screen,
+"       so you've to manually refresh the screen once you return to vim.
+"       that means each time you browse an url, when you return to vim,
 "       you've type :redraw! to manually refresh the blank vim screen!!!
-"       to avoid this manual work, we pipe to redraw! (see code). vim then 
+"
+"       to avoid this manual work, we pipe to redraw! (see code). vim then
 "       automatically refreshes the screen after every url visit.
 "       see https://goo.gl/z21rDQ (vim.wikia) for details
 "
