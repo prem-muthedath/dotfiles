@@ -4,15 +4,14 @@ syntax enable
 set background=dark
 colorscheme solarized
 
-filetype plugin on
+filetype plugin indent on
 
 " customized file type settings
 " see https://goo.gl/A8CCWo (ian langworth)
-" .gitignore ft   -> git -> more readable
-" bash_profile ft -> sh  -> ~ .bash_profile
+"   -- .gitignore ft   -> git -> more readable
+"   -- bash_profile ft -> sh  -> ~ .bash_profile
 au BufNewFile,BufRead .gitignore set ft=git
 au BufNewFile,BufRead bash_profile set ft=sh
-
 
 " #######################################################
 " this function opens the url under the cursor in safari
@@ -56,7 +55,7 @@ au BufNewFile,BufRead bash_profile set ft=sh
 "    4. with silent, there is no "Hit Enter" prompt to redraw the vim screen,
 "       so you've to manually refresh the screen once you return to vim.
 "       that means each time you browse an url, when you return to vim,
-"       you've type :redraw! to manually refresh the blank vim screen!!!
+"       you've to type :redraw! to manually refresh the blank vim screen!!!
 "
 "       to avoid this manual work, we pipe to redraw! (see code). vim then
 "       automatically refreshes the screen after every url visit.
