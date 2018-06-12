@@ -120,7 +120,7 @@ function addpath() {
 	fi
 
 	var='/usr/local/bin'
-	count=$(echo $PATH | grep -E -o $var | wc -l)
+	count=$(echo $PATH | grep -E -o "(^|:)$var(:|$)" | wc -l)
 	if [[ ! $count =~ ^\ *1$ ]]; then
 		echo -e "\nERROR: found invalid existing PATH: $PATH" \
 			"\nExisting PATH must already contain exactly one occurrence of $var," \
