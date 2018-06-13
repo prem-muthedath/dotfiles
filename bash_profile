@@ -43,8 +43,8 @@ printf '\33c\e[3J'
 #        added again to this PATH, even though they may already exist in PATH.
 #        so you may end up with duplicated custom paths in PATH.
 #  -- 3. you can also manually set PATH for an existing bash session, by typing
-#        PATH=some-value.  if you then source bash_profile, bash will take
-#        the PATH you've manually set, and use it to do (2).
+#        PATH=some-value @ the Terminal.  if you then source bash_profile, 
+#	 bash will take the PATH you've manually set, and use it to do (2).
 #
 #        this is a process you often follow when you want to test .bash_profile.
 #        you manually modify PATH, and then source bash_profile to see if 
@@ -60,18 +60,25 @@ printf '\33c\e[3J'
 #        the path order you had in PATH, so you may have to source .bash_profile 
 #        manually to have your custom paths reset ahead of the system path in PATH.
 #
-#	 you can use (4) to fix a mangled PATH, with below sequence of commands @ the Terminal:
+#	 you can use (4) to fix a mangled PATH, using the below sequence of 
+#	 commands @ the Terminal:
 #		(a) PATH=
 #		(b) source /etc/profile
 #		(c) source ~/.bash_profile
 #
 # DESIGN:
 # addpath(), though far from perfect, handles the following:
-#   (a) avoids duplicated custom paths -- see (2) above
+#   (a) avoids duplicated custom paths -- see (2) above.
+#
+#   	the to-be-added path is first searched in PATH, and, if found, 
+#	all instances of path are removed from PATH, and then path is 
+#	prepended -- always -- to this modified PATH.  in this whole 
+#	process, the order of all other paths in PATH is never altered.
 #   (b) ensure that loading/sourcing .bash_profile always gives a valid PATH.
-#       that is, it ensures that, even if bash_profile execution encounters errors, 
-#       you will still end up with a valid PATH, at the very least a valid system PATH, 
-#       so that you'll always have a valid bash session.
+#       that is, it ensures that, even if bash_profile execution encounters errors,
+#	or even if it fails to add custom paths to PATH for some reason, you will 
+#	still end up with a valid PATH, at the very least a valid system PATH, 
+#	so that you'll always have a valid bash session.
 #
 #   	it also addresses, as much as possible, invalid inputs in bash_profile, 
 #	as well as issues that may come from (3)
@@ -90,15 +97,16 @@ printf '\33c\e[3J'
 #		-- (c) path is the only path in PATH
 #		-- (d) path is somewhere between start and end, both exclusive, of PATH
 #	 -- sed then prepends path to PATH
-#	 -- finally, sed removes any dangling : at PATH end -- which occurs in (b) prepend
+#	 -- finally, sed removes any dangling : at PATH end -- which occurs in (c) prepend
 #   -- by design, NEWPATH, a temp, stores result from sed operations. if NEWPATH is null/empty 
-#      (happens if sed fails) we throw an error & exit, but PATH remains valid, though unchanged.
-#      we thus insulate PATH from ever being invalid. only when NEWPATH is valid, PATH=NEWPATH.
+#      (happens if sed fails) we throw an error & exit, but PATH, though unchanged, remains valid.
+#      we thus insulate PATH from being invalid, only setting PATH=NEWPATH if NEWPATH is valid.
 #
 # REFERENCES:
 # -- parameter expansion check for unset/null/spaces, see /u/elomage @ https://goo.gl/nK65cH (so)
 # -- regex match for path in PATH, see /u/ terdon @ https://goo.gl/1S8NV3 (unix.SE)
 # -- reset PATH using `source /etc/profile`, see /u/ rjferguson @ https://goo.gl/Vf96oX (apple.SE)
+# -- grep regular expressions, see https://goo.gl/BWyKrA (digitalocean LLC)
 # -- grep -o | wc -l for multi-match/line count, see /u/ wag, /u/ gilles @ https://goo.gl/iGGfVV (unix.SE)
 # -- regex match/remove spaces in wc -l, see /u/ jens, /u/ william pursell @ https://goo.gl/D7NpX4 (so)
 # -- for use of ${NEWPATH:?error-message}, see /u/ chepner, /u/ jens @ https://goo.gl/QW52j8 (so)
