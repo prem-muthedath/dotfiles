@@ -7,7 +7,7 @@
 #              . !$
 #    ref: see /u/ hyper_st8 @ https://goo.gl/tU3PFr (so)
 # 4. to quickly show/hide this & other hidden files 
-#    in Finder, use: 
+#    in Finder, use:
 #              CMD + SHIFT + .
 #    ref: see https://goo.gl/G2eCwA (ian lunn)
 # 5. ~/.bash_profile is symlinked to ~/dotfiles/bash-profile
@@ -32,7 +32,7 @@ printf '\33c\e[3J'
 
 # add path to PATH
 # PATH, in Terminal, is set under the following conditions:
-#  -- 1. when you open a new tab, bash starts a new login, interactive shell session. 
+#  -- 1. when you open a new tab, bash starts a new login, interactive shell session.
 # 	 bash sources /etc/profile, and then ~/.bash_profile. PATH is initially 
 # 	 empty, /etc/profile then sets PATH to the default system path,
 #	 and .bash_profile then adds custom paths to PATH
@@ -112,50 +112,28 @@ printf '\33c\e[3J'
 # -- for use of ${NEWPATH:?error-message}, see /u/ chepner, /u/ jens @ https://goo.gl/QW52j8 (so)
 
 function addpath() {
-        if [[ -z "${1// /}" ]]; then
-		echo -e "ERROR: you can not add null/empty/blank path to existing PATH"
-		return
-	fi
+	local IFS=':'
+	local NEWPATH
 
-	if [[ -z "${PATH// /}" || ! ("$PATH" =~ (^|:)'/usr/bin'(:|$) && "$PATH" =~ (^|:)'/bin'(:|$)) ]]; then
-		echo -e "WARNING: found invalid existing PATH: $PATH" \
-			"\n1. Existing PATH must not be null/empty/blank; and" \
-			"\n2. Existing PATH must contain /usr/bin and /bin to run" \
-		        "basic shell commands like ls and cat" \
-			"\n\nFix: sourcing /etc/profile to reset PATH ..."
-		PATH=""; source /etc/profile
-		echo -e "RESET PATH: $PATH"
-	fi
-
-	var='/usr/local/bin'
-	count=$(echo $PATH | grep -E -o "(^|:)$var(:|$)" | wc -l)
-	if [[ ! $count =~ ^\ *1$ ]]; then
-		echo -e "\nERROR: found invalid existing PATH: $PATH" \
-			"\nExisting PATH must already contain exactly one occurrence of $var," \
-			"but found instead" $(echo $count | sed -E -n 's/^ *//p') "occurences." \
-			$'\n'"Aborted attempt to add $1 to existing PATH."
-		return
-	fi
-
-	NEWPATH=$(echo $PATH | \
-			sed -E -n "
-				\|$var| {
-					s|^$1(:\|$)||
-					s|:$1(:\|$)|\1|g
-					s|^|$1:|
-					s|:$||;p
-				}"
-		)
-
-	PATH=${NEWPATH:?can not be empty/null.  Aborted adding $1 to PATH, as the attempt results in an invalid new PATH}
+	if [[ ! -d "$1" ]]; then echo -e "\npath '$1' not a directory, so can not add it to PATH"; return; fi
+	for DIR in $PATH; do
+		if [[ "$DIR" != "$1" ]]; then
+			NEWPATH="${NEWPATH:+$NEWPATH:}$DIR"
+		fi
+	done
+	PATH=$1:${NEWPATH:?can not be empty/null.  Aborted adding $1 to PATH, as the attempt results in an invalid new PATH}
 }
+
 
 # ref: for path breakup idea, done here in reverse, see:
 # https://github.com/paulirish/dotfiles
-addpath "${HOME}/.cabal/bin"
-addpath "${HOME}/.local/bin"
-addpath "${HOME}/bin"
-export PATH
+if [[ -x ~/dotfiles/bin/pathhelper ]]; then
+	eval `~/dotfiles/bin/pathhelper`
+	addpath "${HOME}/.cabal/bin"
+	addpath "${HOME}/.local/bin"
+	addpath "${HOME}/bin"
+	export PATH
+fi
 
 export HOMEBREW_GITHUB_API_TOKEN=46ed2e0ca787be20944b88c8a3d63dd0491dcd7f
 
@@ -175,5 +153,9 @@ alias lf="ls | grep '^-'"      # list only files
 alias ll="ls | grep '^l'"      # list only symlinks
 alias lp="ls | grep '^[-l]'"   # list only files + symlinks
 alias ld="ls | grep '^d'"      # list only directories
+
+alias bp=". $HOME/dotfiles/test/bp"
+alias pl="cat $HOME/dotfiles/log/path.log"
+alias sd="cd $HOME/software-development/code"
 
 

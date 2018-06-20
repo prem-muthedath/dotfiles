@@ -1,0 +1,81 @@
+#!/bin/bash -
+
+function fromfile () {
+	local file="$1" fpath="$2"
+	while IFS= read -r path   # -r disables escaping \; treats each \ as part of input line
+	do
+		pattern="(^|:)$path(:|$)"
+		if [[ ! "$fpath" =~ $pattern ]]; then
+			fpath=$(join "$fpath" "$path")
+		fi
+	done < "$file"
+	echo "$fpath"
+}
+
+function join () {
+	local path="${1:+$1:}$2"
+	echo "${path%:}"
+}
+
+function system () {
+	local etcpaths="/etc/paths" etcpathsd="/etc/paths.d"
+	local FPATH=$(fromfile "${1:-$etcpaths}")
+
+	for f in $(/bin/ls -f "${2:-$etcpathsd}")
+	do
+		f="${2:-$etcpathsd}"/"$f"
+		if [[ -f "$f" ]]; then
+			FPATH=$(fromfile "$f" "$FPATH")
+		fi
+	done
+	echo "$FPATH"
+}
+
+function print() {
+	local header
+	for arg in "${@::${#@}-1}"; do
+		header+="$arg"
+	done
+
+	local path="${@: -1:1}" IFS=':'
+	echo -e "\n$header"; for DIR in $path; do echo -e "$DIR"; done 
+}
+
+function log () {
+	local message=("${@}")
+	if (( "$#" >= 2 )); then
+		print "${message[@]}" >> "$log"
+	else
+		echo -e "${message[@]}" >> "$log"
+	fi
+}
+
+function reset () {
+	log "\n***** WARNING: PATH not equal to SYSPATH *****" 
+	log "***** @ start of .bash_profile load, we want PATH=SYSPATH, the core path Apple sets  *****"
+	log "PATH:" "$PATH"
+	log "SYSPATH:" "$(evalsys)"
+	log "\n***** Fix: reset PATH to SYSPATH  *****"
+
+	echo "PATH=\"$SYSPATH\"; export PATH"
+}
+
+function evalsys () {
+	eval echo $(echo \""$SYSPATH"\")
+}
+
+function initialize () {
+	declare -r log=~/dotfiles/log/path.log 
+	/usr/bin/touch "$log"; : >"$log"
+
+	declare -r SYSPATH=$(system)
+ 	: ${SYSPATH:?can not be null/empty. Missing system (i.e., OS) paths -- such as /usr/bin, /bin -- reqd for a Bash session. Aborting PATH initialization ...}	
+	if [[ "$PATH" != "$(evalsys)" ]]; then
+		reset
+	fi
+}
+
+initialize
+
+
+
