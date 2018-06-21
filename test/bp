@@ -2,7 +2,7 @@
 
 function c () {
 	echo -e "\n*** path.log: BEGIN ***"
-	/bin/cat "$HOME"/dotfiles/log/path.log
+	/bin/cat -e "$HOME"/dotfiles/log/path.log
 	echo -e "\n*** path.log: END ***"
 	echo -e "\nPATH:"
 	echo "$PATH" | /usr/bin/sed -E -n 's/:/'$'\\\n''/g;p'
