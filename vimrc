@@ -13,6 +13,54 @@ filetype plugin indent on
 au BufNewFile,BufRead .gitignore set ft=git
 au BufNewFile,BufRead bash_profile set ft=sh
 
+" use space for all indentation
+set expandtab
+set shiftwidth=3
+set softtabstop=3
+set autoindent
+
+set listchars=eol:¬,tab:▸\    " show these on :set list
+
+set wrap
+set textwidth=80
+set colorcolumn=+1            " mark textwidth
+
+" format comments but not code
+set fo=
+set fo+=c      " autowrap comments using textwidth
+set fo+=o      " insert comment leader on press o
+set fo+=j      " smartly join two comments
+set fo+=w      " spot as same paragraph if trailing whitespace
+set fo+=l      " don't break existing long lines
+set fo+=a      " autoformat paragraphs
+set fo+=n      " spot numbered lists
+set fo+=q      " allow gq to format
+set fo-=t      " no text autowrap
+
+set formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+
+" make your own statusline
+set laststatus=2                       " statusline ON, always
+set statusline=%t                      " tail of file name
+set statusline+=\ %y                   " file type
+set statusline+=\ [%{&ff}]             " file format
+set statusline+=\ fo:[%{&fo}]          " format options
+set statusline+=%=                     " seperate left & right
+set statusline+=\ [%l,%c]              " line, column #
+set statusline+=\ %r                   " readonly?
+set statusline+=\ %m                   " file modified?
+
+" EndOfBuffer stuff to remove ~ works if vim >= 8.0
+set fillchars=vert:\│
+hi! VertSplit ctermfg=fg ctermbg=0
+hi! StatusLine cterm=NONE
+hi! StatusLineNC cterm=NONE
+hi! EndOfBuffer ctermfg=bg
+
+set splitright    " vertical right split
+set splitbelow    " horizontal bottom split
+set mouse=a       " no scrollbar!
+
 " #######################################################
 " this function opens the url under the cursor in safari
 " #######################################################
