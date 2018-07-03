@@ -1,10 +1,13 @@
-set number
+" vimrc -- author: Prem Muthedath, JUN 2018
 
+" set up solarized
 syntax enable
 set background=dark
 colorscheme solarized
 
-filetype plugin indent on
+" load ftplugins & indent files
+filetype plugin on
+filetype indent on
 
 " customized file type settings
 " see https://goo.gl/A8CCWo (ian langworth)
@@ -15,20 +18,22 @@ au BufNewFile,BufRead bash_profile set ft=sh
 
 " use space for all indentation
 set expandtab
-set shiftwidth=3
-set softtabstop=3
+set shiftwidth=2
+set softtabstop=2
 set autoindent
 
 set listchars=eol:¬,tab:▸\    " show these on :set list
 
-set wrap
-set textwidth=80
-set colorcolumn=+1            " mark textwidth
+set number              " show line number
+set wrap                " wrap lines (for display)
+set textwidth=80        " std textwidth; wrap lines beyond
+set colorcolumn=+1      " mark textwidth
 
-" format comments but not code
+" format options: format comments but not code
 set fo=
 set fo+=c      " autowrap comments using textwidth
 set fo+=o      " insert comment leader on press o
+set fo+=r      " insert comment leader on return
 set fo+=j      " smartly join two comments
 set fo+=w      " spot as same paragraph if trailing whitespace
 set fo+=l      " don't break existing long lines
@@ -37,7 +42,10 @@ set fo+=n      " spot numbered lists
 set fo+=q      " allow gq to format
 set fo-=t      " no text autowrap
 
-set formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+" add these 'bullet' format list patterns to default
+set flp+=\\\\|^\\s*[\\-\\+\\*]\\+\\s\\+     " - , -- , + , ++ ,  * , ** , ...
+set flp+=\\\\|^\\s*\\w[.\)]\\s\\+           " a. , a) , b. , b) , ...
+set flp+=\\\\|^\\s*[ivxIVX]\\+[.\)]\\s\\+   " i. , i) , ii. , ii) , ...
 
 " make your own statusline
 set laststatus=2                       " statusline ON, always
@@ -50,16 +58,19 @@ set statusline+=\ [%l,%c]              " line, column #
 set statusline+=\ %r                   " readonly?
 set statusline+=\ %m                   " file modified?
 
-" EndOfBuffer stuff to remove ~ works if vim >= 8.0
-set fillchars=vert:\│
+" VertSplit -- no ugly thick border!
+" StatusLine/NC -- no ugly thick status line!
+" EndOfBuffer -- no ~! works only if vim >=8.0
+set fillchars=vert:\│                 " use this to show vsplit
 hi! VertSplit ctermfg=fg ctermbg=0
 hi! StatusLine cterm=NONE
 hi! StatusLineNC cterm=NONE
 hi! EndOfBuffer ctermfg=bg
 
+" window settings
 set splitright    " vertical right split
 set splitbelow    " horizontal bottom split
-set mouse=a       " no scrollbar!
+set mouse=a       " no terminal scrollbar!
 
 " #######################################################
 " this function opens the url under the cursor in safari
