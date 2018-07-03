@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# purpose: ftplugins, which are loaded after vimrc, can override fo and flp 
+# settings in your vimrc. we want to fix this issue.
+# soln:
+#   1. this code creates ~/.vim/after/ftplugini directory, and symlinks its 
+#      contents -- an exact copy of system ftplugin -- to a single file called      
+#      vimrc-after
+#   2. after this code is run, you can create the vimrc-after file, and put your 
+#      custom fo and flp settings there, instead of in your vimrc
+#
+# when vim loads, it will load vimrc-after last, after the ftplugin, so the fo 
+# and flp settings in vimrc-after will never be altered by any plugin. for 
+# details, see the code source link below.
+#
+# code source - http://peox.net/articles/vimconfig.html
+
+mkdir -p ~/.vim/after/ftplugin
+rm -i ~/.vim/after/ftplugin/*
+for file in /usr/share/vim/vim80/ftplugin/*.vim
+do
+    ln -s ~/.vim/.vimrc-after ~/.vim/after/ftplugin/`basename $file`
+done
+
