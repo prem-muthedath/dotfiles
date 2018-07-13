@@ -74,7 +74,7 @@ nmap      ou    :OpenUrl<CR>
 noremap   ts    :ToggleHlSearch<CR>
 noremap   cs    :ClearSearch<CR>
 noremap   tc    :ToggleComment<CR>
-vnoremap  tc    :<C-U>ToggleComments<CR>
+vnoremap  tc    :ToggleComments<CR>
 vnoremap  ic    :norm ^i" <CR>
 vnoremap  rc    :norm ^x<CR>
 
