@@ -26,6 +26,15 @@ augroup MyHighlights
           \| highlight Function ctermfg=31
 augroup END
 
+augroup MySyntax
+  autocmd!
+  autocmd Syntax haskell
+        \ let g:haskell_classic_highlighting = 1
+        \| let g:haskell_enable_quantification = 1
+        \| let g:haskell_enable_recursivedo = 1
+        \| let g:haskell_enable_pattern_synonyms = 1
+augroup END
+
 
 
 
