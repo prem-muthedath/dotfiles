@@ -18,14 +18,14 @@ set expandtab
 set shiftwidth=2
 set softtabstop=2
 
-set autoindent                " auto indent for all ft
-set number                    " show line number
-set wrap                      " wrap lines (for display)
-set textwidth=80              " std textwidth; wrap lines beyond
-set colorcolumn=+1            " mark textwidth
-set wildmenu                  " <Tab> cl-completion
-set wildcharm=<C-Z>           " allow <Tab> in map completion
-set listchars=eol:¬,tab:▸\    " show these on :set list
+set autoindent                                " auto indent for all ft
+set number                                    " show line number
+set wrap                                      " wrap lines (for display)
+set textwidth=80                              " std textwidth; wrap lines beyond
+set colorcolumn=+1                            " mark textwidth
+set wildmenu                                  " <Tab> cl-completion
+set wildcharm=<C-Z>                           " allow <Tab> in map completion
+set listchars=space:»,trail:␣,eol:¬,tab:▸\    " show these on :set list
 set hlsearch                  " highlight search ON, as default
 
 " format options: format comments but not code
@@ -42,13 +42,13 @@ set fo+=q      " allow gq to format
 set fo-=t      " no text autowrap
 
 " add these 'bullet' format list patterns to default
-set flp+=\\\\|^\\s*[\\-\\+\\*]\\+\\s\\+     " - , -- , + , ++ ,  * , ** , ...
-set flp+=\\\\|^\\s*\\w[.\)]\\s\\+           " a. , a) , b. , b) , ...
-set flp+=\\\\|^\\s*[ivxIVX]\\+[.\)]\\s\\+   " i. , i) , ii. , ii) , ...
+set flp+=\\\|^\\s*[-+*]\\+\\s\\+          " - , -- , + , ++ ,  * , ** , ...
+set flp+=\\\|^\\s*\\w[.)]\\s\\+           " a. , a) , b. , b) , ...
+set flp+=\\\|^\\s*[ivxIVX]\\+[.)]\\s\\+   " i. , i) , ii. , ii) , ...
 
 " make your own statusline
 set laststatus=2                          " statusline ON, always
-set statusline=%t                         " tail of file name
+set statusline=%t                         " filename
 set statusline+=\ %y                      " file type
 set statusline+=\ [%{&ff}]                " file format
 set statusline+=\ fo:[%{&fo}]             " format options
@@ -65,6 +65,9 @@ set splitright    " vertical right split
 set splitbelow    " horizontal bottom split
 set mouse=a       " no terminal scrollbar!
 
+" dirs for backup and swap files
+set backupdir=~/.vim/backup
+set directory=~/.vim/swap
 
 " mappings
 nmap      sa    :SyntaxAttr<CR>
