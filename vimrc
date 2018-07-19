@@ -80,6 +80,7 @@ noremap   tc    :ToggleComment<CR>
 vnoremap  tc    :ToggleComments<CR>
 vnoremap  ic    :norm ^i" <CR>
 vnoremap  rc    :norm ^x<CR>
+vnoremap  ri    :Reindent<CR>
 
 " https://google.com
 

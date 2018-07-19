@@ -24,8 +24,8 @@ command! ToggleHlSearch set hls! | set hls?
 command! ClearSearch let @/=""
 
 " toggle comments -- current line | range, visual mode; plugin: ToggleComment
-command! ToggleComment call ToggleComment()
-command! -range=% ToggleComments <line1>,<line2>call ToggleComment()
+command! ToggleComment .call ToggleComments()
+command! -range=% ToggleComments <line1>,<line2>call ToggleComments()
 
-
+command! -range=% Reindent <line1>,<line2>call Reindent()
 
