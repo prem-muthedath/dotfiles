@@ -26,7 +26,7 @@ set colorcolumn=+1                            " mark textwidth
 set wildmenu                                  " <Tab> cl-completion
 set wildcharm=<C-Z>                           " allow <Tab> in map completion
 set listchars=space:»,trail:␣,eol:¬,tab:▸\    " show these on :set list
-set hlsearch                  " highlight search ON, as default
+set hlsearch                                  " highlight search ON, as default
 
 " format options: format comments but not code
 set fo=
