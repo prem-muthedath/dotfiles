@@ -27,5 +27,6 @@ command! ClearSearch let @/=""
 command! ToggleComment .call ToggleComments()
 command! -range=% ToggleComments <line1>,<line2>call ToggleComments()
 
+" re-indent a block of lines; plugin: Reindent
 command! -range=% Reindent <line1>,<line2>call Reindent()
 
