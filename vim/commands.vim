@@ -5,7 +5,7 @@ command! OpenUrl call OpenUrlUnderCursor()
 command! SyntaxAttr call SyntaxAttr()
 
 " toggle comment highlighting
-function! s:ToggleCommentHl(comment_hl) abort
+function! s:toggleCommentHl(comment_hl) abort
   " Redirect output of :highlight to l:current
   redir => l:current
   silent highlight Comment
@@ -17,7 +17,7 @@ function! s:ToggleCommentHl(comment_hl) abort
     execute "highlight Comment " . a:comment_hl
   endif
 endfunction
-command! ToggleCommentHl call s:ToggleCommentHl('ctermfg=245')
+command! ToggleCommentHl call s:toggleCommentHl('ctermfg=245')
 
 " hl search -- toggle, clear (pattern)
 command! ToggleHlSearch set hls! | set hls?
@@ -27,6 +27,6 @@ command! ClearSearch let @/=""
 command! ToggleComment .call ToggleComments()
 command! -range=% ToggleComments <line1>,<line2>call ToggleComments()
 
-" re-indent a block of lines; plugin: Reindent
+" reindent a block of lines -- preserves trailing spaces; plugin: Reindent
 command! -range=% Reindent <line1>,<line2>call Reindent()
 
