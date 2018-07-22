@@ -29,7 +29,7 @@ augroup END
 augroup MySyntax
   autocmd!
   " -- set preferences for raichoo's haskell syntax
-  " -- for details, see https://github.com/neovimhaskell/haskell-vim
+  " -- for details, see https://github.com/raichoo/haskell-vim
   autocmd Syntax haskell
         \ let g:haskell_classic_highlighting = 1
         \| let g:haskell_enable_quantification = 1
