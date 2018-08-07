@@ -76,8 +76,9 @@ nmap      co    :colorscheme <C-Z><S-Tab>
 nmap      ou    :OpenUrl<CR>
 noremap   ts    :ToggleHlSearch<CR>
 noremap   cs    :ClearSearch<CR>
-noremap   tc    :ToggleComment<CR>
+nnoremap  tc    :ToggleComment<CR>
 vnoremap  tc    :ToggleComments<CR>
+nnoremap  sc    :StartComment<CR>
 vnoremap  ic    :norm ^i" <CR>
 vnoremap  rc    :norm ^x<CR>
 vnoremap  ri    :Reindent<CR>

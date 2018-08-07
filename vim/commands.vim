@@ -27,6 +27,9 @@ command! ClearSearch let @/=""
 command! ToggleComment .call ToggleComments()
 command! -range=% ToggleComments <line1>,<line2>call ToggleComments()
 
+" start a new comment line, below current line, in insert mode; plugin: ditto
+command! StartComment call StartComment()
+
 " reindent a block of lines -- preserves trailing spaces; plugin: Reindent
 command! -range=% Reindent <line1>,<line2>call Reindent()
 
