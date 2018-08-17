@@ -2,7 +2,7 @@
 # from files under /usr/share/vim/vim80/ftplugin
 
 # 'raw' output - full paths + corresponding &comments + &commentstring data  
-find "/usr/share/vim/vim80/ftplugin" -type f -print0 | xargs -0 grep 'commentstring=\|comments=\|com=' | sort > vim/notes/cs-raw.vim > vim/notes/cs-raw.vim
+find "/usr/share/vim/vim80/ftplugin" -type f -print0 | xargs -0 grep 'commentstring=\|comments=\|com=' | sort > vim/notes/cs-raw.vim
 
  
 # 'cleansed' output - filenames + corresponding &comments + &commentstring data
