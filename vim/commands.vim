@@ -27,8 +27,21 @@ command! ClearSearch let @/=""
 command! ToggleComment .call ToggleComments()
 command! -range=% ToggleComments <line1>,<line2>call ToggleComments()
 
-" start a new comment line, below current line, in insert mode; plugin: ditto
-command! StartComment call StartComment()
+" start a comment line in insert mode:
+"   -- if current line empty, make it a comment;
+"   -- otherwise, start a new comment line right below current line
+function! s:startcomment()
+  let l:execstr = getline('.') =~ '^$' ?
+        \ 'normal 0' . 'tc' . '==' :
+        \ 'normal o' . "\<Esc>" . 'tc' . '=='
+  if len(Cs()) == 1
+    :execute l:execstr | :startinsert!
+  else
+    let l:cursorshift = len(Cs()[0]) + 1
+    :execute l:execstr . '^' . l:cursorshift . 'l' | :startinsert
+  endif
+endfunction
+command! StartComment call s:startcomment()
 
 " reindent a block of lines -- preserves trailing spaces; plugin: Reindent
 command! -range=% Reindent <line1>,<line2>call Reindent()
