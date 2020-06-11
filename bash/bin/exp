@@ -1,0 +1,79 @@
+#!/bin/bash
+
+function fromfile () {
+        declare -r file="$1"
+        local fpath="$2" pattern
+        while IFS= read -r path   # -r disables escaping \; treats each \ as part of input line
+        do
+                pattern="(^|:)$path(:|$)"
+                if [[ ! "$fpath" =~ $pattern ]]; then
+                        fpath=$(join "$fpath" "$path")
+                fi  
+        done < "$file"
+        echo "$fpath"
+}
+
+function join () {
+        declare -r path1="$1" path2="$2"
+        declare -r path="${path1:+$path1:}$path2"
+        echo "${path%:}"
+}
+
+function f () {
+	declare -r paths="$1"
+	declare -r files=( "${@:2:${#@}-1}" )  # "${@::${#@}-1}"
+
+        local FPATH=$(fromfile "$paths")
+        for f in "${files[@]}"
+        do  
+                if [[ -f "$f" ]]; then
+                        FPATH=$(fromfile "$f" "$FPATH")
+                fi  
+        done
+        echo "$FPATH"
+}
+
+function system () {
+        declare -r paths="${1:-"/etc/paths"}" pathsd="${2:-"/etc/paths.d"}"
+	declare -r pattern=$'([^\n]+)(\n|$)'
+	local lsstring="$(/bin/ls -f "$pathsd")" 
+	local files=()
+	
+	while [[ "$lsstring" =~ $pattern ]]; do
+		files+=("${pathsd}/${BASH_REMATCH[1]}")		# capture the field
+    		nextstart=${#BASH_REMATCH}              	# length of field + delimiter
+    		lsstring="${lsstring:nextstart}"            	# advance the string by that length
+	done
+	f "$paths" "${files[@]}" 
+}
+
+function test () {
+	str="Paris, France, Europe"
+	array=()
+	while [[ $str =~ ([^,]+)(,[ ]+|$) ]]; do
+	    array+=("${BASH_REMATCH[1]}")   # capture the field
+	    i=${#BASH_REMATCH}              # length of field + delimiter
+	    echo -e "--str--$str--arr--${array[@]}--REMATCH0--${BASH_REMATCH[0]}--REMATCH1-${BASH_REMATCH[1]}--"
+	    str=${str:i}                    # advance the string by that length
+	done
+}
+
+#test
+system
+
+
+#echo -e "--str--$lsstr--arr--${array[@]}--REMATCH0--${BASH_REMATCH[0]}--REMATCH1-${BASH_REMATCH[1]}--"
+#echo -e "--str--$lsstr--\nfiles--${files[@]}--\nREMATCH1-${BASH_REMATCH[1]}--"
+#function f () { 
+#	var="$1";
+#       	local IFS=$'\n'	
+#	for i in $var; do printf "%s\n" "$i"; done
+#	#(IFS=$'\n'; for i in $var; do printf "%s\n" "$i"; done)
+#}
+#
+#IFS=$'\n'
+#var=( $(\ls -f /etc/paths.d) )
+#for i in "${var[@]}"; do echo "[$i]"; done
+#arr=( $(f "$(\ls -f /etc/paths.d)") )
+#for i in "${arr[@]}"; do echo "[$i]"; done
+

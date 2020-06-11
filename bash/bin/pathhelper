@@ -1,0 +1,87 @@
+#!/bin/bash
+
+function fromfile () {
+	declare -r file="$1"
+	local fpath="$2"
+	while IFS= read -r path   # -r disables escaping \; treats each \ as part of input line
+	do
+		pattern="(^|:)$path(:|$)"
+		if [[ ! "$fpath" =~ $pattern ]]; then
+			fpath=$(join "$fpath" "$path")
+		fi
+	done < "$file"
+	echo "$fpath"
+}
+
+function join () {
+	declare -r path1="$1" path2="$2"
+	declare -r path="${path1:+$path1:}$path2"
+	echo "${path%:}"
+}
+
+function system () {
+	declare -r paths="${1:-"/etc/paths"}" pathsd="${2:-"/etc/paths.d"}"
+
+	declare -r files=$(/bin/ls -f "$pathsd")
+	declare -r filler='<<>>'
+	local FPATH=$(fromfile "$paths")
+
+	for f in ${files// /"$filler"}
+	do
+		f="$pathsd"/"${f//"$filler"/ }"
+		if [[ -f "$f" ]]; then
+			FPATH=$(fromfile "$f" "$FPATH")
+		fi
+	done
+	echo "$FPATH"
+}
+
+function log () {
+	declare -r messages=("${@}")
+	for item in "${messages[@]}"; do
+		printf "\n%s" "$item" >> "$log"
+	done
+}
+
+function reset () {
+	declare -r syspath="$(evalsys)"
+	declare -r messages=("***** WARNING: PATH not equal to SYSPATH *****"
+		"***** @ start of .bash_profile load, we want PATH=SYSPATH, the core path Apple sets  *****" 
+		""
+		"PATH:"
+		"${PATH//:/$'\n'}"
+		""
+		"SYSPATH:"
+		"${syspath//:/$'\n'}"
+		""
+		"***** Fix: reset PATH to SYSPATH  *****"
+		"")
+	log "${messages[@]}"
+	echo "PATH=\"$SYSPATH\"; export PATH"
+}
+
+function evalsys () {
+	eval echo $(echo \""$SYSPATH"\")
+}
+
+function cleanup () {
+	ARG=$?
+	set +f
+	if (( "$ARG" > 0 )); then echo "false"; fi
+}
+
+function initialize () {
+	declare -r log=~/dotfiles/bash/log/path.log 
+	: > "$log"
+
+	declare -r SYSPATH=$(system)
+ 	: ${SYSPATH:?can not be null/empty.  Aborting PATH initialization ...}	
+	if [[ "$PATH" != "$(evalsys)" ]]; then
+		reset
+	fi
+}
+
+set -f; trap cleanup EXIT
+initialize
+
+

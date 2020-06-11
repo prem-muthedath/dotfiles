@@ -1,0 +1,66 @@
+#!/usr/bin/bash
+
+function fromfile () {
+	/usr/bin/sed -E -n '
+		{
+                   :a
+                   $!N
+                   s/\n/:/
+                   ta
+                   p
+           	}' "$1"
+}
+
+function join () {
+	if [[ -z "${1// /}" ]]; then
+		echo "${2}"
+	elif [[ -z "${2// /}" ]]; then
+		echo "${1}"
+	else
+		echo "${1}:${2}"
+	fi
+}
+
+function system () {
+	: "${1:? path to file containing core system paths can not be empty/null}" 
+	: "${2:? directory path for files containing additional system paths can not be empty/null}"
+	
+	local FPATH SYSPATH
+	SYSPATH=$(fromfile "$1")
+	: ${SYSPATH:?can not be null/empty.  No system paths found in $1}
+	
+	for f in "$2"/* 
+		do
+		if [[ -f "$f" ]]; then
+			FPATH=$(join "${FPATH}" $(fromfile "$f"))
+		fi
+	done
+	join "${FPATH}" "${SYSPATH}"
+}
+
+function reset () {
+	echo -e "sourcing /etc/profile to reset PATH ..."
+	PATH=; source /etc/profile
+	echo -e "RESET PATH: ${PATH}"
+}
+
+function initialize () {
+	local SYSPATH
+	local etcpaths="/etc/paths"
+	local etcpathsd="/etc/paths.d"
+
+	if [[ -z "${PATH// /}" ]]; then
+		echo -e "***** WARNING: PATH is null/empty *****"
+		reset
+	else
+		SYSPATH=$(system "${etcpaths}" "${etcpathsd}")
+		if [[ "${PATH}" != "${SYSPATH}" ]]; then
+			echo -e "***** WARNING: PATH is not equal to SYSPATH *****" \
+			"\nPATH: ${PATH}" \
+			"\nSYSPATH: ${SYSPATH}"
+			reset
+		fi
+	fi
+}
+
+

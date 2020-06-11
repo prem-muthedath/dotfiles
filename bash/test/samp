@@ -1,0 +1,104 @@
+#!/bin/bash
+
+(set -xv; eval x="y:z:k:p: :q:r:s: "; export x)
++ eval 'x=y:z:k:p: :q:r:s: '
+x=y:z:k:p: :q:r:s: 
+++ x=y:z:k:p:
+++ :q:r:s:
+-bash: :q:r:s:: command not found
++ export x
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶ (set -xv; eval 'x="y:z:k:p: :q:r:s: "; export x')
++ eval 'x="y:z:k:p: :q:r:s: "; export x'
+x="y:z:k:p: :q:r:s: "; export x
+++ x='y:z:k:p: :q:r:s: '
+++ export x
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶ (set -xv; eval 'x="y:z:k:p: ':q:r:s: '";' export 'x';)
++ eval 'x="y:z:k:p: :q:r:s:' '";' export x
+x="y:z:k:p: :q:r:s: "; export x
+++ x='y:z:k:p: :q:r:s: '
+++ export x
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶ (set -xv; for arg in 'x="y:z:k:p: ':q:r:s: '";'; do echo "$arg"; done)
++ for arg in ''\''x="y:z:k:p: '\'':q:r:s:' ''\''";'\'''
++ echo 'x="y:z:k:p: :q:r:s:'
+x="y:z:k:p: :q:r:s:
++ for arg in ''\''x="y:z:k:p: '\'':q:r:s:' ''\''";'\'''
++ echo '";'
+";
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶  for arg in 'x="y:z:k:p: ':q:r:s: '";'; do echo "$arg"; done
+x="y:z:k:p: :q:r:s:
+";
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶  (set -xv; eval x=y:z:k:p: :q:r:s: ; export x)
++ eval x=y:z:k:p: :q:r:s:
+x=y:z:k:p: :q:r:s:
+++ x=y:z:k:p:
+++ :q:r:s:
+-bash: :q:r:s:: command not found
++ export x
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶  (set -xv; 'x="y:z:k:p:  ':q:r:s:   '";' export 'x';)
++ 'x="y:z:k:p:  :q:r:s:' '";' export x
+-bash: x="y:z:k:p:  :q:r:s:: command not found
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶  (set -xv; `x="y:z:k:p:  ':q:r:s:   '";' export 'x'`)
+x="y:z:k:p:  ':q:r:s:   '";' export 'x'
+-bash: command substitution: line 142: unexpected EOF while looking for matching `''
+-bash: command substitution: line 143: syntax error: unexpected end of file
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶  (set -xv; `x="y:z:k:p:  :q:r:s:   '";' export 'x'`)
+x="y:z:k:p:  :q:r:s:   '";' export 'x'
+-bash: command substitution: line 143: unexpected EOF while looking for matching `''
+-bash: command substitution: line 144: syntax error: unexpected end of file
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶  (set -xv; `echo 'x="y:z:k:p:  :q:r:s:   ";export 'x''`)
+echo 'x="y:z:k:p:  :q:r:s:   ";export 'x''
+++ echo 'x="y:z:k:p:  :q:r:s:   ";export x'
++ 'x="y:z:k:p:' :q:r:s: '";export' x
+-bash: x="y:z:k:p:: command not found
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶  (set -xv; `echo 'x="y:z:k:p:  :q:r:s:   "; export 'x''`)
+echo 'x="y:z:k:p:  :q:r:s:   "; export 'x''
+++ echo 'x="y:z:k:p:  :q:r:s:   "; export x'
++ 'x="y:z:k:p:' :q:r:s: '";' export x
+-bash: x="y:z:k:p:: command not found
+
+
+
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶  (set -xv; `echo 'x="y:z:k:p::q:r:s:"; export 'x''`)
+echo 'x="y:z:k:p::q:r:s:"; export 'x''
+++ echo 'x="y:z:k:p::q:r:s:"; export x'
++ 'x="y:z:k:p::q:r:s:";' export x
+-bash: x="y:z:k:p::q:r:s:";: command not found
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶  (set -xv; `echo 'x="y:z:k:p::q:r:s:";export 'x''`)
+echo 'x="y:z:k:p::q:r:s:";export 'x''
+++ echo 'x="y:z:k:p::q:r:s:";export x'
++ 'x="y:z:k:p::q:r:s:";export' x
+-bash: x="y:z:k:p::q:r:s:";export: command not found
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶  (set -xv; `echo 'x="y:z:k:p:  :q:r:s:   "; export 'x''`)
+echo 'x="y:z:k:p:  :q:r:s:   "; export 'x''
+++ echo 'x="y:z:k:p:  :q:r:s:   "; export x'
++ 'x="y:z:k:p:' :q:r:s: '";' export x
+-bash: x="y:z:k:p:: command not found
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶  (set -xv; eval `echo 'x="y:z:k:p:  :q:r:s:   "; export 'x''`)
+echo 'x="y:z:k:p:  :q:r:s:   "; export 'x''
+++ echo 'x="y:z:k:p:  :q:r:s:   "; export x'
++ eval 'x="y:z:k:p:' :q:r:s: '";' export x
+x="y:z:k:p: :q:r:s: "; export x
+++ x='y:z:k:p: :q:r:s: '
+++ export x
+
+MacBook-Air:Wed Jun 20:~/dotfiles prem_muthedath ▶ (set -xv; echo 'x="y:z:k:p:  :q:r:s:   ";export 'x'')
++ echo 'x="y:z:k:p:  :q:r:s:   ";export x'
+x="y:z:k:p:  :q:r:s:   ";export x
+
+
+
+

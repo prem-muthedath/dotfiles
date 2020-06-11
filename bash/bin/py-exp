@@ -1,0 +1,76 @@
+#!/bin/bash
+
+function fromfile () {
+        local file="$1" pattern
+        while IFS= read -r path   # -r disables escaping \; treats each \ as part of input line
+        do
+                pattern="(^|:)$path(:|$)"
+                if [[ ! "$FPATH" =~ $pattern ]]; then
+			FPATH="${FPATH:+$FPATH:}$path"
+			FPATH="${FPATH%:}"
+                fi  
+        done < "$file"
+}
+
+function build () {
+	FPATH="${FPATH:+''}"
+        for f in "${files[@]}"
+        do  
+                if [[ -f "$f" ]]; then
+                        fromfile "$f"
+                fi  
+        done
+        echo "$FPATH"
+}
+
+function system () {
+	declare -r paths="${1:-"/etc/paths"}" 
+	declare -r pathsd="${2:-"/etc/paths.d"}"
+
+	declare lsstring="$(/bin/ls -f "$pathsd")"
+	declare -r pattern=$'([^\n]+)(\n|$)'
+
+	files=("$paths")
+	while [[ "$lsstring" =~ $pattern ]]; do
+		files+=("${pathsd}/${BASH_REMATCH[1]}")		# capture the field
+    		nextstart=${#BASH_REMATCH}              	# length of field + delimiter
+    		lsstring="${lsstring:nextstart}"            	# advance the string by that length
+	done
+	build
+}
+
+set -f
+declare FPATH files=()
+#system
+
+
+#echo -e "--str--$lsstr--arr--${array[@]}--REMATCH0--${BASH_REMATCH[0]}--REMATCH1-${BASH_REMATCH[1]}--"
+#echo -e "--str--$lsstr--\nfiles--${files[@]}--\nREMATCH1-${BASH_REMATCH[1]}--"
+#function f () { 
+#	var="$1";
+#       	local IFS=$'\n'	
+#	for i in $var; do printf "%s\n" "$i"; done
+#	#(IFS=$'\n'; for i in $var; do printf "%s\n" "$i"; done)
+#}
+#
+#IFS=$'\n'
+#var=( $(\ls -f /etc/paths.d) )
+#for i in "${var[@]}"; do echo "[$i]"; done
+#arr=( $(f "$(\ls -f /etc/paths.d)") )
+#for i in "${arr[@]}"; do echo "[$i]"; done
+
+function test () {
+	str="Paris, France, Europe, Los Angeles"
+	array=()
+	while [[ $str =~ ([^,]+)(,[ ]+|$) ]]; do
+	    array+=("${BASH_REMATCH[1]}")   # capture the field
+	    i=${#BASH_REMATCH}              # length of field + delimiter
+	    echo -e "--str--$str--arr--${array[@]}--REMATCH0--${BASH_REMATCH[0]}--REMATCH1-${BASH_REMATCH[1]}--"
+	    str=${str:i}                    # advance the string by that length
+	done
+}
+
+test
+#
+
+

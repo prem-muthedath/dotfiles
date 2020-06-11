@@ -1,0 +1,19 @@
+#!/bin/bash
+
+function validate () {
+        #: ${SYSPATH:?can not be null/empty. Found no system (i.e., OS) paths -- such as /usr/bin, /bin -- reqd for a Bash session. Aborting PATH initialization ...}
+            
+        local apple_path=$(PATH=; eval `/usr/libexec/path_helper -s`; echo "$PATH")
+        if [[ -z "${SYSPATH// /}" || -z "${apple_path// /}" || "$SYSPATH" != "$apple_path" ]]; then
+               log "\n***** SYSPATH Validation Failure *****"
+               log "Reason: one or more of the following conditions violated:"
+               log "1. SYSPATH can not be null/empty/blank"
+               log "2. Apple PATH, the path returned by /usr/libexec/path_helper when invoked with PATH set empty, can not be null/empty/blank"
+               log "3. SYSPATH must equal Apple PATH"
+               log "SYSPATH:" "$SYSPATH"
+               log "ApplePATH:" "$apple_path"
+               return 1
+        fi  
+        return 0    
+}
+
