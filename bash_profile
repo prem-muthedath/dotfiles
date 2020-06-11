@@ -33,7 +33,7 @@ printf '\33c\e[3J'
 # add path to PATH
 # PATH, in Terminal, is set under the following conditions:
 #  -- 1. when you open a new tab, bash starts a new login, interactive shell session.
-# 	 bash sources /etc/profile, and then ~/.bash_profile. PATH is initially 
+#        bash sources /etc/profile, and then ~/.bash_profile. PATH is initially 
 # 	 empty, /etc/profile then sets PATH to the default system path,
 #	 and .bash_profile then adds custom paths to PATH
 #  -- 2. when you manually source ~/.bash_profile in an existing bash session 
@@ -127,23 +127,30 @@ function addpath() {
 
 # ref: for path breakup idea, done here in reverse, see:
 # https://github.com/paulirish/dotfiles
-if [[ -x ~/dotfiles/bin/pathhelper ]]; then
-	eval `~/dotfiles/bin/pathhelper`
-	addpath "${HOME}/.cabal/bin"
-	addpath "${HOME}/.local/bin"
-	addpath "${HOME}/bin"
-	export PATH
+if [[ -x ~/dotfiles/bash//bin/pathhelper ]]; then
+	#if eval $(~/dotfiles/bin/pathhelper || echo "false"); then
+	if eval $(~/dotfiles/bash/bin/pathhelper); then
+		addpath "${HOME}/.cabal/bin"
+		addpath "${HOME}/.local/bin"
+		addpath "${HOME}/bin"
+		export PATH
+	else
+		echo -e "\nPATH validation failed. No custom paths added to PATH"
+	fi
 fi
 
 export HOMEBREW_GITHUB_API_TOKEN=46ed2e0ca787be20944b88c8a3d63dd0491dcd7f
 
-export PS1="\n\[\033[0;36m\]\h:\d:\w \u ▶ \[\033[0;m\]"  # cyan 
+export PS1="\n\[\033[0;36m\]\h:\d: \w \u ▶ \[\033[0;m\]"  # cyan
 export PS2="\[\033[0;31m\]▶▶ \[\033[0;m\]"               # red
 
 export CLICOLOR=1
 
+# https://blog.mozilla.org/webdev/2015/10/27/eradicating-those-nasty-pyc-files/
+export PYTHONDONTWRITEBYTECODE=1 # prevent python from creating .pyc files
+
 alias ghc="ghc -O2 -fforce-recomp -Wall -Werror"
-alias ls="ls -laFh"            # "h" for human readable ouput 
+alias ls="ls -laFh"            # "h" for human readable ouput
 alias rm="rm -i"               # "i" for confirmation before removal
 
 # alias for listing files, links, directories
@@ -154,8 +161,15 @@ alias ll="ls | grep '^l'"      # list only symlinks
 alias lp="ls | grep '^[-l]'"   # list only files + symlinks
 alias ld="ls | grep '^d'"      # list only directories
 
-alias bp=". $HOME/dotfiles/test/bp"
-alias pl="cat $HOME/dotfiles/log/path.log"
-alias sd="cd $HOME/software-development/code"
+sd="$HOME/software-development/code"
+df="$HOME/dotfiles"
+alias sd="cd $sd"
+alias df="cd $df"
+
+alias bp=". $HOME/dotfiles/bash/test/bp"
+alias pl="cat -e $HOME/dotfiles/bash/log/path.log"
+alias pyt="$HOME/dotfiles/bash/bin/py-exp"
+
+alias clr="printf '\33c\e[3J'"
 
 
