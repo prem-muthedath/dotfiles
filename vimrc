@@ -18,6 +18,8 @@ set expandtab
 set shiftwidth=2
 set softtabstop=2
 
+" `CTRL-K F B` to get space symbol in listchars;
+" REF: see /u/ randy morris @ https://tinyurl.com/y97g3akv
 set autoindent                                " auto indent for all ft
 set number                                    " show line number
 set wrap                                      " wrap lines (for display)
@@ -25,7 +27,7 @@ set textwidth=80                              " std textwidth; wrap lines beyond
 set colorcolumn=+1                            " mark textwidth
 set wildmenu                                  " <Tab> cl-completion
 set wildcharm=<C-Z>                           " allow <Tab> in map completion
-set listchars=space:»,trail:␣,eol:¬,tab:▸\    " show these on :set list
+set listchars=space:█,trail:█,eol:¬,tab:▸\    " show these on :set list
 set hlsearch                                  " highlight search ON, as default
 set history=1000                              " keep large history
 
@@ -61,6 +63,9 @@ set statusline+=\ %m                      " file modified?
 
 set fillchars=vert:\│                     " use this to show vsplit
 
+" ignore these file extensions
+set wildignore+=*.hi,*.o,*.class
+
 " window settings
 set splitright    " vertical right split
 set splitbelow    " horizontal bottom split
@@ -71,6 +76,10 @@ set backupdir=~/.vim/backup
 set directory=~/.vim/swap
 
 " mappings
+" NOTE:  :w !pbcopy copies line selections to OSX system clipboard
+"        see /u/ Brian @ https://tinyurl.com/y4n9njg7  (so)
+"        for set list, see /u/ derrick zhang @ https://tinyurl.com/y7gk2ncg
+"        ws: highlights blank lines & trailing white spaces.
 nmap      sa    :SyntaxAttr<CR>
 nmap      ch    :ToggleCommentHl<CR>
 nmap      co    :colorscheme <C-Z><S-Tab>
@@ -83,6 +92,9 @@ nnoremap  sc    :StartComment<CR>
 vnoremap  ic    :norm ^i" <CR>
 vnoremap  rc    :norm ^x<CR>
 vnoremap  ri    :Reindent<CR>
-
+vmap      cp    :w !pbcopy<CR><CR>
+map       sl    :set list! list? <CR>
+nmap      ws    :/^\s\+$\\|\s\+$/ <CR>
 " https://google.com
+
 
