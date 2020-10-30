@@ -171,5 +171,8 @@ alias pl="cat -e $HOME/dotfiles/bash/log/path.log"
 alias pyt="$HOME/dotfiles/bash/bin/py-exp"
 
 alias clr="printf '\33c\e[3J'"
-
+# https://opensource.com/article/19/5/python-3-default-mac
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi
 
