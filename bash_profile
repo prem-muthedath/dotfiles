@@ -111,6 +111,8 @@ printf '\33c\e[3J'
 # -- regex match/remove spaces in wc -l, see /u/ jens, /u/ william pursell @ https://goo.gl/D7NpX4 (so)
 # -- for use of ${NEWPATH:?error-message}, see /u/ chepner, /u/ jens @ https://goo.gl/QW52j8 (so)
 
+
+################ PATH SETUP
 function addpath() {
 	local IFS=':'
 	local NEWPATH
@@ -123,7 +125,6 @@ function addpath() {
 	done
 	PATH=$1:${NEWPATH:?can not be empty/null.  Aborted adding $1 to PATH, as the attempt results in an invalid new PATH}
 }
-
 
 # ref: for path breakup idea, done here in reverse, see:
 # https://github.com/paulirish/dotfiles
@@ -139,17 +140,33 @@ if [[ -x ~/dotfiles/bash//bin/pathhelper ]]; then
 	fi
 fi
 
-export HOMEBREW_GITHUB_API_TOKEN=46ed2e0ca787be20944b88c8a3d63dd0491dcd7f
 
+################ TERMINAL PROMPT SETTINGS -- FORMAT & COLOR
 export PS1="\n\[\033[0;36m\]\h:\d: \w \u ▶ \[\033[0;m\]"  # cyan
 export PS2="\[\033[0;31m\]▶▶ \[\033[0;m\]"               # red
 
 export CLICOLOR=1
 
+
+################ PYTHON SETTINGS
 # https://blog.mozilla.org/webdev/2015/10/27/eradicating-those-nasty-pyc-files/
 export PYTHONDONTWRITEBYTECODE=1 # prevent python from creating .pyc files
 
+# https://opensource.com/article/19/5/python-3-default-mac
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi
+
+
+################ HOMEBREW SETTINGS
+export HOMEBREW_GITHUB_API_TOKEN=46ed2e0ca787be20944b88c8a3d63dd0491dcd7f
+
+
+################ ALIASES
+# haskell command
 alias ghc="ghc -O2 -fforce-recomp -Wall -Werror"
+
+# file listing, removal
 alias ls="ls -laFh"            # "h" for human readable ouput
 alias rm="rm -i"               # "i" for confirmation before removal
 
@@ -161,18 +178,17 @@ alias ll="ls | grep '^l'"      # list only symlinks
 alias lp="ls | grep '^[-l]'"   # list only files + symlinks
 alias ld="ls | grep '^d'"      # list only directories
 
+# commonly used dirs
 sd="$HOME/software-development/code"
 df="$HOME/dotfiles"
 alias sd="cd $sd"
 alias df="cd $df"
 
+# bash profile testing
 alias bp=". $HOME/dotfiles/bash/test/bp"
 alias pl="cat -e $HOME/dotfiles/bash/log/path.log"
 alias pyt="$HOME/dotfiles/bash/bin/py-exp"
 
+# clear screen
 alias clr="printf '\33c\e[3J'"
-# https://opensource.com/article/19/5/python-3-default-mac
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-fi
 
