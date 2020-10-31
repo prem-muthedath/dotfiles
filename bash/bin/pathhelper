@@ -44,7 +44,7 @@ function log () {
 }
 
 function reset () {
-	declare -r syspath="$(evalsys)"
+	declare -r syspath="$SYSPATH"
 	declare -r messages=("***** WARNING: PATH not equal to SYSPATH *****"
 		"***** @ start of .bash_profile load, we want PATH=SYSPATH, the core path Apple sets  *****" 
 		""
@@ -60,10 +60,6 @@ function reset () {
 	echo "PATH=\"$SYSPATH\"; export PATH"
 }
 
-function evalsys () {
-	eval echo $(echo \""$SYSPATH"\")
-}
-
 function cleanup () {
 	ARG=$?
 	set +f
@@ -76,7 +72,7 @@ function initialize () {
 
 	declare -r SYSPATH=$(system)
  	: ${SYSPATH:?can not be null/empty.  Aborting PATH initialization ...}	
-	if [[ "$PATH" != "$(evalsys)" ]]; then
+	if [[ "$PATH" != "$SYSPATH" ]]; then
 		reset
 	fi
 }
