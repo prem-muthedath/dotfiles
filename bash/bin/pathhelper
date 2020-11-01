@@ -1,83 +1,140 @@
 #!/bin/bash
 
+################################################################################
+# pathhelper executable -- called from ~/.bash_profile
+# author: Prem Muthedath
+#
+# pathhelper ensures that @ start of a bash session, PATH is always initialized 
+# to the default system path -- the path that Apple sets. bash_profile then 
+# PREPENDS user-defined custom paths to PATH.
+#
+# why is pathhelper needed at all?
+# 1. ensure correct PATH initialization -- no duplicates, right path order, etc.
+# 2. when you manually source bash_profile, ensure PATH integrity -- that is, 
+#    you don't end up with duplicate paths (bash does this!) & bad path order.
+#
+# DESIGN:
+# 1. compute default system path -- named here as SYSPATH -- in the right order, 
+#    just the same way Apple does:
+#    (a) first, read /etc/paths file, & build ordered path sequence using paths 
+#    listed there; ensure path sequence does not contain duplicates.
+#    (b) next, read each file in etc/paths.d directory, in the order they are 
+#    listed in the directory, & append path sequence (no dups) built from each 
+#    file to result from (a).
+#    (c) default system path = result from operations (a) & (b)
+# 2. in doing (1), ensure that system path does not contain duplicates.
+# 3. check if PATH == SYSPATH.  if yes, exit.
+# 4. else, log warning to ~/dotfiles/bash/log/path.log, return command for 
+#    PATH-reset-to-SYSPATH as a string to caller in bash_profile, & exit.
+# 5. trap any execution errors, clean up, and exit, returning 'false'
+################################################################################
+
 function fromfile () {
-	declare -r file="$1"
-	local fpath="$2"
-	while IFS= read -r path   # -r disables escaping \; treats each \ as part of input line
-	do
-		pattern="(^|:)$path(:|$)"
-		if [[ ! "$fpath" =~ $pattern ]]; then
-			fpath=$(join "$fpath" "$path")
-		fi
-	done < "$file"
-	echo "$fpath"
+  # read file, and append all paths in it to fpath, ensuring no duplicates.
+  # args: input file, fpath
+  declare -r file="$1"
+  local fpath="$2"
+  while IFS= read -r path   # -r disables escaping \; treats each \ as part of input line
+  do
+    pattern="(^|:)$path(:|$)"   # `path` pattern for duplicate check
+    # if fpath already contains path, do not include the path again.
+    if [[ ! "$fpath" =~ $pattern ]]; then
+      fpath=$(join "$fpath" "$path")
+    fi
+  done < "$file"
+  echo "$fpath"
 }
 
 function join () {
-	declare -r path1="$1" path2="$2"
-	declare -r path="${path1:+$path1:}$path2"
-	echo "${path%:}"
+  # join path1 & path2, returning path1:path2
+  # args: path1, path2
+  declare -r path1="$1" path2="$2"
+  declare -r path="${path1:+$path1:}$path2"
+  echo "${path%:}"
 }
 
 function system () {
-	declare -r paths="${1:-"/etc/paths"}" pathsd="${2:-"/etc/paths.d"}"
+  # compute & return default system path -- called here as FPATH -- in just the 
+  # same way as Apple does @ start of a bash terminal session.
+  # args: none.
+  #
+  # STEPS:
+  # 1. read /etc/paths file, and compute path sequence, ignoring duplicates;
+  # 2. next, read each file in /etc/paths.d directory, in listed order, & append 
+  #    path sequence computed from each file to result in (a); ignore dups.
+  # 3. return system path -- the result of operations (1) & (2)
+  declare -r paths="${1:-"/etc/paths"}" pathsd="${2:-"/etc/paths.d"}"
 
-	declare -r files=$(/bin/ls -f "$pathsd")
-	declare -r filler='<<>>'
-	local FPATH=$(fromfile "$paths")
+  declare -r files=$(/bin/ls -f "$pathsd")  # file list from /etc/paths.d
+  declare -r filler='<<>>'                  # filler for blanks in file name
+  local FPATH=$(fromfile "$paths")          # syspath built from /etc/paths
 
-	for f in ${files// /"$filler"}
-	do
-		f="$pathsd"/"${f//"$filler"/ }"
-		if [[ -f "$f" ]]; then
-			FPATH=$(fromfile "$f" "$FPATH")
-		fi
-	done
-	echo "$FPATH"
+  # for each file in /etc/paths.d, append computed path sequence to FPATH
+  for f in ${files// /"$filler"}
+  do
+    f="$pathsd"/"${f//"$filler"/ }"
+    if [[ -f "$f" ]]; then    # check if `f` is a file
+      FPATH=$(fromfile "$f" "$FPATH")
+    fi
+  done
+  echo "$FPATH"
 }
 
 function log () {
-	declare -r messages=("${@}")
-	for item in "${messages[@]}"; do
-		printf "\n%s" "$item" >> "$log"
-	done
+  # log messages -- a string array -- to file, defined by $log.
+  # args: messages array
+  declare -r messages=("${@}")
+  for item in "${messages[@]}"; do
+    printf "\n%s" "$item" >> "$log"
+  done
 }
 
 function reset () {
-	declare -r syspath="$SYSPATH"
-	declare -r messages=("***** WARNING: PATH not equal to SYSPATH *****"
-		"***** @ start of .bash_profile load, we want PATH=SYSPATH, the core path Apple sets  *****" 
-		""
-		"PATH:"
-		"${PATH//:/$'\n'}"
-		""
-		"SYSPATH:"
-		"${syspath//:/$'\n'}"
-		""
-		"***** Fix: reset PATH to SYSPATH  *****"
-		"")
-	log "${messages[@]}"
-	echo "PATH=\"$SYSPATH\"; export PATH"
+  # log warnings & return command for reset-PATH-to-SYSPATH as a string.
+  # args: none
+  declare -r syspath="$SYSPATH"
+  declare -r messages=("***** WARNING: PATH not equal to SYSPATH *****"
+      "***** @ start of .bash_profile load, we want PATH=SYSPATH, the core path Apple sets  *****"
+      ""
+      "PATH:"
+      "${PATH//:/$'\n'}"
+      ""
+      "SYSPATH:"
+      "${syspath//:/$'\n'}"
+      ""
+      "***** Fix: reset PATH to SYSPATH  *****"
+      "")
+  log "${messages[@]}"
+  echo "PATH=\"$SYSPATH\"; export PATH"
 }
 
 function cleanup () {
-	ARG=$?
-	set +f
-	if (( "$ARG" > 0 )); then echo "false"; fi
+  # cleanup before exit, returning `false` if there are execution errors.
+  # args: none
+  ARG=$?  # exit status of last executed command; non-zero => failure
+  set +f
+  if (( "$ARG" != 0 )); then echo "false"; fi
 }
 
 function initialize () {
-	declare -r log=~/dotfiles/bash/log/path.log 
-	: > "$log"
+  # initialize PATH to default system path.
+  # if PATH needs reset, returns command for reset-PATH-to-SYSPATH as string; 
+  # otherwise, doesn't explicitly return anything except exit status.
+  # args: none
+  declare -r log=~/dotfiles/bash/log/path.log
 
-	declare -r SYSPATH=$(system)
- 	: ${SYSPATH:?can not be null/empty.  Aborting PATH initialization ...}	
-	if [[ "$PATH" != "$SYSPATH" ]]; then
-		reset
-	fi
+  # https://askubuntu.com/questions/831414/what-is-the-difference-between-touch-file-and-file
+  : > "$log"    # create or overwrite log file; ':' is no-op command
+
+  declare -r SYSPATH=$(system)
+  : ${SYSPATH:?can not be null/empty.  Aborting PATH initialization ...}
+  if [[ "$PATH" != "$SYSPATH" ]]; then
+    reset
+  fi
 }
 
-set -f; trap cleanup EXIT
+# set -f => disable file name generation, aka globbing.
+set -f; trap cleanup EXIT   # trap errors to ensure clean exit
 initialize
 
 
