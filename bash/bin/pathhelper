@@ -29,6 +29,14 @@
 # 5. trap any execution errors, clean up, and exit, returning 'false'
 ################################################################################
 
+function join () {
+  # join path1 & path2, returning path1:path2
+  # args: path1, path2
+  declare -r path1="$1" path2="$2"
+  declare -r path="${path1:+$path1:}$path2"
+  echo "${path%:}"
+}
+
 function fromfile () {
   # read file, and append all paths in it to fpath, ensuring no duplicates.
   # args: input file, fpath
@@ -43,14 +51,6 @@ function fromfile () {
     fi
   done < "$file"
   echo "$fpath"
-}
-
-function join () {
-  # join path1 & path2, returning path1:path2
-  # args: path1, path2
-  declare -r path1="$1" path2="$2"
-  declare -r path="${path1:+$path1:}$path2"
-  echo "${path%:}"
 }
 
 function system () {
