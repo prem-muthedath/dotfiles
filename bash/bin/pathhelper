@@ -15,7 +15,7 @@
 #
 # DESIGN:
 # 1. compute default system path -- named here as SYSPATH -- in the right order, 
-#    just the same way as Apple does:
+#    in just the same way as Apple does:
 #    (a) first, read /etc/paths file, & build ordered path sequence using paths 
 #    listed there; ensure path sequence does not contain duplicates.
 #    (b) next, read each file in etc/paths.d directory, in the order they are 
