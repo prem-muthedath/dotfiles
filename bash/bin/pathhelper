@@ -14,7 +14,7 @@
 #    you don't end up with duplicate paths (bash does this!) & bad path order.
 #
 # DESIGN:
-# 1. compute default system path -- named here as SYSPATH -- in the right order, 
+# 1. compute default system path -- named here as SYSPATH -- in right order -- 
 #    in just the same way as Apple does:
 #    (a) first, read /etc/paths file, & build ordered path sequence using paths 
 #    listed there; ensure path sequence does not contain duplicates.
