@@ -70,16 +70,16 @@ function system () {
   # 3. return system path -- the result of operations (1) & (2)
   declare -r paths="${1:-"/etc/paths"}" pathsd="${2:-"/etc/paths.d"}"
 
-  # NOTE: Apple uses an unordered list of files from /etc/paths.d, the list you 
-  # get with `ls -f` on paths.d directory, so we do the same here.
+  # NOTE: Apple uses an unordered file list from /etc/paths.d, the list you get 
+  # with `ls -f` on paths.d directory, so we do the same here.
   declare -r files=$(/bin/ls -f "$pathsd")  # file list from /etc/paths.d
-  declare -r filler='<<>>'                  # filler for blanks in file name
+  declare -r filler='<<>>'                  # filler for blank in file name
   local FPATH=$(fromfile "$paths")          # syspath built from /etc/paths
 
   # for each file in /etc/paths.d, append computed path sequence to FPATH
-  for f in ${files// /"$filler"}
+  for f in ${files// /"$filler"}  # filler avoids split of blanks in file name.
   do
-    f="$pathsd"/"${f//"$filler"/ }"
+    f="$pathsd"/"${f//"$filler"/ }"   # replace filler back with space
     if [[ -f "$f" ]]; then    # check if `f` is a file
       FPATH=$(fromfile "$f" "$FPATH")
     fi
