@@ -1,0 +1,17 @@
+## list of files in ~/dotfiles/bash/test/paths.d
+## list got from `/bin/ls -f` paths.d
+## this is the expected list you should get when you run bash/bin/pathhelper
+## NOTE: data contain BLANKS; use `ws` to see them.
+################################################################################
+paths.d/.
+paths.d/..
+paths.d/33-doo
+paths.d/10-koo
+paths.d/33-roo
+paths.d/56-toc
+paths.d/02-zoo
+paths.d/01-boo
+paths.d/64-jkl
+paths.d/75-upn
+paths.d/45-blank   name    
+paths.d/85-rob

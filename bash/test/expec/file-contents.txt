@@ -1,0 +1,33 @@
+## contents of all files in ~/dotfiles/bash/test/paths.d directory.
+## the file order is in ~/dotfiles/bash/test/expec/files
+## the file order => `/bin/ls -f` paths.d
+## this is the expected contents you should get when you run bash/bin/pathhelper
+## of course, pathhelper should eliminate duplicate paths listed here.
+## NOTE: data contain BLANKS & BLANK LINES; use `ws` to see them.
+################################################################################
+cat: paths.d/.: Is a directory
+cat: paths.d/..: Is a directory
+/Users/prem_muthedath/software-development/code/haskell-stuff/performance
+/Users/prem_muthedath/software-development/code/c-stuff/learn
+/Users/prem_muthedath/software-development/code/haskell-stuff/performance
+/Users/prem_muthedath/Documents/my-stuff/dubai - travel
+/Users/prem_muthedath/software-development/code/timer
+/Users/prem_muthedath/software-development/notes
+/usr/local/bin
+/Users/prem_muthedath/software-development/code/tdd
+/sbin
+/Users/prem_muthedath/software-development/code/bowling
+/Users/prem_muthedath/software-development/code/haskell-stuff
+/Users/prem_muthedath/software-development/code/c-stuff
+/Users/prem_muthedath/software-development/code/bash
+/Users/prem_muthedath/software-development/code/bash
+/Users/prem_muthedath/dotfiles
+/Users/prem_muthedath/dotfiles/test/data/dirs/.dot
+/Users/prem_muthedath/dotfiles/test/data/dirs/.  dot   blank   
+/Users/prem_muthedath/dotfiles/test/data/dirs/foo    blank    
+/Users/prem_muthedath/dotfiles/test/data/dirs/foo    blank    
+/Users/prem_muthedath/software-development/articles
+   
+/Users/prem_muthedath/software-development/code/bom_costing
+    
+    
