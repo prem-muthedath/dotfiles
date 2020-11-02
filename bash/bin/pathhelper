@@ -77,7 +77,7 @@ function system () {
   local FPATH=$(fromfile "$paths")          # syspath built from /etc/paths
 
   # for each file in /etc/paths.d, append computed path sequence to FPATH
-  for f in ${files// /"$filler"}  # filler avoids split of blanks in file name.
+  for f in ${files// /"$filler"}  # filler avoids file name split @ blanks.
   do
     f="$pathsd"/"${f//"$filler"/ }"   # replace filler back with space
     if [[ -f "$f" ]]; then    # check if `f` is a file
