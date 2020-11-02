@@ -8,6 +8,8 @@
 # to the default system path -- the path that Apple sets. bash_profile then 
 # PREPENDS user-defined custom paths to PATH.
 #
+# REF: see /u/algal @ https://tinyurl.com/y574yqtw (so) on how Apple sets PATH
+#
 # why is pathhelper needed at all?
 # 1. ensure correct PATH initialization -- no duplicates, right path order, etc.
 # 2. when you manually source bash_profile, ensure PATH integrity -- that is, 
@@ -42,11 +44,14 @@ function fromfile () {
   # args: input file, fpath
   declare -r file="$1"
   local fpath="$2"
+
+  re="^[[:space:]]*$"   # blank & empty line pattern.
   while IFS= read -r path   # -r disables escaping \; treats each \ as part of input line
   do
     pattern="(^|:)$path(:|$)"   # `path` pattern for duplicate check
+    # if $path is empty or blank line, ignore it.
     # if fpath already contains path, do not include the path again.
-    if [[ ! "$fpath" =~ $pattern ]]; then
+    if [[ ! "$path" =~ $re ]] && [[ ! "$fpath" =~ $pattern ]]; then
       fpath=$(join "$fpath" "$path")
     fi
   done < "$file"
@@ -65,6 +70,8 @@ function system () {
   # 3. return system path -- the result of operations (1) & (2)
   declare -r paths="${1:-"/etc/paths"}" pathsd="${2:-"/etc/paths.d"}"
 
+  # NOTE: Apple uses an unordered list of files from /etc/paths.d, the list you 
+  # get with `ls -f` on paths.d directory, so we do the same here.
   declare -r files=$(/bin/ls -f "$pathsd")  # file list from /etc/paths.d
   declare -r filler='<<>>'                  # filler for blanks in file name
   local FPATH=$(fromfile "$paths")          # syspath built from /etc/paths
