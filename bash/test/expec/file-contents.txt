@@ -1,7 +1,7 @@
 ## contents of all files in ~/dotfiles/bash/test/paths.d directory.
-## the file order is in ~/dotfiles/bash/test/expec/files
-## the file order => `/bin/ls -f` paths.d
-## this is the expected contents you should get when you run bash/bin/pathhelper
+## file order is in ~/dotfiles/bash/test/expec/files.txt
+## file order => `/bin/ls -f` bash/test/paths.d
+## this is the expected contents you should get in bash/bin/pathhelper test run.
 ## of course, pathhelper should eliminate duplicate paths listed here.
 ## NOTE: data contain BLANKS & BLANK LINES; use `ws` to see them.
 ################################################################################

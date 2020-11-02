@@ -1,6 +1,6 @@
 ## list of files in ~/dotfiles/bash/test/paths.d
-## list got from `/bin/ls -f` paths.d
-## this is the expected list you should get when you run bash/bin/pathhelper
+## list got from `/bin/ls -f` bash/test/paths.d
+## this is the expected list you should get in bash/bin/pathhelper test run
 ## NOTE: data contain BLANKS; use `ws` to see them.
 ################################################################################
 paths.d/.
