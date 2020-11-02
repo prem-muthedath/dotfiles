@@ -36,7 +36,7 @@ function join () {
   # args: path1, path2
   declare -r path1="$1" path2="$2"
   declare -r path="${path1:+$path1:}$path2"
-  echo "${path%:}"
+  echo "$path"
 }
 
 function fromfile () {
