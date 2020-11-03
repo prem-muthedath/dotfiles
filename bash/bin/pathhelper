@@ -129,8 +129,8 @@ function initialize () {
   # if PATH needs reset, return command for reset-PATH-to-SYSPATH as string; 
   # otherwise, return nothing explicitly (of course, bash returns exit status).
   # args: none
-  declare -r logfile=~/dotfiles/bash/log/path.log       # log file
-  declare -r paths='/etc/paths' pathsd='/etc/paths.d'   # file, dir for system paths
+  declare -r logfile="${HOME}/dotfiles/bash/log/path.log"   # log file
+  declare -r paths='/etc/paths' pathsd='/etc/paths.d'       # file, dir for system paths
 
   # https://askubuntu.com/questions/831414/what-is-the-difference-between-touch-file-and-file
   : > "$logfile"    # create or overwrite log file; ':' is no-op command
