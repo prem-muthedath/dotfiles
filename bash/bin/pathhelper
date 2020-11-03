@@ -25,10 +25,11 @@
 #    file to result from (a).
 #    (c) default system path = result from operations (a) & (b)
 # 2. in doing (1), ensure that system path does not contain duplicates.
-# 3. check if PATH == SYSPATH.  if yes, exit.
+# 3. check if PATH == SYSPATH.  if yes, clean up, & exit.
 # 4. else, log warning to ~/dotfiles/bash/log/path.log, return command for 
-#    PATH-reset-to-SYSPATH as a string to caller in bash_profile, & exit.
-# 5. trap any execution errors, clean up, and exit, returning 'false'
+#    PATH-reset-to-SYSPATH as string to caller in bash_profile, clean up & exit.
+# 5. trap any execution errors, clean up, and exit, returning "false" -- i.e., 
+#    `false` command as string -- to caller in bash_profile.
 ################################################################################
 
 function join () {
@@ -91,7 +92,7 @@ function log () {
   # args: messages array
   local messages=("${@}")
   for item in "${messages[@]}"; do
-    printf "\n%s" "$item" >> "$log"
+    printf "\n%s" "$item" >> "$logfile"
   done
 }
 
@@ -115,7 +116,8 @@ function reset () {
 }
 
 function cleanup () {
-  # cleanup before exit, returning `false` if there are execution errors.
+  # cleanup before exit, check execution status, and if failure, return "false" 
+  # -- i.e., `false` command as string -- to caller.
   # args: none
   local ARG=$?  # exit status of last executed command; non-zero => failure
   set +f
@@ -124,14 +126,14 @@ function cleanup () {
 
 function initialize () {
   # initialize PATH to default system path.
-  # if PATH needs reset, returns command for reset-PATH-to-SYSPATH as string; 
-  # otherwise, doesn't explicitly return anything except exit status.
+  # if PATH needs reset, return command for reset-PATH-to-SYSPATH as string; 
+  # otherwise, return nothing explicitly (of course, bash returns exit status).
   # args: none
-  declare -r log=~/dotfiles/bash/log/path.log           # log file
+  declare -r logfile=~/dotfiles/bash/log/path.log       # log file
   declare -r paths='/etc/paths' pathsd='/etc/paths.d'   # file, dir for system paths
 
   # https://askubuntu.com/questions/831414/what-is-the-difference-between-touch-file-and-file
-  : > "$log"    # create or overwrite log file; ':' is no-op command
+  : > "$logfile"    # create or overwrite log file; ':' is no-op command
 
   declare -r SYSPATH=$(system)
   : ${SYSPATH:?can not be null/empty.  Aborting PATH initialization ...}
