@@ -73,7 +73,7 @@ function system () {
   # NOTE: Apple uses an unordered file list from /etc/paths.d, the list you get 
   # with `ls -f` on paths.d directory, so we do the same here.
   local fnames=$(/bin/ls -f "$pathsd")    # file names from /etc/paths.d
-  local filler='<<>>'                     # filler for blank in file name
+  local filler='▶'                        # filler for blank in file name
   local FPATH=$(fromfile "$paths")        # syspath built from /etc/paths
 
   # for each file in /etc/paths.d, append computed path sequence to FPATH
