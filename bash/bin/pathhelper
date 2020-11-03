@@ -34,24 +34,24 @@
 function join () {
   # join path1 & path2, returning path1:path2
   # args: path1, path2
-  declare -r path1="$1" path2="$2"
-  declare -r path="${path1:+$path1:}$path2"
+  local path1="$1" path2="$2"
+  local path="${path1:+$path1:}$path2"
   echo "$path"
 }
 
 function fromfile () {
   # read file, and append all paths in it to fpath, ensuring no duplicates.
   # args: input file, fpath
-  declare -r file="$1"
+  local file="$1"
   local fpath="$2"
 
-  re="^[[:space:]]*$"   # blank & empty line pattern.
+  local blank="^[[:space:]]*$"   # blanks & empty line pattern.
   while IFS= read -r path   # -r disables escaping \; treats each \ as part of input line
   do
-    pattern="(^|:)$path(:|$)"   # `path` pattern for duplicate check
-    # if $path is empty or blank line, ignore it.
+    dup="(^|:)$path(:|$)"   # `path` pattern for duplicate check
+    # if path is empty or blank line, ignore it.
     # if fpath already contains path, do not include the path again.
-    if [[ ! "$path" =~ $re ]] && [[ ! "$fpath" =~ $pattern ]]; then
+    if [[ ! "$path" =~ $blank ]] && [[ ! "$fpath" =~ $dup ]]; then
       fpath=$(join "$fpath" "$path")
     fi
   done < "$file"
@@ -68,18 +68,17 @@ function system () {
   # 2. next, read each file in /etc/paths.d directory, in listed order, & append 
   #    path sequence computed from each file to result in (a); ignore dups.
   # 3. return system path -- the result of operations (1) & (2)
-  declare -r paths="${1:-"/etc/paths"}" pathsd="${2:-"/etc/paths.d"}"
 
   # NOTE: Apple uses an unordered file list from /etc/paths.d, the list you get 
   # with `ls -f` on paths.d directory, so we do the same here.
-  declare -r files=$(/bin/ls -f "$pathsd")  # file list from /etc/paths.d
-  declare -r filler='<<>>'                  # filler for blank in file name
-  local FPATH=$(fromfile "$paths")          # syspath built from /etc/paths
+  local fnames=$(/bin/ls -f "$pathsd")    # file names from /etc/paths.d
+  local filler='<<>>'                     # filler for blank in file name
+  local FPATH=$(fromfile "$paths")        # syspath built from /etc/paths
 
   # for each file in /etc/paths.d, append computed path sequence to FPATH
-  for f in ${files// /"$filler"}  # filler avoids file name split @ blanks.
+  for fname in ${fnames// /"$filler"}  # filler avoids file name split @ blanks.
   do
-    f="$pathsd"/"${f//"$filler"/ }"   # replace filler back with space
+    f="$pathsd"/"${fname//"$filler"/ }"   # replace filler back with space
     if [[ -f "$f" ]]; then    # check if `f` is a file
       FPATH=$(fromfile "$f" "$FPATH")
     fi
@@ -90,7 +89,7 @@ function system () {
 function log () {
   # log messages -- a string array -- to file, defined by $log.
   # args: messages array
-  declare -r messages=("${@}")
+  local messages=("${@}")
   for item in "${messages[@]}"; do
     printf "\n%s" "$item" >> "$log"
   done
@@ -99,8 +98,8 @@ function log () {
 function reset () {
   # log warnings & return command for reset-PATH-to-SYSPATH as a string.
   # args: none
-  declare -r syspath="$SYSPATH"
-  declare -r messages=("***** WARNING: PATH not equal to SYSPATH *****"
+  local syspath="$SYSPATH"
+  local messages=("***** WARNING: PATH not equal to SYSPATH *****"
       "***** @ start of .bash_profile load, we want PATH=SYSPATH, the core path Apple sets  *****"
       ""
       "PATH:"
@@ -118,7 +117,7 @@ function reset () {
 function cleanup () {
   # cleanup before exit, returning `false` if there are execution errors.
   # args: none
-  ARG=$?  # exit status of last executed command; non-zero => failure
+  local ARG=$?  # exit status of last executed command; non-zero => failure
   set +f
   if (( "$ARG" != 0 )); then echo "false"; fi
 }
@@ -128,7 +127,8 @@ function initialize () {
   # if PATH needs reset, returns command for reset-PATH-to-SYSPATH as string; 
   # otherwise, doesn't explicitly return anything except exit status.
   # args: none
-  declare -r log=~/dotfiles/bash/log/path.log
+  declare -r log=~/dotfiles/bash/log/path.log           # log file
+  declare -r paths='/etc/paths' pathsd='/etc/paths.d'   # file, dir for system paths
 
   # https://askubuntu.com/questions/831414/what-is-the-difference-between-touch-file-and-file
   : > "$log"    # create or overwrite log file; ':' is no-op command
