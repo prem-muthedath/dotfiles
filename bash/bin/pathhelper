@@ -46,13 +46,12 @@ function fromfile () {
   local file="$1"
   local fpath="$2"
 
-  local blank="^[[:space:]]*$"   # blanks & empty line pattern.
   while IFS= read -r path   # -r disables escaping \; treats each \ as part of input line
   do
     dup="(^|:)$path(:|$)"   # `path` pattern for duplicate check
-    # if path is empty or blank line, ignore it.
+    # path MUST be a directory; if not (blanks, file, dummy, etc.), ignore it.
     # if fpath already contains path, do not include the path again.
-    if [[ ! "$path" =~ $blank ]] && [[ ! "$fpath" =~ $dup ]]; then
+    if [[ -d  "$path" ]] && [[ ! "$fpath" =~ $dup ]]; then
       fpath=$(join "$fpath" "$path")
     fi
   done < "$file"
