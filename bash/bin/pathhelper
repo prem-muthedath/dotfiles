@@ -91,11 +91,11 @@ function log () {
   # log messages -- a string array -- to file, defined by $log.
   # args: messages array
   #
-  # BUG FIX: code below redirects ALL stdout within the for-loop, rather than 
-  # stdout from just printf, to file; this avoids mangled file content caused by 
-  # interspersed output from different bash terminal sessions to the file.  this 
-  # problem occurs particulary when output is large -- i.e., when it takes 
-  # longer time for each bash terminal session to write to file.
+  # BUG FIX: code below redirects ALL for-loop stdout, rather than just printf 
+  # stdout, to file; this avoids mangled file content that results from 
+  # interspersed writes from different bash terminal sessions to file.  this 
+  # problem is particularly acute for large output -- i.e., when it takes longer 
+  # time for each bash terminal session to write to file.
   # REF: https://mywiki.wooledge.org/BashGuide/InputAndOutput
   local messages=("${@}")
   for item in "${messages[@]}"; do
