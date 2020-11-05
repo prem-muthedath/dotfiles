@@ -62,7 +62,7 @@ function fromfile () {
     # path MUST be a directory; if not (blanks, file, dummy, etc.), ignore it.
     # if fpath already contains path, do not include the path again.
     if [[ -d  "$path" ]] && [[ ! "$fpath" =~ $dup ]]; then
-      fpath=$(join "$fpath" "$path")
+      fpath="$(join "$fpath" "$path")"
     fi
   done < "$file"
   echo "$fpath"
@@ -82,9 +82,9 @@ function system () {
   # NOTE: Apple uses an unordered file list from /etc/paths.d, the list you get 
   # with `ls -f` on paths.d directory, so we do the same here.
   local fnames filler FPATH
-  fnames=$(/bin/ls -f "$pathsd")    # file names from /etc/paths.d
-  filler='▶'                        # filler for blank in file name
-  FPATH=$(fromfile "$paths")        # syspath built from /etc/paths
+  fnames="$(/bin/ls -f "$pathsd")"    # file names from /etc/paths.d
+  filler='▶'                          # filler for blank in file name
+  FPATH="$(fromfile "$paths")"        # syspath built from /etc/paths
 
   # for each file in /etc/paths.d, append computed path sequence to FPATH
   local fname f
@@ -92,7 +92,7 @@ function system () {
   do
     f="$pathsd"/"${fname//"$filler"/ }"   # replace filler back with space
     if [[ -f "$f" ]]; then    # check if `f` is a file
-      FPATH=$(fromfile "$f" "$FPATH")
+      FPATH="$(fromfile "$f" "$FPATH")"
     fi
   done
   echo "$FPATH"
