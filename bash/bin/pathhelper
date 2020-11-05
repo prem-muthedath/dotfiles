@@ -137,12 +137,13 @@ function reset () {
 }
 
 function cleanup () {
-  # cleanup before exit, check execution status, & if failure, return "false" 
-  # -- i.e., `false` command as string -- to caller.
+  # capture execution status, clean up; if execution status is failure, return 
+  # "false" -- i.e., `false` command as string -- to caller.
   # args: none
-  local ARG
-  ARG=$?  # exit status of last executed command; non-zero => failure
-  set +f
+
+  # NOTE: capture the execution status first, BEFORE doing anything else!!
+  local ARG=$?  # exit status of last executed command; non-zero => failure
+  set +f        # clean up
   if (( "$ARG" != 0 )); then echo "false"; fi
 }
 
