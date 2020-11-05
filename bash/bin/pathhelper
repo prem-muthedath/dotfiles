@@ -57,7 +57,7 @@ function fromfile () {
   local path dup
   while IFS= read -r path
   do
-    path="${path/#~/$HOME}" # replace '~' @ start with home directory
+    path="${path/#~/$HOME}" # replace '~' (if any) @ start with home directory
     dup="(^|:)$path(:|$)"   # `path` pattern for duplicate check
     # path MUST be a directory; if not (blanks, file, dummy, etc.), ignore it.
     # if fpath already contains path, do not include the path again.
@@ -100,7 +100,7 @@ function system () {
 
 function log () {
   # log messages -- a string array -- to file, defined by $log.
-  # args: messages array
+  # args: messages -- an array
   #
   # BUG FIX: code below redirects ALL for-loop stdout, rather than just printf 
   # stdout, to file; this avoids mangled file content that results from 
