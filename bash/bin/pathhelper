@@ -26,8 +26,8 @@
 #    (c) default system path = result from operations (a) & (b)
 # 2. in doing (1), ensure that system path does not contain duplicates.
 # 3. check if PATH == SYSPATH.  if yes, clean up, & exit.
-# 4. else, log warning to ~/dotfiles/bash/log/path.log, return command for 
-#    PATH-reset-to-SYSPATH as string to caller in bash_profile, clean up & exit.
+# 4. else, log warning to ~/dotfiles/bash/log/path.log, return 
+#    reset-PATH-to-SYSPATH command as string to bash_profile, clean up & exit.
 # 5. trap any execution errors, clean up, and exit, returning "false" -- i.e., 
 #    `false` command as string -- to caller in bash_profile.
 ################################################################################
@@ -38,21 +38,23 @@ function join () {
 
   # REF: for path1="${path1:+$path1:}$path2", see /u/ sancho.s @ 
   # https://tinyurl.com/y3ts4mle (so)
-  local path1="$1" path2="$2"
-  local path="${path1:+$path1:}$path2"
+  local path1 path2 path
+  path1="$1" path2="$2"
+  path="${path1:+$path1:}$path2"
   echo "$path"
 }
 
 function fromfile () {
   # read file, and append all paths in it to fpath, ensuring no duplicates.
   # args: input file, fpath
-  local file="$1"
-  local fpath="$2"
+  local file fpath
+  file="$1" fpath="$2"
 
   # REF: for tilde expansion using parameter expansion, see 
   # https://tinyurl.com/y3muoeoj and https://tinyurl.com/y2mfzchz @ so
-  # REF: `read -r` disables escaping \; treats each \ as part of input line; see
+  # REF: `read -r` disables \ escape; treats each \ as part of input line; see
   # https://mywiki.wooledge.org/BashFAQ/001#trimming
+  local path dup
   while IFS= read -r path
   do
     path="${path/#~/$HOME}" # replace '~' @ start with home directory
@@ -79,11 +81,13 @@ function system () {
 
   # NOTE: Apple uses an unordered file list from /etc/paths.d, the list you get 
   # with `ls -f` on paths.d directory, so we do the same here.
-  local fnames=$(/bin/ls -f "$pathsd")    # file names from /etc/paths.d
-  local filler='▶'                        # filler for blank in file name
-  local FPATH=$(fromfile "$paths")        # syspath built from /etc/paths
+  local fnames filler FPATH
+  fnames=$(/bin/ls -f "$pathsd")    # file names from /etc/paths.d
+  filler='▶'                        # filler for blank in file name
+  FPATH=$(fromfile "$paths")        # syspath built from /etc/paths
 
   # for each file in /etc/paths.d, append computed path sequence to FPATH
+  local fname f
   for fname in ${fnames// /"$filler"}  # filler avoids file name split @ blanks.
   do
     f="$pathsd"/"${fname//"$filler"/ }"   # replace filler back with space
@@ -104,17 +108,19 @@ function log () {
   # problem is particularly acute for large output -- i.e., when it takes longer 
   # time for each bash terminal session to write to file.
   # REF: https://mywiki.wooledge.org/BashGuide/InputAndOutput
-  local messages=("${@}")
+  local messages item
+  messages=("${@}")
   for item in "${messages[@]}"; do
     printf "\n%s" "$item"
   done 1> "$logfile"
 }
 
 function reset () {
-  # log warnings & return command for reset-PATH-to-SYSPATH as a string.
+  # log warnings & return reset-PATH-to-SYSPATH command as string.
   # args: none
-  local syspath="$SYSPATH"
-  local messages=("***** WARNING: PATH not equal to SYSPATH *****"
+  local syspath messages reset_path_cmd
+  syspath="$SYSPATH"
+  messages=("***** WARNING: PATH not equal to SYSPATH *****"
       "***** @ start of .bash_profile load, we want PATH=SYSPATH, the core path Apple sets  *****"
       ""
       "PATH:"
@@ -126,21 +132,23 @@ function reset () {
       "***** Fix: reset PATH to SYSPATH  *****"
       "")
   log "${messages[@]}"
-  echo "PATH=\"$SYSPATH\"; export PATH"
+  reset_path_cmd="PATH=\"$SYSPATH\"; export PATH"
+  echo "$reset_path_cmd"
 }
 
 function cleanup () {
-  # cleanup before exit, check execution status, and if failure, return "false" 
+  # cleanup before exit, check execution status, & if failure, return "false" 
   # -- i.e., `false` command as string -- to caller.
   # args: none
-  local ARG=$?  # exit status of last executed command; non-zero => failure
+  local ARG
+  ARG=$?  # exit status of last executed command; non-zero => failure
   set +f
   if (( "$ARG" != 0 )); then echo "false"; fi
 }
 
 function initialize () {
   # initialize PATH to default system path.
-  # if PATH needs reset, return command for reset-PATH-to-SYSPATH as string; 
+  # if PATH needs reset, return reset-PATH-to-SYSPATH command as string; 
   # otherwise, return nothing explicitly (of course, bash returns exit status).
   # args: none
   declare -r logfile="${HOME}/dotfiles/bash/log/path.log"   # log file
