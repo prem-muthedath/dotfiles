@@ -8,7 +8,7 @@
 # to the default system path -- the path that Apple sets. bash_profile then 
 # PREPENDS user-defined custom paths to PATH.
 #
-# REF: see /u/algal @ https://tinyurl.com/y574yqtw (so) on how Apple sets PATH
+# REF: see /u/ algal @ https://tinyurl.com/y574yqtw (so) on how Apple sets PATH
 #
 # why is pathhelper needed at all?
 # 1. ensure correct PATH initialization -- no duplicates, right path order, etc.
@@ -35,6 +35,9 @@
 function join () {
   # join path1 & path2, returning path1:path2
   # args: path1, path2
+
+  # REF: for path1="${path1:+$path1:}$path2", see /u/ sancho.s @ 
+  # https://tinyurl.com/y3ts4mle (so)
   local path1="$1" path2="$2"
   local path="${path1:+$path1:}$path2"
   echo "$path"
@@ -46,8 +49,13 @@ function fromfile () {
   local file="$1"
   local fpath="$2"
 
-  while IFS= read -r path   # -r disables escaping \; treats each \ as part of input line
+  # REF: for tilde expansion using parameter expansion, see 
+  # https://tinyurl.com/y3muoeoj and https://tinyurl.com/y2mfzchz @ so
+  # REF: `read -r` disables escaping \; treats each \ as part of input line; see
+  # https://mywiki.wooledge.org/BashFAQ/001#trimming
+  while IFS= read -r path
   do
+    path="${path/#~/$HOME}" # replace '~' @ start with home directory
     dup="(^|:)$path(:|$)"   # `path` pattern for duplicate check
     # path MUST be a directory; if not (blanks, file, dummy, etc.), ignore it.
     # if fpath already contains path, do not include the path again.
