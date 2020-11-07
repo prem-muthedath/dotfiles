@@ -81,7 +81,9 @@ printf '\33c\e[3J'
 # DESIGN:
 # 1. initialize PATH, no what matter what, to system path, the core PATH Apple 
 #    sets.  to do this, we call ~/dotfiles/bash/bin/pathhelper executable from 
-#    ~/.bash_profile. refer to that file for details on PATH initialization.
+#    ~/.bash_profile whenever you load/source ~/.bash_profile. since PATH is 
+#    initialized/reset to system path, we begin afresh every time, avoiding 
+#    duplicates & bad path order. see pathhelper file for details.
 # 2. if (1) succeeds, in ~/.bash_profile, we PREPEND each user-defined custom 
 #    path to PATH by calling `addpath()`.  `addpath()` ensures the following:
 #       a) no duplicates -- the to-be-added path is first searched in PATH, and, 
@@ -132,7 +134,7 @@ if [[ -x "$pathexec" ]]; then
     addpath "${HOME}/bin"
     export PATH
   else
-    echo -e "\ncustomized PATH initialization failed, so PATH may be missing custom paths."
+    echo -e "\ncustomized PATH initialization failed; as a result, PATH may be missing custom paths."
   fi
 else
   echo -e "\ncustomized PATH-initialization executable \"$pathexec\" missing or does not have execute permission. as a result, PATH may be missing custom paths."
@@ -192,3 +194,5 @@ alias pyt="$HOME/dotfiles/bash/bin/py-exp"
 alias clr="printf '\33c\e[3J'"
 
 #########################################################################
+
+

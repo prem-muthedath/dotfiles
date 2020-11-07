@@ -4,16 +4,17 @@
 # pathhelper executable -- called from ~/.bash_profile
 # author: Prem Muthedath
 #
-# pathhelper ensures that @ start of a bash session, PATH is always initialized 
-# to the default system path -- the path that Apple sets. bash_profile then 
-# PREPENDS user-defined custom paths to PATH.
+# pathhelper ensures that @ start of a bash session, as well as when you source 
+# ~/.bash_profile, PATH is always initialized/reset to the default system path 
+# that Apple sets.  bash_profile then PREPENDS user-defined custom paths to 
+# PATH.  this ensures a valid PATH -- no duplicates & with paths in right order.
 #
 # REF: see /u/ algal @ https://tinyurl.com/y574yqtw (so) on how Apple sets PATH
 #
 # why is pathhelper needed at all?
 # 1. ensure correct PATH initialization -- no duplicates, right path order, etc.
 # 2. when you manually source bash_profile, ensure PATH integrity -- that is, 
-#    you don't end up with duplicate paths (bash does this!) & bad path order.
+#    you don't end up with duplicate paths (Apple does this!) & bad path order.
 #
 # DESIGN:
 # 1. compute default system path -- named here as SYSPATH -- in right order -- 
@@ -168,5 +169,7 @@ function initialize () {
 # set -f => disable file name generation, aka globbing.
 set -f; trap cleanup EXIT   # trap errors to ensure clean exit
 initialize
+
+################################################################################
 
 
