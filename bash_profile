@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ########################################################################
 # NOTES:
 # 1. set GHC & haskell binaries paths
@@ -15,6 +17,7 @@
 #    ref: /u/ sehe comments on /u/ tuxdude @ https://goo.gl/hjXAkw (so)
 #########################################################################
 
+################ TERMINAL CLEARING
 # clear terminal tabs @ start-up
 #     2 ways to get this done:
 #       -- see details @ https://goo.gl/PqSqix (stackoverflow)
@@ -29,8 +32,7 @@
 # as this code will clear screen (stdout) of all bash_profile output!!
 printf '\33c\e[3J'
 
-
-# add path to PATH
+################ PATH SETUP
 # PATH, in Terminal, is set under the following conditions:
 #  -- 1. when you open a new tab, bash starts a new login, interactive shell session.
 #        bash sources /etc/profile, and then ~/.bash_profile. PATH is initially 
@@ -66,80 +68,80 @@ printf '\33c\e[3J'
 #		(b) source /etc/profile
 #		(c) source ~/.bash_profile
 #
+# GOAL:
+# 1. Apple's process can -- and do -- result in dups & unexpected path order.
+# 2. we want to avoid that as much as possible by ensuring that loading/sourcing 
+#    ~/.bash_profile always gives a valid PATH.
+# 3. but our custom process may fail for unexpected reasons, so we want to also 
+#    ensure that even if bash_profile execution encounters errors, or even if it 
+#    fails to add custom paths to PATH for some reason, user will still end up, 
+#    at the very least, with a valid system PATH, so that he/she will always 
+#    have a valid bash session.
+#
+# VALID PATH:
+# (a) has no duplicates;
+# (b) has paths (both custom & system) in expected order
+#
 # DESIGN:
-# addpath(), though far from perfect, handles the following:
-#   (a) avoids duplicated custom paths -- see (2) above.
-#
-#   	the to-be-added path is first searched in PATH, and, if found, 
-#	all instances of path are removed from PATH, and then path is 
-#	prepended -- always -- to this modified PATH.  in this whole 
-#	process, the order of all other paths in PATH is never altered.
-#   (b) ensure that loading/sourcing .bash_profile always gives a valid PATH.
-#       that is, it ensures that, even if bash_profile execution encounters errors,
-#	or even if it fails to add custom paths to PATH for some reason, you will 
-#	still end up with a valid PATH, at the very least a valid system PATH, 
-#	so that you'll always have a valid bash session.
-#
-#   	it also addresses, as much as possible, invalid inputs in bash_profile, 
-#	as well as issues that may come from (3)
-#
-# METHOD:
-#   -- validates input, and to ensure PATH remains always valid, simply returns if invalid
-#   -- ensures PATH has /usr/bin & /bin -- essential to run the shell commands in the script
-#   -- checks if PATH has exactly one /usr/local/bin -- a weak, surrogate check for system 
-#      path -- and aborts if check fails, and alerts user
-#   -- PATH modification done using sed:
-#	-- /usr/local/bin used as sed address
-#	-- to avoid duplicates, sed first clears to-be-added path from PATH,
-#		dealing with 4 cases:
-# 		-- (a) path occurs at the start of PATH
-#		-- (b) path occurs at the end of PATH
-#		-- (c) path is the only path in PATH
-#		-- (d) path is somewhere between start and end, both exclusive, of PATH
-#	 -- sed then prepends path to PATH
-#	 -- finally, sed removes any dangling : at PATH end -- which occurs in (c) prepend
-#   -- by design, NEWPATH, a temp, stores result from sed operations. if NEWPATH is null/empty 
-#      (happens if sed fails) we throw an error & exit, but PATH, though unchanged, remains valid.
-#      we thus insulate PATH from being invalid, only setting PATH=NEWPATH if NEWPATH is valid.
+# 1. initialize PATH, no what matter what, to system path, the core PATH Apple 
+#    sets.  to do this, we call ~/dotfiles/bash/bin/pathhelper executable from 
+#    ~/.bash_profile. refer to that file for details on PATH initialization.
+# 2. if (1) succeeds, in ~/.bash_profile, we PREPEND each user-defined custom 
+#    path to PATH by calling `addpath()`.  `addpath()` ensures the following:
+#       a) no duplicates -- the to-be-added path is first searched in PATH, and, 
+#          if found, all instances of path are removed from PATH;
+#       b) path order -- the to-be-added path is PREPENDED to PATH.
+#       c) mishaps -- on errors, skips prepending custom path to PATH.
+# 3. if (1) fails, display warning to user, and skip prepending any custom paths 
+#    to PATH.  PATH will then be that set by Apple's process.  PATH, at the very 
+#    least, will have system paths, so users will have a valid bash session.
 #
 # REFERENCES:
-# -- parameter expansion check for unset/null/spaces, see /u/elomage @ https://goo.gl/nK65cH (so)
-# -- regex match for path in PATH, see /u/ terdon @ https://goo.gl/1S8NV3 (unix.SE)
-# -- reset PATH using `source /etc/profile`, see /u/ rjferguson @ https://goo.gl/Vf96oX (apple.SE)
-# -- grep regular expressions, see https://goo.gl/BWyKrA (digitalocean LLC)
-# -- grep -o | wc -l for multi-match/line count, see /u/ wag, /u/ gilles @ https://goo.gl/iGGfVV (unix.SE)
-# -- regex match/remove spaces in wc -l, see /u/ jens, /u/ william pursell @ https://goo.gl/D7NpX4 (so)
-# -- for use of ${NEWPATH:?error-message}, see /u/ chepner, /u/ jens @ https://goo.gl/QW52j8 (so)
+# -- reset PATH using `source /etc/profile`, see /u/ rjferguson @ 
+#    https://goo.gl/Vf96oX (apple.SE)
+# -- for PATH iteration idea using IFS, see http://mywiki.wooledge.org/IFS
+# -- for NEWPATH="${NEWPATH:+$NEWPATH:}$DIR", see /u/ sancho.s @ 
+#    https://tinyurl.com/y3ts4mle
+# -- for use of ${NEWPATH:?error-message}, see /u/ chepner, /u/ jens @ 
+#    https://goo.gl/QW52j8 (so)
 
-
-################ PATH SETUP
 function addpath() {
-	local IFS=':'
-	local NEWPATH
+  # by design, we introduce NEWPATH, a temp, that stores value of new path, 
+  # formed from PATH, for PREPENDING custom path to PATH.  After creation of 
+  # NEWPATH, we ensure NEWPATH is neither empty nor null, and only then set PATH 
+  # = custom-path:NEWPATH.  we thus insulate PATH from being invalid.
+  # args: custom_path
+  local NEWPATH custom_path
 
-	if [[ ! -d "$1" ]]; then echo -e "\npath '$1' not a directory, so can not add it to PATH"; return; fi
-	for DIR in $PATH; do
-		if [[ "$DIR" != "$1" ]]; then
-			NEWPATH="${NEWPATH:+$NEWPATH:}$DIR"
-		fi
-	done
-	PATH=$1:${NEWPATH:?can not be empty/null.  Aborted adding $1 to PATH, as the attempt results in an invalid new PATH}
+  custom_path="$1"
+  if [[ ! -d "$custom_path" ]]; then echo -e "\npath \"$custom_path\" not a directory, so can not add it to PATH"; return; fi
+  IFS=':'   # for parsing PATH
+  for DIR in $PATH; do    # don't quote $PATH
+    if [[ "$DIR" != "$custom_path" ]]; then   # ignore duplicate
+      NEWPATH="${NEWPATH:+$NEWPATH:}$DIR"
+    fi
+  done
+  unset IFS
+  : ${NEWPATH:?can not be empty/null. Aborted adding "$custom_path" to PATH, as it will result in invalid PATH. NO custom paths added to PATH.}
+  PATH="$1":"$NEWPATH"
 }
 
 # ref: for path breakup idea, done here in reverse, see:
 # https://github.com/paulirish/dotfiles
-if [[ -x ~/dotfiles/bash//bin/pathhelper ]]; then
-	#if eval $(~/dotfiles/bin/pathhelper || echo "false"); then
-	if eval $(~/dotfiles/bash/bin/pathhelper); then
-		addpath "${HOME}/.cabal/bin"
-		addpath "${HOME}/.local/bin"
-		addpath "${HOME}/bin"
-		export PATH
-	else
-		echo -e "\nPATH validation failed. No custom paths added to PATH"
-	fi
+pathexec="$HOME"/dotfiles/bash/bin/pathhelper   # customized path-init executable
+if [[ -x "$pathexec" ]]; then
+  #if eval $(~/dotfiles/bin/pathhelper || echo "false"); then
+  if eval "$("$pathexec")"; then
+    addpath "${HOME}/.cabal/bin"
+    addpath "${HOME}/.local/bin"
+    addpath "${HOME}/bin"
+    export PATH
+  else
+    echo -e "\ncustomized PATH initialization failed, so PATH may be missing custom paths."
+  fi
+else
+  echo -e "\ncustomized PATH-initialization executable \"$pathexec\" missing or does not have execute permission. as a result, PATH may be missing custom paths."
 fi
-
 
 ################ TERMINAL PROMPT SETTINGS -- FORMAT & COLOR
 export PS1="\n\[\033[0;36m\]\h:\d: \w \u ▶ \[\033[0;m\]"  # cyan
