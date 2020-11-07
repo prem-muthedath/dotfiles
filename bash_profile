@@ -2,17 +2,13 @@
 
 ########################################################################
 # NOTES:
-# 1. set GHC & haskell binaries paths
-# 2. PS1, PS2 prompt colored -- see taylor mcgann @ 
-#    http://blog.taylormcgann.com/tag/prompt-color/
-# 3. to load this file RIGHT AFTER any changes, type:
+# 1. to load this file RIGHT AFTER any changes, type:
 #              . !$
 #    ref: see /u/ hyper_st8 @ https://goo.gl/tU3PFr (so)
-# 4. to quickly show/hide this & other hidden files 
-#    in Finder, use:
+# 2. to quickly show/hide this & other hidden files in Finder, use:
 #              CMD + SHIFT + .
 #    ref: see https://goo.gl/G2eCwA (ian lunn)
-# 5. ~/.bash_profile is symlinked to ~/dotfiles/bash-profile
+# 3. ~/.bash_profile is symlinked to ~/dotfiles/bash-profile
 #    so that we can git version this and other key dotfiles.
 #    ref: /u/ sehe comments on /u/ tuxdude @ https://goo.gl/hjXAkw (so)
 #########################################################################
@@ -130,9 +126,8 @@ function addpath() {
 # https://github.com/paulirish/dotfiles
 pathexec="$HOME"/dotfiles/bash/bin/pathhelper   # customized path-init executable
 if [[ -x "$pathexec" ]]; then
-  #if eval $(~/dotfiles/bin/pathhelper || echo "false"); then
   if eval "$("$pathexec")"; then
-    addpath "${HOME}/.cabal/bin"
+    addpath "${HOME}/.cabal/bin"  # haskell cabal binaries
     addpath "${HOME}/.local/bin"
     addpath "${HOME}/bin"
     export PATH
@@ -144,8 +139,10 @@ else
 fi
 
 ################ TERMINAL PROMPT SETTINGS -- FORMAT & COLOR
+# PS1, PS2 prompt colored -- see taylor mcgann @ 
+# http://blog.taylormcgann.com/tag/prompt-color/
 export PS1="\n\[\033[0;36m\]\h:\d: \w \u ▶ \[\033[0;m\]"  # cyan
-export PS2="\[\033[0;31m\]▶▶ \[\033[0;m\]"               # red
+export PS2="\[\033[0;31m\]▶▶ \[\033[0;m\]"                # red
 
 export CLICOLOR=1
 
