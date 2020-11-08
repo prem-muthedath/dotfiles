@@ -119,7 +119,7 @@ function addpath() {
   IFS=':'   # for parsing PATH
   for DIR in $PATH; do    # don't quote $PATH
     if [[ "$DIR" != "$custom_path" ]]; then   # ignore duplicate
-      NEWPATH="${NEWPATH:+$NEWPATH:}$DIR"
+      NEWPATH="${NEWPATH:+${NEWPATH}:}$DIR"
     fi
   done
   unset IFS
