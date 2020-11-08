@@ -115,7 +115,7 @@ function addpath() {
   local NEWPATH custom_path
 
   NEWPATH='' custom_path="$1"
-  if [[ ! -d "$custom_path" ]]; then echo -e "\ncustom path \"$custom_path\" not a directory, so can not add it to PATH."; return; fi
+  if [[ ! -d "$custom_path" ]]; then echo -e "\ncustom path \"${custom_path}\" not a directory, so can not add it to PATH."; return; fi
   IFS=':'   # for parsing PATH
   for DIR in $PATH; do    # don't quote $PATH
     if [[ "$DIR" != "$custom_path" ]]; then   # ignore duplicate
@@ -123,15 +123,15 @@ function addpath() {
     fi
   done
   unset IFS
-  : ${NEWPATH:?can not be empty/null. Aborted adding \""$custom_path"\" to PATH, as it will result in invalid PATH. NO custom paths added to PATH.}
+  : ${NEWPATH:?can not be empty/null. Aborted adding \""${custom_path}"\" to PATH, as it will result in invalid PATH. NO custom paths added to PATH.}
   PATH="$1":"$NEWPATH"
 }
 
 # ref: for path breakup idea, done here in reverse, see:
 # https://github.com/paulirish/dotfiles
-pathexec="$HOME/dotfiles/bash/bin/pathhelper"   # customized path-init executable
+pathexec="${HOME}/dotfiles/bash/bin/pathhelper"   # customized path-init executable
 if [[ ! -x "$pathexec" ]]; then
-  echo -e "\ncustomized PATH-initialization executable \"$pathexec\" missing or does not have execute permission. as a result, PATH may be missing custom paths."
+  echo -e "\ncustomized PATH-initialization executable \"${pathexec}\" missing or does not have execute permission. as a result, PATH may be missing custom paths."
 elif eval "$("$pathexec")"; then
   addpath "${HOME}/.cabal/bin"  # haskell cabal binaries
   addpath "${HOME}/.local/bin"
