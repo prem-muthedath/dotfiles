@@ -33,7 +33,7 @@
 #    `false` command as string -- to caller in bash_profile.
 ################################################################################
 
-function fromfile () {
+function fromfile() {
   # read file, and append all paths in it to fpath, ensuring no duplicates.
   # args: input file, fpath
   local file fpath
@@ -59,7 +59,7 @@ function fromfile () {
   echo "$fpath"
 }
 
-function system () {
+function system() {
   # compute & return default system path -- called here as FPATH -- in just the 
   # same way as Apple does @ start of a bash terminal session.
   # args: none.
@@ -89,7 +89,7 @@ function system () {
   echo "$FPATH"
 }
 
-function log () {
+function log() {
   # log messages -- a string array -- to file, defined by $log.
   # args: messages -- an array
   #
@@ -106,7 +106,7 @@ function log () {
   done 1> "$logfile"
 }
 
-function reset () {
+function reset() {
   # log warnings & return reset-PATH-to-SYSPATH command as string.
   # args: none
   local syspath messages reset_path_cmd
@@ -127,7 +127,7 @@ function reset () {
   echo "$reset_path_cmd"
 }
 
-function cleanup () {
+function cleanup() {
   # capture execution status, clean up; if execution status is failure, return 
   # "false" -- i.e., `false` command as string -- to caller.
   # args: none
@@ -138,7 +138,7 @@ function cleanup () {
   if (( "$ARG" != 0 )); then echo "false"; fi
 }
 
-function initialize () {
+function initialize() {
   # initialize PATH to default system path.
   # if PATH needs reset, return reset-PATH-to-SYSPATH command as string; 
   # otherwise, return nothing explicitly (of course, bash returns exit status).
