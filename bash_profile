@@ -82,8 +82,9 @@ printf '\33c\e[3J'
 # 1. initialize PATH, no what matter what, to system path, the core PATH Apple 
 #    sets.  to do this, we call ~/dotfiles/bash/bin/pathhelper executable from 
 #    ~/.bash_profile whenever you load/source ~/.bash_profile. since PATH is 
-#    initialized/reset to system path, we build PATH afresh every time, avoiding 
-#    duplicates & bad path order. see pathhelper file for details.
+#    initialized/reset to system path, instead of reusing PATH value from 
+#    existing session, as Apple does, we build PATH afresh from scratch every 
+#    time, avoiding dups & bad path order.  see pathhelper file for details.
 # 2. if (1) succeeds, in ~/.bash_profile, we PREPEND each user-defined custom 
 #    path to PATH by calling `addpath()`.  `addpath()` ensures the following:
 #       a) no duplicates -- before prepending to PATH -- see b) -- the 
