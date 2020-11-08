@@ -113,7 +113,7 @@ function addpath() {
   # args: custom_path
   local NEWPATH custom_path
 
-  custom_path="$1"
+  NEWPATH='' custom_path="$1"
   if [[ ! -d "$custom_path" ]]; then echo -e "\npath \"$custom_path\" not a directory, so can not add it to PATH"; return; fi
   IFS=':'   # for parsing PATH
   for DIR in $PATH; do    # don't quote $PATH
