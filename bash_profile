@@ -112,14 +112,14 @@ function addpath() {
   # NEWPATH, we ensure NEWPATH is neither empty nor null, and only then set PATH 
   # = custom-path:NEWPATH.  we thus insulate PATH from being invalid.
   # args: custom_path
-  local NEWPATH custom_path
+  local NEWPATH custom_path DIR
 
   NEWPATH='' custom_path="$1"
   if [[ ! -d "$custom_path" ]]; then echo -e "\ncustom path \"${custom_path}\" not a directory, so can not add it to PATH."; return; fi
   IFS=':'   # for parsing PATH
   for DIR in $PATH; do    # don't quote $PATH
     if [[ "$DIR" != "$custom_path" ]]; then   # ignore duplicate
-      NEWPATH="${NEWPATH:+${NEWPATH}:}$DIR"
+      NEWPATH="${NEWPATH:+${NEWPATH}:}${DIR}"
     fi
   done
   unset IFS
@@ -181,15 +181,15 @@ alias lp="ls | grep '^[-l]'"   # list only files + symlinks
 alias ld="ls | grep '^d'"      # list only directories
 
 # commonly used dirs
-sd="$HOME/software-development/code"
-df="$HOME/dotfiles"
+sd="${HOME}/software-development/code"
+df="${HOME}/dotfiles"
 alias sd="cd $sd"
 alias df="cd $df"
 
 # bash profile testing
-alias bp=". $HOME/dotfiles/bash/test/bp"
-alias pl="cat -e $HOME/dotfiles/bash/log/path.log"
-alias pyt="$HOME/dotfiles/bash/bin/py-exp"
+alias bp=". ${HOME}/dotfiles/bash/test/bp"
+alias pl="cat -e ${HOME}/dotfiles/bash/log/path.log"
+alias pyt="${HOME}/dotfiles/bash/bin/py-exp"
 
 # clear screen
 alias clr="printf '\33c\e[3J'"
