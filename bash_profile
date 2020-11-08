@@ -86,8 +86,9 @@ printf '\33c\e[3J'
 #    duplicates & bad path order. see pathhelper file for details.
 # 2. if (1) succeeds, in ~/.bash_profile, we PREPEND each user-defined custom 
 #    path to PATH by calling `addpath()`.  `addpath()` ensures the following:
-#       a) no duplicates -- the to-be-added path is first searched in PATH, and, 
-#          if found, all instances of path are removed from PATH;
+#       a) no duplicates -- before prepending to PATH -- see b) -- the 
+#          to-be-added path is first searched in PATH, and, if found, all 
+#          instances of path are removed from PATH;
 #       b) path order -- the to-be-added path is PREPENDED to PATH.
 #       c) mishaps -- on errors, skips prepending custom path to PATH.
 # 3. if (1) fails, display warning to user, and skip prepending any custom paths 
