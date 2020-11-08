@@ -33,18 +33,6 @@
 #    `false` command as string -- to caller in bash_profile.
 ################################################################################
 
-function join () {
-  # join path1 & path2, returning path1:path2
-  # args: path1, path2
-
-  # REF: for path1="${path1:+$path1:}$path2", see /u/ sancho.s @ 
-  # https://tinyurl.com/y3ts4mle (so)
-  local path1 path2 path
-  path1="$1" path2="$2"
-  path="${path1:+$path1:}$path2"
-  echo "$path"
-}
-
 function fromfile () {
   # read file, and append all paths in it to fpath, ensuring no duplicates.
   # args: input file, fpath
@@ -55,6 +43,8 @@ function fromfile () {
   # https://tinyurl.com/y3muoeoj and https://tinyurl.com/y2mfzchz @ so
   # REF: `read -r` disables \ escape; treats each \ as part of input line; see
   # https://mywiki.wooledge.org/BashFAQ/001#trimming
+  # REF: for fpath="${fpath:+${fpath}:}$path", see /u/ sancho.s @ 
+  # https://tinyurl.com/y3ts4mle (so)
   local path dup
   while IFS= read -r path
   do
@@ -63,7 +53,7 @@ function fromfile () {
     # path MUST be a directory; if not (blanks, file, dummy, etc.), ignore it.
     # if fpath already contains path, do not include the path again.
     if [[ -d  "$path" ]] && [[ ! "$fpath" =~ $dup ]]; then
-      fpath="$(join "$fpath" "$path")"
+      fpath="${fpath:+${fpath}:}$path"
     fi
   done < "$file"
   echo "$fpath"
