@@ -101,7 +101,7 @@ printf '\33c\e[3J'
 # -- reset PATH using `source /etc/profile`, see /u/ rjferguson @ 
 #    https://goo.gl/Vf96oX (apple.SE)
 # -- for PATH iteration idea using IFS, see http://mywiki.wooledge.org/IFS
-# -- for NEWPATH="${NEWPATH:+$NEWPATH:}$DIR", see /u/ sancho.s @ 
+# -- for NEWPATH="${NEWPATH:+${NEWPATH}:}${DIR}", see /u/ sancho.s @ 
 #    https://tinyurl.com/y3ts4mle
 # -- for use of ${NEWPATH:?error-message}, see /u/ chepner, /u/ jens @ 
 #    https://goo.gl/QW52j8 (so)
