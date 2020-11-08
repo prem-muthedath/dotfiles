@@ -48,7 +48,7 @@ function fromfile () {
   local path dup
   while IFS= read -r path
   do
-    path="${path/#~/$HOME}" # replace '~' (if any) @ start with home directory
+    path="${path/#~/${HOME}}" # replace '~' (if any) @ start with home directory
     dup="(^|:)$path(:|$)"   # `path` pattern for duplicate check
     # path MUST be a directory; if not (blanks, file, dummy, etc.), ignore it.
     # if fpath already contains path, do not include the path again.
@@ -123,7 +123,7 @@ function reset () {
       "***** Fix: reset PATH to SYSPATH  *****"
       "")
   log "${messages[@]}"
-  reset_path_cmd="PATH=\"$SYSPATH\"; export PATH"
+  reset_path_cmd="PATH=\"${SYSPATH}\"; export PATH"
   echo "$reset_path_cmd"
 }
 
