@@ -1,8 +1,9 @@
 #!/bin/bash -E
 
-# NOTE: with `-E` option, `ERR` trap is inherited by shell functions.  see 
-# https://fvue.nl/wiki/Bash:_Error_handling
-
+# NOTES:
+# 1. with `-E` option, `ERR` trap is inherited by shell functions.
+# 2. this script SHOULD be executed in a subshell.
+# REF: https://fvue.nl/wiki/Bash:_Error_handling
 ################################################################################
 # pathhelper executable -- called from ~/.bash_profile
 # author: Prem Muthedath
@@ -169,6 +170,8 @@ function initialize() {
 }
 
 # set -f => disable file name generation, aka globbing.
+# traps: ERR => simple command non-zero status exit; EXIT => shell exit.
+# REF: `man bash`
 set -f; trap cleanup ERR EXIT  # trap error & ensure clean exit
 initialize
 

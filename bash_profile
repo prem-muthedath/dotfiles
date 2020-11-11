@@ -105,8 +105,10 @@ printf '\33c\e[3J'
 #    https://tinyurl.com/y3ts4mle
 # -- for use of ${NEWPATH:?error-message}, see /u/ chepner, /u/ jens @ 
 #    https://goo.gl/QW52j8 (so)
-# -- for idea on how `eval "$()"` works out output & error, see /u/ charles 
+# -- for diffrence between `return` & output (using `echo`), see /u/ charles 
 #    duffy, /u/ william pursell on `var="$()"` @ https://tinyurl.com/y6rt9vlt
+# -- for use of logical operator `||` within command substitution `$()`, see 
+#    https://fvue.nl/wiki/Bash:_Error_handling
 
 function addpath() {
   # by design, we introduce NEWPATH, a temp, that stores value of new path, 
