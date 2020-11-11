@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/bin/bash -E
+
+# NOTE: with `-E` option, `ERR` trap is inherited by shell functions.  see 
+# https://fvue.nl/wiki/Bash:_Error_handling
 
 ################################################################################
 # pathhelper executable -- called from ~/.bash_profile
@@ -29,8 +32,8 @@
 # 3. check if PATH == SYSPATH.  if yes, clean up, & exit.
 # 4. else, log warning to ~/dotfiles/bash/log/path.log, return 
 #    reset-PATH-to-SYSPATH command as string to bash_profile, clean up & exit.
-# 5. trap any execution errors, clean up, and exit, returning "false" -- i.e., 
-#    `false` command as string -- to caller in bash_profile.
+# 5. trap any execution errors, clean up, and exit with captured exit status to 
+#    caller in bash_profile.
 ################################################################################
 
 function fromfile() {
@@ -55,7 +58,7 @@ function fromfile() {
     if [[ -d  "$path" ]] && [[ ! "$fpath" =~ $dup ]]; then
       fpath="${fpath:+${fpath}:}${path}"
     fi
-  done < "$file"
+  done < "$file" || exit $?
   echo "$fpath"
 }
 
@@ -73,9 +76,11 @@ function system() {
   # NOTE: Apple uses an unordered file list from /etc/paths.d, the list you get 
   # with `ls -f` on paths.d directory, so we do the same here.
   local fnames filler FPATH
+
   fnames="$(/bin/ls -f "$pathsd")"    # file names from /etc/paths.d
   filler='▶'                          # filler for blank in file name
   FPATH="$(fromfile "$paths")"        # syspath built from /etc/paths
+  : ${FPATH:?from \""${paths}"\" can not be empty/null. Aborting ...}
 
   # for each file in /etc/paths.d, append computed path sequence to FPATH
   local fname f
@@ -111,7 +116,8 @@ function warn_path_reset() {
   # args: none
   local syspath messages
   syspath="$SYSPATH"
-  messages=("***** WARNING: PATH not equal to SYSPATH *****"
+  messages=("***** TIMESTAMP: $(date) *****"
+      "***** WARNING: PATH not equal to SYSPATH *****"
       "***** @ start of .bash_profile load, we want PATH=SYSPATH, the core path Apple sets  *****"
       ""
       "PATH:"
@@ -142,7 +148,7 @@ function cleanup() {
   # NOTE: capture the execution status first, BEFORE doing anything else!!
   local ARG=$?  # exit status of last executed command; non-zero => failure
   set +f        # clean up
-  if (( "$ARG" != 0 )); then echo "false"; fi
+  if (( "$ARG" != 0 )); then exit $ARG; fi
 }
 
 function initialize() {
@@ -151,10 +157,10 @@ function initialize() {
   # otherwise, return nothing explicitly (of course, bash returns exit status).
   # args: none
   declare -r logfile="${HOME}/dotfiles/bash/log/path.log"   # log file
-  declare -r paths='/etc/paths' pathsd='/etc/paths.d'       # file, dir for system paths
+  declare -r paths="/etc/paths" pathsd="/etc/paths.d"       # file, dir for system paths
 
   # https://askubuntu.com/questions/831414/what-is-the-difference-between-touch-file-and-file
-  : > "$logfile"    # create or overwrite log file; ':' is no-op command
+  : > "$logfile" || exit $?  # create or overwrite log file; ':' is no-op command
 
   declare -r SYSPATH="$(system)"
   : ${SYSPATH:?can not be null/empty.  Aborting PATH initialization ...}
@@ -164,7 +170,7 @@ function initialize() {
 }
 
 # set -f => disable file name generation, aka globbing.
-set -f; trap cleanup EXIT   # trap errors to ensure clean exit
+set -f; trap cleanup ERR EXIT  # trap errors & ensure clean exit
 initialize
 
 ################################################################################

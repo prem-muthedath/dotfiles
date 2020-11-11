@@ -105,6 +105,8 @@ printf '\33c\e[3J'
 #    https://tinyurl.com/y3ts4mle
 # -- for use of ${NEWPATH:?error-message}, see /u/ chepner, /u/ jens @ 
 #    https://goo.gl/QW52j8 (so)
+# -- for idea on how `eval "$()"` works out output & error, see /u/ charles 
+#    duffy, /u/ william pursell on `var="$()"` @ https://tinyurl.com/y6rt9vlt
 
 function addpath() {
   # by design, we introduce NEWPATH, a temp, that stores value of new path, 
@@ -132,7 +134,7 @@ function addpath() {
 pathexec="${HOME}/dotfiles/bash/bin/pathhelper"   # customized path-init executable
 if [[ ! -x "$pathexec" ]]; then
   echo -e "\ncustomized PATH-initialization executable \"${pathexec}\" missing or does not have execute permission. as a result, PATH may be missing custom paths."
-elif eval "$("$pathexec")"; then
+elif eval "$("$pathexec" || echo "false")"; then
   addpath "${HOME}/.cabal/bin"  # haskell cabal binaries
   addpath "${HOME}/.local/bin"
   addpath "${HOME}/bin"
