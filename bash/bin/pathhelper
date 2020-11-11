@@ -29,11 +29,11 @@
 #    file to result from (a).
 #    (c) default system path = result from operations (a) & (b)
 # 2. in doing (1), ensure that system path does not contain duplicates.
-# 3. check if PATH == SYSPATH.  if yes, clean up, & exit.
-# 4. else, log warning to ~/dotfiles/bash/log/path.log, return 
-#    reset-PATH-to-SYSPATH command as string to bash_profile, clean up & exit.
-# 5. trap any execution errors, clean up, and exit with captured exit status to 
-#    caller in bash_profile.
+# 3. check if PATH == SYSPATH.  if yes, clean up, & exit with last exit status.
+# 4. else, log warning to ~/dotfiles/bash/log/path.log, ouput 
+#    reset-PATH-to-SYSPATH command as string to caller; finally, before exiting, 
+#    capture exit status, clean up, & exit with captured exit status.
+# 5. trap any error, clean up, & exit with captured exit status.
 ################################################################################
 
 function fromfile() {
@@ -116,7 +116,7 @@ function warn_path_reset() {
   # args: none
   local syspath messages
   syspath="$SYSPATH"
-  messages=("***** TIMESTAMP: $(date) *****"
+  messages=("***** $(date) *****"
       "***** WARNING: PATH not equal to SYSPATH *****"
       "***** @ start of .bash_profile load, we want PATH=SYSPATH, the core path Apple sets  *****"
       ""
@@ -141,20 +141,19 @@ function reset() {
 }
 
 function cleanup() {
-  # capture execution status, clean up; if execution status is failure, return 
-  # "false" -- i.e., `false` command as string -- to caller.
+  # capture exit status, clean up, & exit with captured exit status.
   # args: none
 
-  # NOTE: capture the execution status first, BEFORE doing anything else!!
+  # NOTE: capture the exit status first, BEFORE doing anything else!!
   local ARG=$?  # exit status of last executed command; non-zero => failure
   set +f        # clean up
-  if (( "$ARG" != 0 )); then exit $ARG; fi
+  exit $ARG
 }
 
 function initialize() {
   # initialize PATH to default system path.
-  # if PATH needs reset, return reset-PATH-to-SYSPATH command as string; 
-  # otherwise, return nothing explicitly (of course, bash returns exit status).
+  # if PATH needs reset, output reset-PATH-to-SYSPATH command as string; 
+  # otherwise, output nothing.
   # args: none
   declare -r logfile="${HOME}/dotfiles/bash/log/path.log"   # log file
   declare -r paths="/etc/paths" pathsd="/etc/paths.d"       # file, dir for system paths
@@ -170,7 +169,7 @@ function initialize() {
 }
 
 # set -f => disable file name generation, aka globbing.
-set -f; trap cleanup ERR EXIT  # trap errors & ensure clean exit
+set -f; trap cleanup ERR EXIT  # trap error & ensure clean exit
 initialize
 
 ################################################################################
