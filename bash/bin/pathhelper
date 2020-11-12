@@ -161,7 +161,7 @@ function initialize() {
   declare -r paths="/etc/paths" pathsd="/etc/paths.d"       # file, dir for system paths
 
   # https://askubuntu.com/questions/831414/what-is-the-difference-between-touch-file-and-file
-  : > "$logfile" || exit $?  # create or overwrite log file; ':' is no-op command
+  : > "$logfile"  # create or overwrite log file; ':' is no-op command
 
   declare -r SYSPATH="$(system)"
   : ${SYSPATH:?can not be null/empty.  Aborting PATH initialization ...}
