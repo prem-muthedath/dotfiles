@@ -57,7 +57,7 @@ function printc() {
 
   # COLORS; REF: https://tinyurl.com/peczo67 (so)
   # `LGREEN` => light green; `NC` => no color
-  # we use `NC` to restrict colored output to those from just script.
+  # we use `NC` to restrict colored output to just this script.
   local CYAN LGREEN NC header msg
   CYAN='\033[0;36m'  LGREEN='\033[1;32m' NC='\033[0m'
   header="$1" msg="$2"
