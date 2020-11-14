@@ -222,6 +222,8 @@ function printh() {
 function help() {
   # output usage info to console.
   # args: none
+
+  # REF: https://mywiki.wooledge.org/BashFAQ/035?highlight=%28getopts%29
   printc "" \
     "Usage: ${0##*/} [-hs]
     Customized PATH initialization.
