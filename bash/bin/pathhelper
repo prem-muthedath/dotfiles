@@ -36,7 +36,43 @@
 #    reset-PATH-to-SYSPATH command as string to caller; finally, before exiting, 
 #    capture exit status, clean up, & exit with captured exit status.
 # 5. trap any error, clean up, & exit with captured exit status.
+#
+# USAGE:
+# 1. always run this script in a subshell, so that `-E` setting works properly; 
+#    this practice also avoids inadvertently altering bash terminal PATH.
+# 2. default usage: "~/path/pathhelper" -- prints warnings, etc., to console.
+# 3. silent mode: "~/path/pathhelper -s" -- shows only runtime errors, if any.
+# 4. help mode: "~/path/pathhelper -h" -- displays usage info & exits.
+# 5. PATH reset is logged (see `DESIGN`, item 4) both in default & silent modes.
 ################################################################################
+
+function printc() {
+  # if not in silent mode, print to console (i.e., stderr), using colors.
+  # args: header, message
+  #
+  # NOTE: script's main output -- PATH -- goes to stdout, which is used by the 
+  # calling program (i.e., bash_profile) to set PATH.  to avoid interfering with 
+  # PATH output, we print these messages (warnings, etc.) to stderr.  that way,
+  # user can see these console messages without screwing up PATH output.
+
+  # COLORS; REF: https://tinyurl.com/peczo67 (so)
+  # `LGREEN` => light green; `NC` => no color
+  # we use `NC` to restrict colored output to those from just script.
+  local CYAN LGREEN NC header msg
+  CYAN='\033[0;36m'  LGREEN='\033[1;32m' NC='\033[0m'
+  header="$1" msg="$2"
+  if [[ "$SILENT" = "false" ]]; then
+    printf "${CYAN}${header} ${LGREEN}${msg}${NC}\n" 1>&2
+  fi
+}
+
+function warn() {
+  # print warning to console.
+  # args: warning
+  local warning
+  warning="$1"
+  printc "warning =>" "$warning"
+}
 
 function fromfile() {
   # read file, and append all paths in it to fpath, ensuring no duplicates.
@@ -57,7 +93,11 @@ function fromfile() {
     dup="(^|:)${path}(:|$)"   # `path` pattern for duplicate check
     # path MUST be a directory; if not (blanks, file, dummy, etc.), ignore it.
     # if fpath already contains path, do not include the path again.
-    if [[ -d  "$path" ]] && [[ ! "$fpath" =~ $dup ]]; then
+    if [[ ! -d  "$path" ]]; then
+      warn "path \"${path}\" in file \"${file}\" not a directory, so not added to PATH."
+    elif [[ "$fpath" =~ $dup ]]; then
+      warn "path \"${path}\" in file \"${file}\" already in PATH, so not added to PATH again."
+    else
       fpath="${fpath:+${fpath}:}${path}"
     fi
   done < "$file" || exit $?
@@ -91,6 +131,8 @@ function system() {
     f="$pathsd"/"${fname//"$filler"/ }"   # replace filler back with space
     if [[ -f "$f" ]]; then    # check if `f` is a file
       FPATH="$(fromfile "$f" "$FPATH")"
+    else
+      warn "\"${f}\" not a file, so ignored in PATH initialization."
     fi
   done
   echo "$FPATH"
@@ -113,8 +155,8 @@ function log() {
   done 1> "$logfile"
 }
 
-function warn_path_reset() {
-  # log path-reset warning
+function log_path_reset() {
+  # build path-reset message & log it.
   # args: none
   local syspath messages
   syspath="$SYSPATH"
@@ -137,7 +179,7 @@ function reset() {
   # warn path reset & return reset-PATH-to-SYSPATH command as string.
   # args: none
   local reset_path_cmd
-  warn_path_reset
+  log_path_reset
   reset_path_cmd="PATH=\"${SYSPATH}\"; export PATH"
   echo "$reset_path_cmd"
 }
@@ -166,14 +208,59 @@ function initialize() {
   declare -r SYSPATH="$(system)"
   : ${SYSPATH:?can not be null/empty.  Aborting PATH initialization ...}
   if [[ "$PATH" != "$SYSPATH" ]]; then
+    warn "RE-SETTING PATH -- see \"${logfile}\" for details."
     reset
   fi
+}
+
+function printh() {
+  # print header to console.
+  # args: none
+    printc "" "***** CUSTOMIZED PATH INITIALIZATION *****"
+}
+
+function help() {
+  # output usage info to console.
+  # args: none
+  printc "" \
+    "Usage: ${0##*/} [-hs]
+    Customized PATH initialization.
+    This script SHOULD be run in a subshell.
+       -h      display this help and exit.
+       -s      silent mode."
+}
+
+function setopt() {
+  # set option passed to script.
+  # args: "$*"
+  local opts
+  opts="$1"  SILENT=false   # default mode is verbose
+  case "$opts" in
+    -h)   # help mode -- output usage info to console
+      help
+      exit 1
+      ;;
+    -s)   # silent mode -- no output to console, except errors
+      SILENT=true
+      ;;
+    '')   # default mode -- output (mainly warnings) to console
+      :
+      ;;
+    *)    # bad option -- output usage info to console
+      help
+      exit 1
+      ;;
+  esac
 }
 
 # set -f => disable file name generation, aka globbing; inherited by subshells.
 # REF: `man bash` -- traps: ERR with -E => simple command non-zero status exit 
 # from functions, $(), & subshells; EXIT => exit from this shell only.
+# REF: options parsing, see https://wiki.bash-hackers.org/scripting/posparams, 
+# https://wiki.bash-hackers.org/scripting/posparams
 set -f; trap cleanup ERR EXIT  # trap error & ensure clean exit
+setopt "$*"   # "$*" expands to "$1c$2c$3...$N" where 'c' is `IFS` 1st char.
+printh        # print header
 initialize
 
 ################################################################################
