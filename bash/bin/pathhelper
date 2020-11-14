@@ -258,8 +258,7 @@ function setopt() {
 # set -f => disable file name generation, aka globbing; inherited by subshells.
 # REF: `man bash` -- traps: ERR with -E => simple command non-zero status exit 
 # from functions, $(), & subshells; EXIT => exit from this shell only.
-# REF: options parsing, see https://wiki.bash-hackers.org/scripting/posparams, 
-# https://wiki.bash-hackers.org/scripting/posparams
+# REF: options parsing, see https://wiki.bash-hackers.org/scripting/posparams
 set -f; trap cleanup ERR EXIT  # trap error & ensure clean exit
 setopt "$*"   # "$*" expands to "$1c$2c$3...$N" where 'c' is `IFS` 1st char.
 printh        # print header
