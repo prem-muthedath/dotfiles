@@ -67,7 +67,6 @@ function shows() {
   local status
   status="$1"
   printc "${CYAN}${status}${NC}"  # `NC` restricts color to just this output.
-
 }
 
 function warn() {
