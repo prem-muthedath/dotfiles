@@ -48,30 +48,35 @@
 
 function printc() {
   # if not in silent mode, print to console (i.e., stderr), using colors.
-  # args: header, message
+  # arg: message
   #
   # NOTE: script's main output -- PATH -- goes to stdout, which is used by the 
   # calling program (i.e., bash_profile) to set PATH.  to avoid interfering with 
   # PATH output, we print these messages (warnings, etc.) to stderr.  that way,
   # user can see these console messages without screwing up PATH output.
-
-  # COLORS; REF: https://tinyurl.com/peczo67 (so)
-  # `LGREEN` => light green; `NC` => no color
-  # we use `NC` to restrict colored output to just this script.
-  local CYAN LGREEN NC header msg
-  CYAN='\033[0;36m'  LGREEN='\033[1;32m' NC='\033[0m'
-  header="$1" msg="$2"
+  local msg;
+  msg="$1"
   if [[ "$SILENT" = "false" ]]; then
-    printf "${CYAN}${header} ${LGREEN}${msg}${NC}\n" 1>&2
+    printf "${msg}\n" 1>&2
   fi
+}
+
+function shows() {
+  # show status message on console.
+  # args: status
+  local status
+  status="$1"
+  printc "${CYAN}${status}${NC}"  # `NC` restricts color to just this output.
+
 }
 
 function warn() {
   # print warning to console.
   # args: warning
+  # NOTE: `NC` restricts color to just this output.
   local warning
   warning="$1"
-  printc "warning =>" "$warning"
+  printc "${ORANGE}warning => ${LGREEN}${warning}${NC}"
 }
 
 function fromfile() {
@@ -129,7 +134,7 @@ function system() {
   for fname in ${fnames// /"$filler"}  # filler avoids file name split @ blanks.
   do
     f="$pathsd"/"${fname//"$filler"/ }"   # replace filler back with space
-    if [[ -f "$f" ]]; then    # check if `f` is a file
+    if [[ -f "$f" ]]; then                # check if `f` is a file
       FPATH="$(fromfile "$f" "$FPATH")"
     else
       warn "\"${f}\" not a file, so ignored in PATH initialization."
@@ -184,24 +189,15 @@ function reset() {
   echo "$reset_path_cmd"
 }
 
-function cleanup() {
-  # capture exit status, clean up, & exit with captured exit status.
-  # args: none
-
-  # NOTE: capture the exit status first, BEFORE doing anything else!!
-  local ARG=$?  # exit status of last executed command; non-zero => failure
-  set +f        # clean up
-  exit $ARG
-}
-
 function initialize() {
   # initialize PATH to default system path.
   # if PATH needs reset, output reset-PATH-to-SYSPATH command as string; 
-  # otherwise, output nothing.
+  # otherwise, output `no-op` command as string.
   # args: none
   declare -r logfile="${HOME}/dotfiles/bash/log/path.log"   # log file
   declare -r paths="/etc/paths" pathsd="/etc/paths.d"       # file, dir for system paths
 
+  shows "initializing PATH ..."     # print status
   # https://askubuntu.com/questions/831414/what-is-the-difference-between-touch-file-and-file
   : > "$logfile"  # create or overwrite log file; ':' is no-op command
 
@@ -210,26 +206,25 @@ function initialize() {
   if [[ "$PATH" != "$SYSPATH" ]]; then
     warn "RE-SETTING PATH -- see \"${logfile}\" for details."
     reset
+  else
+    echo ":"
   fi
+  shows "done!"                     # print status
 }
 
-function printh() {
-  # print header to console.
-  # args: none
-    printc "" "***** CUSTOMIZED PATH INITIALIZATION *****"
-}
+################################################################################
 
 function help() {
-  # output usage info to console.
+  # print usage info to console.
   # args: none
-
   # REF: https://mywiki.wooledge.org/BashFAQ/035?highlight=%28getopts%29
-  printc "" \
-    "Usage: ${0##*/} [-hs]
+  # NOTE: `NC` restricts color to just this output.
+  printf "${LGREEN}\
+    Usage: ${0##*/} [-hs]
     Customized PATH initialization.
     This script SHOULD be run in a subshell.
        -h      display this help and exit.
-       -s      silent mode."
+       -s      silent mode.${NC}\n" 1>&2
 }
 
 function setopt() {
@@ -238,31 +233,88 @@ function setopt() {
   local opts
   opts="$1"  SILENT=false   # default mode is verbose
   case "$opts" in
-    -h)   # help mode -- output usage info to console
+    -h)   # help mode -- print usage info to console & exit
       help
       exit 1
       ;;
-    -s)   # silent mode -- no output to console, except errors
+    -s)   # silent mode -- show nothing except runtime errors
       SILENT=true
       ;;
-    '')   # default mode -- output (mainly warnings) to console
+    '')   # default mode -- print (status, warnings) to console
       :
       ;;
-    *)    # bad option -- output usage info to console
+    *)    # bad option -- print usage info to console & exit
       help
       exit 1
       ;;
   esac
 }
 
-# set -f => disable file name generation, aka globbing; inherited by subshells.
+################################################################################
+
+function errline() {
+  # detects error line & colors it, returning the colored line.
+  # if not error line, simply returns line.
+  # args: line
+  local line
+  line="$1"
+  errpattern="${0##*/}"
+  if [[ "$line" =~ $errpattern ]]; then
+    echo "${RED}ERROR => ${line}${NC}"
+  else
+    echo "$line"
+  fi
+}
+
+function printfile() {
+  # called by `cleanup()`; prints each line in file `"$err"` to stderr.
+  # args: `exitcode` passed from `cleanup()`
+  local exitcode
+  exitcode="$1"
+  while IFS= read -r line; do
+    if [[ "$exitcode" -eq 0 ]]; then
+      printf "${line}\n"
+    else
+      printf "$(errline "$line")\n"
+    fi
+  done < "$err" 1>&2    # print to stderr
+}
+
+function cleanup() {
+  # capture exit status, clean up, & exit with captured exit status.
+  # args: none
+
+  # NOTE: capture the exit status first, BEFORE doing anything else!!
+  local ARG=$?  # exit status of last executed command; non-zero => failure
+  if [[ -f "$err" ]]; then
+    # print file `"$err"` & then delete it; handle clean up if things go amiss.
+    { printfile "$ARG" && rm -f "$err"; } || { ARG=$? && set +f && exit "$ARG"; }
+  fi
+  set +f        # clean up
+  exit "$ARG"
+}
+
+################################################################################
+
 # REF: `man bash` -- traps: ERR with -E => simple command non-zero status exit 
 # from functions, $(), & subshells; EXIT => exit from this shell only.
 # REF: options parsing, see https://wiki.bash-hackers.org/scripting/posparams
-set -f; trap cleanup ERR EXIT  # trap error & ensure clean exit
-setopt "$*"   # "$*" expands to "$1c$2c$3...$N" where 'c' is `IFS` 1st char.
-printh        # print header
-initialize
+#
+# NOTES:
+# 1. in `EXIT` trap, we reset stderr back to `dev/tty`; otherwise, when we run 
+#    script with `set -x`, because `cleanup()` context ~ `initialize()`, within 
+#    `cleanup()`, stderr still points to file, so `set -x` will write to file; 
+#    as a result, `printfile()`, which reads from file, will never end.
+# 2. we create a file with randomized name to capture, during execution, all 
+#    status, warnings, errors. with a randomized file name, we ensure each bash 
+#    terminal session has a unique file, so we avoid file-resource clashes 
+#    between sessions.  this file is removed in `cleanup()`.
+set -f  # disable file name generation (globbing); inherited by subshells.
+trap 'exit $?' ERR                # trap error & exit
+trap 'cleanup 2> /dev/tty' EXIT   # ensure clean exit
+setopt "$*"         # "$*" expands to "$1c$2c$3...$N"; 'c' is `IFS` 1st char.
+err="${HOME}/dotfiles/err${RANDOM}.txt"
+initialize 2>"$err"
 
 ################################################################################
 

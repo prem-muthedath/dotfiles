@@ -28,6 +28,14 @@
 # as this code will clear screen (stdout) of all bash_profile output!!
 printf '\33c\e[3J'
 
+################ COLORS
+# REF: https://tinyurl.com/peczo67 (so)
+export CYAN='\033[0;36m'    # cyan
+export LGREEN='\033[1;32m'  # light green
+export ORANGE='\033[0;33m'  # orange
+export RED='\033[0;31m'     # red
+export NC='\033[0m'         # no color
+
 ################ PATH SETUP
 # PATH, in Terminal, is set under the following conditions:
 #  -- 1. when you open a new tab, bash starts a new login, interactive shell session.
@@ -136,7 +144,8 @@ function addpath() {
 pathexec="${HOME}/dotfiles/bash/bin/pathhelper"   # customized path-init executable
 if [[ ! -x "$pathexec" ]]; then
   echo -e "\ncustomized PATH-initialization executable \"${pathexec}\" missing or does not have execute permission. as a result, PATH may be missing custom paths."
-elif eval "$("$pathexec" || echo "false")"; then
+elif pathcmd="$("$pathexec")"; then
+  eval "$pathcmd"
   addpath "${HOME}/.cabal/bin"  # haskell cabal binaries
   addpath "${HOME}/.local/bin"
   addpath "${HOME}/bin"
