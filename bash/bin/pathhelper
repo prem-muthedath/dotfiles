@@ -32,7 +32,7 @@
 #    (c) default system path = result from operations (a) & (b)
 # 2. in doing (1), ensure that system path does not contain duplicates.
 # 3. check if PATH == SYSPATH.  if yes, clean up, & exit with last exit status.
-# 4. else, log warning to ~/dotfiles/bash/log/path.log, ouput 
+# 4. else, log warning to ~/dotfiles/bash/log/path.log, output 
 #    reset-PATH-to-SYSPATH command as string to caller; finally, before exiting, 
 #    capture exit status, clean up, & exit with captured exit status.
 # 5. trap any error, clean up, & exit with captured exit status.
@@ -44,6 +44,54 @@
 # 3. silent mode: "~/path/pathhelper -s" -- shows only runtime errors, if any.
 # 4. help mode: "~/path/pathhelper -h" -- displays usage info & exits.
 # 5. PATH reset is logged (see `DESIGN`, item 4) both in default & silent modes.
+################################################################################
+
+function log() {
+  # log messages -- a string array -- to file, defined by $log.
+  # args: messages -- an array
+  #
+  # BUG FIX: code below redirects ALL for-loop stdout, rather than just printf 
+  # stdout, to file; this avoids mangled file content that results from 
+  # interspersed writes from different bash terminal sessions to file.  this 
+  # problem is particularly acute for large output -- i.e., when it takes longer 
+  # time for each bash terminal session to write to file.
+  # REF: https://mywiki.wooledge.org/BashGuide/InputAndOutput
+  local messages item
+  messages=("${@}")
+  for item in "${messages[@]}"; do
+    printf "\n%s" "$item"
+  done 1> "$logfile"
+}
+
+function log_path_reset() {
+  # build path-reset message & log it.
+  # args: none
+  local syspath messages
+  syspath="$SYSPATH"
+  messages=("***** $(date) *****"
+      "***** WARNING: PATH not equal to SYSPATH *****"
+      "***** @ start of .bash_profile load, we want PATH=SYSPATH, the core path Apple sets  *****"
+      ""
+      "PATH:"
+      "${PATH//:/$'\n'}"
+      ""
+      "SYSPATH:"
+      "${syspath//:/$'\n'}"
+      ""
+      "***** Fix: reset PATH to SYSPATH  *****"
+      "")
+  log "${messages[@]}"
+}
+
+function reset() {
+  # warn path reset & return reset-PATH-to-SYSPATH command as string.
+  # args: none
+  local reset_path_cmd
+  log_path_reset
+  reset_path_cmd="PATH=\"${SYSPATH}\"; export PATH"
+  echo "$reset_path_cmd"
+}
+
 ################################################################################
 
 function printc() {
@@ -77,6 +125,8 @@ function warn() {
   warning="$1"
   printc "${ORANGE}warning => ${LGREEN}${warning}${NC}"
 }
+
+################################################################################
 
 function fromfile() {
   # read file, and append all paths in it to fpath, ensuring no duplicates.
@@ -142,51 +192,7 @@ function system() {
   echo "$FPATH"
 }
 
-function log() {
-  # log messages -- a string array -- to file, defined by $log.
-  # args: messages -- an array
-  #
-  # BUG FIX: code below redirects ALL for-loop stdout, rather than just printf 
-  # stdout, to file; this avoids mangled file content that results from 
-  # interspersed writes from different bash terminal sessions to file.  this 
-  # problem is particularly acute for large output -- i.e., when it takes longer 
-  # time for each bash terminal session to write to file.
-  # REF: https://mywiki.wooledge.org/BashGuide/InputAndOutput
-  local messages item
-  messages=("${@}")
-  for item in "${messages[@]}"; do
-    printf "\n%s" "$item"
-  done 1> "$logfile"
-}
-
-function log_path_reset() {
-  # build path-reset message & log it.
-  # args: none
-  local syspath messages
-  syspath="$SYSPATH"
-  messages=("***** $(date) *****"
-      "***** WARNING: PATH not equal to SYSPATH *****"
-      "***** @ start of .bash_profile load, we want PATH=SYSPATH, the core path Apple sets  *****"
-      ""
-      "PATH:"
-      "${PATH//:/$'\n'}"
-      ""
-      "SYSPATH:"
-      "${syspath//:/$'\n'}"
-      ""
-      "***** Fix: reset PATH to SYSPATH  *****"
-      "")
-  log "${messages[@]}"
-}
-
-function reset() {
-  # warn path reset & return reset-PATH-to-SYSPATH command as string.
-  # args: none
-  local reset_path_cmd
-  log_path_reset
-  reset_path_cmd="PATH=\"${SYSPATH}\"; export PATH"
-  echo "$reset_path_cmd"
-}
+################################################################################
 
 function initialize() {
   # initialize PATH to default system path.
@@ -259,14 +265,13 @@ function errline() {
   line="$1"
   errpattern="${0##*/}"
   if [[ "$line" =~ $errpattern ]]; then
-    echo "${RED}ERROR => ${line}${NC}"
-  else
-    echo "$line"
+    line="${RED}ERROR => ${line}${NC}"
   fi
+  echo "${line}"
 }
 
 function printfile() {
-  # called by `cleanup()`; prints each line in file `"$err"` to stderr.
+  # called by `cleanup()`; prints each line in file `"$statusfile"` to stderr.
   # args: `exitcode` passed from `cleanup()`
   local exitcode
   exitcode="$1"
@@ -276,7 +281,7 @@ function printfile() {
     else
       printf "$(errline "$line")\n"
     fi
-  done < "$err" 1>&2    # print to stderr
+  done < "$statusfile" 1>&2    # print to stderr
 }
 
 function cleanup() {
@@ -285,12 +290,21 @@ function cleanup() {
 
   # NOTE: capture the exit status first, BEFORE doing anything else!!
   local ARG=$?  # exit status of last executed command; non-zero => failure
-  if [[ -f "$err" ]]; then
-    # print file `"$err"` & then delete it; handle clean up if things go amiss.
-    { printfile "$ARG" && rm -f "$err"; } || { ARG=$? && set +f && exit "$ARG"; }
+  if [[ -f "$statusfile" ]]; then
+    # print file `"$statusfile"` & then delete it.
+    { printfile "$ARG" &&
+      rm -f "$statusfile"
+    } ||
+    # clean up the mess!
+    { ARG=$? &&
+      set +f &&
+      errmsg="${RED}ERROR => failed to remove ${statusfile}.${NC}" &&
+      printf "${errmsg}\n" 1>&2 &&
+      exit "${ARG}"
+    }
   fi
-  set +f        # clean up
-  exit "$ARG"
+  set +f    # clean up
+  exit "${ARG}"
 }
 
 ################################################################################
@@ -299,21 +313,19 @@ function cleanup() {
 # from functions, $(), & subshells; EXIT => exit from this shell only.
 # REF: options parsing, see https://wiki.bash-hackers.org/scripting/posparams
 #
-# NOTES:
-# 1. in `EXIT` trap, we reset stderr back to `dev/tty`; otherwise, when we run 
-#    script with `set -x`, because `cleanup()` context ~ `initialize()`, within 
-#    `cleanup()`, stderr still points to file, so `set -x` will write to file; 
-#    as a result, `printfile()`, which reads from file, will never end.
-# 2. we create a file with randomized name to capture, during execution, all 
-#    status, warnings, errors. with a randomized file name, we ensure each bash 
-#    terminal session has a unique file, so we avoid file-resource clashes 
-#    between sessions.  this file is removed in `cleanup()`.
+# NOTE:
+# we create a file with randomized name to capture, during execution, all 
+# status, warnings, errors. with a randomized file name.  by doing so, we ensure 
+# each bash terminal session has a unique file, avoiding file-resource clashes 
+# between sessions.  `cleanup()` removes this file before exit.
 set -f  # disable file name generation (globbing); inherited by subshells.
-trap 'exit $?' ERR                # trap error & exit
-trap 'cleanup 2> /dev/tty' EXIT   # ensure clean exit
+declare -r statusfile="${HOME}/dotfiles/err${RANDOM}.txt"
+trap 'exit $?' ERR  # trap error & exit
+trap cleanup EXIT   # ensure clean exit
 setopt "$*"         # "$*" expands to "$1c$2c$3...$N"; 'c' is `IFS` 1st char.
-err="${HOME}/dotfiles/err${RANDOM}.txt"
-initialize 2>"$err"
+var="$(initialize 2>"$statusfile")"
+echo "$var"
+exit 0
 
 ################################################################################
 
