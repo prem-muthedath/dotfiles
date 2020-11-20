@@ -318,7 +318,7 @@ function cleanup() {
 #    status, warnings, errors. by having a randomized file name, we ensure each 
 #    bash terminal session has a unique file, avoiding file-resource clashes 
 #    between sessions.  `cleanup()` removes this file before exit.
-# 2. stderr in a variable: see /u/ tripleee @ .https://tinyurl.com/y5tyf4hh (so)
+# 2. stderr in a variable: see /u/ tripleee @ https://tinyurl.com/y5tyf4hh (so)
 set -f  # disable file name generation (globbing); inherited by subshells.
 declare -r statusfile="${HOME}/dotfiles/bash/log/status${RANDOM}.txt"
 trap 'exit $?' ERR  # trap error & exit
