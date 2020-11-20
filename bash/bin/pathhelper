@@ -315,8 +315,8 @@ function cleanup() {
 #
 # NOTE:
 # we create a file with randomized name to capture, during execution, all 
-# status, warnings, errors. with a randomized file name.  by doing so, we ensure 
-# each bash terminal session has a unique file, avoiding file-resource clashes 
+# status, warnings, errors. by having a randomized file name, we ensure each 
+# bash terminal session has a unique file, avoiding file-resource clashes 
 # between sessions.  `cleanup()` removes this file before exit.
 set -f  # disable file name generation (globbing); inherited by subshells.
 declare -r statusfile="${HOME}/dotfiles/bash/log/status${RANDOM}.txt"
