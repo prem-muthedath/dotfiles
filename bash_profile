@@ -114,9 +114,9 @@ export NC='\033[0m'         # no color
 # -- for use of ${NEWPATH:?error-message}, see /u/ chepner, /u/ jens @ 
 #    https://goo.gl/QW52j8 (so)
 # -- for diffrence between `return` & output (using `echo`), see /u/ charles 
-#    duffy, /u/ william pursell on `var="$()"` @ https://tinyurl.com/y6rt9vlt
+#    duffy, /u/ william pursell on `if var="$()"` @ https://tinyurl.com/y6rt9vlt
 # -- for use of logical operator `||` within command substitution `$()`, see 
-#    https://fvue.nl/wiki/Bash:_Error_handling
+#    https://fvue.nl/wiki/Bash:_Error_handling -- NOTE: this doesn't work!!!
 
 function addpath() {
   # by design, we introduce NEWPATH, a temp, that stores value of new path, 
@@ -127,7 +127,7 @@ function addpath() {
   local NEWPATH custom_path DIR
 
   NEWPATH='' custom_path="$1"
-  if [[ ! -d "$custom_path" ]]; then echo -e "\ncustom path \"${custom_path}\" not a directory, so can not add it to PATH."; return; fi
+  if [[ ! -d "$custom_path" ]]; then echo -e "\n${ORANGE}warning => custom path \"${custom_path}\" not a directory, so can not add it to PATH.${NC}"; return; fi
   IFS=':'   # for parsing PATH
   for DIR in $PATH; do    # don't quote $PATH
     if [[ "$DIR" != "$custom_path" ]]; then   # ignore duplicate
@@ -135,7 +135,8 @@ function addpath() {
     fi
   done
   unset IFS
-  : ${NEWPATH:?can not be empty/null. Aborted adding \""${custom_path}"\" to PATH, as it will result in invalid PATH. NO custom paths added to PATH.}
+  alert="$(printf "${RED}can not be empty/null. Aborted adding \"${custom_path}\" to PATH, as it will result in invalid PATH. NO custom paths added to PATH.${NC}")"
+  : ${NEWPATH:?"${alert}"}
   PATH="$1":"$NEWPATH"
 }
 
@@ -143,7 +144,7 @@ function addpath() {
 # https://github.com/paulirish/dotfiles
 pathexec="${HOME}/dotfiles/bash/bin/pathhelper"   # customized path-init executable
 if [[ ! -x "$pathexec" ]]; then
-  echo -e "\ncustomized PATH-initialization executable \"${pathexec}\" missing or does not have execute permission. as a result, PATH may be missing custom paths."
+  echo -e "\n${RED}customized PATH-initialization executable \"${pathexec}\" missing or does not have execute permission. as a result, PATH may be missing custom paths.${NC}"
 elif pathcmd="$("$pathexec")"; then
   eval "$pathcmd"
   addpath "${HOME}/.cabal/bin"  # haskell cabal binaries
@@ -151,7 +152,7 @@ elif pathcmd="$("$pathexec")"; then
   addpath "${HOME}/bin"
   export PATH
 else
-  echo -e "\ncustomized PATH initialization failed; as a result, PATH may be missing custom paths."
+  echo -e "\n${RED}customized PATH initialization failed; as a result, PATH may be missing custom paths.${NC}"
 fi
 
 ################ TERMINAL PROMPT SETTINGS -- FORMAT & COLOR
