@@ -129,11 +129,13 @@ function addpath() {
   NEWPATH='' custom_path="$1"
   if [[ ! -d "$custom_path" ]]; then echo -e "\n${ORANGE}warning => custom path \"${custom_path}\" not a directory, so can not add it to PATH.${NC}"; return; fi
   IFS=':'   # for parsing PATH
+  set -f
   for DIR in $PATH; do    # don't quote $PATH
     if [[ "$DIR" != "$custom_path" ]]; then   # ignore duplicate
       NEWPATH="${NEWPATH:+${NEWPATH}:}${DIR}"
     fi
   done
+  set +f
   unset IFS
   alert="$(printf "${RED}can not be empty/null. Aborted adding \"${custom_path}\" to PATH, as it will result in invalid PATH. NO custom paths added to PATH.${NC}")"
   : ${NEWPATH:?"${alert}"}
