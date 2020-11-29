@@ -295,12 +295,10 @@ function cleanup() {
     { printfile "$ARG" &&
       rm -f "$statusfile"
     } ||
-    # clean up the mess!
-    { ARG=$? &&
-      set +f &&
-      errmsg="${RED}ERROR => failed to remove ${statusfile}.${NC}" &&
-      printf "${errmsg}\n" 1>&2 &&
-      exit "${ARG}"
+    # capture (failed) status code & print message to stderr.
+    { ARG=$?
+      errmsg="${RED}ERROR => failed to remove ${statusfile}.${NC}"
+      printf "${errmsg}\n" 1>&2
     }
   fi
   set +f    # clean up
@@ -324,7 +322,7 @@ declare -r statusfile="${HOME}/dotfiles/bash/log/status${RANDOM}.txt"
 trap 'exit $?' ERR  # trap error & exit
 trap cleanup EXIT   # ensure clean exit
 setopt "$*"         # "$*" expands to "$1c$2c$3...$N"; 'c' is `IFS` 1st char.
-var="$(initialize 2>"$statusfile")"
+var="$(initialize 2>"$statusfile")"   # NOTE: if you run `set -x`, it's output will also go to file.
 echo "$var"
 exit 0
 
