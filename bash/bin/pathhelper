@@ -259,30 +259,16 @@ function setopt() {
 
 ################################################################################
 
-function errline() {
-  # detects error line & colors it, returning the colored line.
-  # if not error line, simply returns line.
-  # args: line
-  local line
-  line="$1"
-  errpattern="${0##*/}"
-  if [[ "$line" =~ $errpattern ]]; then
-    line="${RED}ERROR => ${line}${NC}"
-  fi
-  echo "${line}"
-}
-
-function printfile() {
-  # called by `cleanup()`; prints each line in file `"$statusfile"` to stderr.
-  # args: `exitcode` passed from `cleanup()`
-  local exitcode
-  exitcode="$1"
+function printss() {
+  # print script status (i.e., warnings, errors, etc.).
+  # prints each line in file `"$statusfile"` to stderr.
+  # args: none
+  errorpattern="${0##*/}"   # which is nothing but this script's name.
   while IFS= read -r line; do
-    if [[ "$exitcode" -eq 0 ]]; then
-      printf "${line}\n"
-    else
-      printf "$(errline "$line")\n"
-    fi
+  if [[ "$line" =~ $errorpattern ]]; then
+    line="${RED}ERROR => ${line}${NC}"    # color error line.
+  fi
+  printf "${line}\n"
   done < "$statusfile" 1>&2    # print to stderr
 }
 
@@ -293,14 +279,13 @@ function cleanup() {
   # NOTE: capture the exit status first, BEFORE doing anything else!!
   local ARG=$?  # exit status of last executed command; non-zero => failure
   if [[ -f "$statusfile" ]]; then
-    # print file `"$statusfile"` & then delete it.
-    { printfile "$ARG" &&
+    # print script status (warnings, errors, etc.) & then delete status file.
+    { printss &&
       rm -f "$statusfile"
     } ||
-    # capture (failed) status code & print message to stderr.
+    # capture (failed) status code & print error message to stderr.
     { ARG=$?
-      errmsg="${RED}ERROR => failed to remove ${statusfile}.${NC}"
-      printf "${errmsg}\n" 1>&2
+      printf "${RED}ERROR => failed to remove ${statusfile}.${NC}\n" 1>&2
     }
   fi
   set +f    # clean up
