@@ -220,8 +220,7 @@ function initialize() {
 ################################################################################
 
 function help() {
-  # print usage info to console.
-  # args: none
+  # print usage info; args: none
   # help format: https://mywiki.wooledge.org/BashFAQ/035
   # printf usage with multiline string: https://tinyurl.com/yxzgx5a7
   # NOTE: `NC` restricts color to just this output.
@@ -230,7 +229,7 @@ function help() {
     "Customized PATH initialization." \
     "This script SHOULD be run in a subshell." \
     "   -h      display this help and exit." \
-    "   -s      silent mode." 1>&2
+    "   -s      silent mode."
 }
 
 function setopt() {
@@ -240,7 +239,7 @@ function setopt() {
   opts="$1"  SILENT=false   # default mode is verbose
   case "$opts" in
     -h)   # help mode -- print usage info to console & exit
-      help
+      help 1>&2
       exit 1
       ;;
     -s)   # silent mode -- show nothing except runtime errors
@@ -251,8 +250,7 @@ function setopt() {
       ;;
     *)    # bad option -- warn, print usage info to console, & exit
       printf "${ORANGE}unknown option: '${opts}'${NC}\n" 1>&2
-      help
-      exit 1
+      setopt '-h'
       ;;
   esac
 }
@@ -266,7 +264,7 @@ function printss() {
   errorpattern="${0##*/}"   # which is nothing but this script's name.
   while IFS= read -r line; do
   if [[ "$line" =~ $errorpattern ]]; then
-    line="${RED}ERROR => ${line}${NC}"    # color error line.
+    line="${RED}ERROR => ${line}${NC}"    # tag & color error line.
   fi
   printf "${line}\n"
   done < "$statusfile" 1>&2    # print to stderr
