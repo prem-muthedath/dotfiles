@@ -222,14 +222,15 @@ function initialize() {
 function help() {
   # print usage info to console.
   # args: none
-  # REF: https://mywiki.wooledge.org/BashFAQ/035?highlight=%28getopts%29
+  # help format: https://mywiki.wooledge.org/BashFAQ/035
+  # printf usage with multiline string: https://tinyurl.com/yxzgx5a7
   # NOTE: `NC` restricts color to just this output.
-  printf "${LGREEN}\
-    Usage: ${0##*/} [-hs]
-    Customized PATH initialization.
-    This script SHOULD be run in a subshell.
-       -h      display this help and exit.
-       -s      silent mode.${NC}\n" 1>&2
+  printf "${LGREEN}"'%s'"${NC}\n" \
+    "Usage: ${0##*/} [-hs]" \
+    "Customized PATH initialization." \
+    "This script SHOULD be run in a subshell." \
+    "   -h      display this help and exit." \
+    "   -s      silent mode." 1>&2
 }
 
 function setopt() {
@@ -248,7 +249,8 @@ function setopt() {
     '')   # default mode -- print (status, warnings) to console
       :
       ;;
-    *)    # bad option -- print usage info to console & exit
+    *)    # bad option -- warn, print usage info to console, & exit
+      printf "${ORANGE}unknown option: '${opts}'${NC}\n" 1>&2
       help
       exit 1
       ;;
