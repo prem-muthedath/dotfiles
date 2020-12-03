@@ -105,7 +105,7 @@ function printc() {
   local msg;
   msg="$1"
   if [[ "$SILENT" = "false" ]]; then
-    printf "${msg}\n" 1>&2
+    printf '%b\n' "${msg}" 1>&2
   fi
 }
 
@@ -249,7 +249,7 @@ function setopt() {
       :
       ;;
     *)    # bad option -- warn, print usage info to console, & exit
-      printf "${ORANGE}unknown option: '${opts}'${NC}\n" 1>&2
+      printf "${ORANGE}"'%s'"${NC}\n" "unknown option: '${opts}'" 1>&2
       setopt '-h'
       ;;
   esac
@@ -266,7 +266,7 @@ function printss() {
   if [[ "$line" =~ $errorpattern ]]; then
     line="${RED}ERROR => ${line}${NC}"    # tag & color error line.
   fi
-  printf "${line}\n"
+  printf '%b\n' "${line}"
   done < "$statusfile" 1>&2    # print to stderr
 }
 
@@ -283,7 +283,7 @@ function cleanup() {
     } ||
     # capture (failed) status code & print error message to stderr.
     { ARG=$?
-      printf "${RED}ERROR => failed to remove ${statusfile}.${NC}\n" 1>&2
+      printf "${RED}"'%s'"${NC}\n" "ERROR => failed to remove ${statusfile}." 1>&2
     }
   fi
   set +f    # clean up
