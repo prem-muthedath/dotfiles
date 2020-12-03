@@ -160,11 +160,11 @@ fi
 ################ TERMINAL PROMPT SETTINGS -- FORMAT & COLOR
 # PS1, PS2 prompt colored -- see taylor mcgann @ 
 # http://blog.taylormcgann.com/tag/prompt-color/
-export PS1="\n\[\033[0;36m\]\h:\d: \w \u ▶ \[\033[0;m\]"  # cyan
-export PS2="\[\033[0;31m\]▶▶ \[\033[0;m\]"                # red
+# for export, see: https://mywiki.wooledge.org/BashPitfalls
+export PS1="\n\[${CYAN}\]\h:\d: \w \u ▶ \[${NC}\]"
+export PS2="\[${RED}\]▶▶ \[${NC}\]"
 
 export CLICOLOR=1
-
 
 ################ PYTHON SETTINGS
 # https://blog.mozilla.org/webdev/2015/10/27/eradicating-those-nasty-pyc-files/
@@ -175,10 +175,8 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
 fi
 
-
 ################ HOMEBREW SETTINGS
 export HOMEBREW_GITHUB_API_TOKEN=46ed2e0ca787be20944b88c8a3d63dd0491dcd7f
-
 
 ################ ALIASES
 # haskell command
