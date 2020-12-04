@@ -47,7 +47,7 @@
 ################################################################################
 
 function log() {
-  # log messages -- a string array -- to file, defined by $log.
+  # log messages -- a string array -- to file, defined by $logfile.
   # args: messages -- an array
   #
   # BUG FIX: code below redirects ALL for-loop stdout, rather than just printf 
