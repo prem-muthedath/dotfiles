@@ -46,7 +46,7 @@
 # 5. PATH reset is logged (see `DESIGN`, item 4) both in default & silent modes.
 ################################################################################
 
-function log() {
+log() {
   # log messages -- a string array -- to file, defined by $logfile.
   # args: messages -- an array
   #
@@ -63,7 +63,7 @@ function log() {
   done 1> "$logfile"
 }
 
-function log_path_reset() {
+log_path_reset() {
   # build path-reset message & log it.
   # args: none
   local syspath messages
@@ -83,7 +83,7 @@ function log_path_reset() {
   log "${messages[@]}"
 }
 
-function reset() {
+reset() {
   # warn path reset & return reset-PATH-to-SYSPATH command as string.
   # args: none
   local reset_path_cmd
@@ -94,7 +94,7 @@ function reset() {
 
 ################################################################################
 
-function printc() {
+printc() {
   # if not in silent mode, print to console (i.e., stderr), using colors.
   # arg: message
   #
@@ -109,7 +109,7 @@ function printc() {
   fi
 }
 
-function shows() {
+shows() {
   # show status message on console.
   # args: status
   local status
@@ -117,7 +117,7 @@ function shows() {
   printc "${CYAN}${status}${NC}"  # `NC` restricts color to just this output.
 }
 
-function warn() {
+warn() {
   # print warning to console.
   # args: warning
   # NOTE: `NC` restricts color to just this output.
@@ -128,7 +128,7 @@ function warn() {
 
 ################################################################################
 
-function fromfile() {
+fromfile() {
   # read file, and append all paths in it to fpath, ensuring no duplicates.
   # args: input file, fpath
   local file fpath
@@ -158,7 +158,7 @@ function fromfile() {
   echo "$fpath"
 }
 
-function system() {
+system() {
   # compute & return default system path -- called here as FPATH -- in just the 
   # same way as Apple does @ start of a bash terminal session.
   # args: none.
@@ -194,7 +194,7 @@ function system() {
 
 ################################################################################
 
-function initialize() {
+initialize() {
   # initialize PATH to default system path.
   # if PATH needs reset, output reset-PATH-to-SYSPATH command as string; 
   # otherwise, output `no-op` command as string.
@@ -219,7 +219,7 @@ function initialize() {
 
 ################################################################################
 
-function help() {
+help() {
   # print usage info; args: none
   # help format: https://mywiki.wooledge.org/BashFAQ/035
   # printf usage with multiline string: https://tinyurl.com/yxzgx5a7
@@ -232,7 +232,7 @@ function help() {
     "   -s      silent mode."
 }
 
-function setopt() {
+setopt() {
   # set option passed to script.
   # args: "$*"
   local opts
@@ -257,7 +257,7 @@ function setopt() {
 
 ################################################################################
 
-function printss() {
+printss() {
   # print script status (i.e., warnings, errors, etc.).
   # prints each line in file `"$statusfile"` to stderr.
   # args: none
@@ -270,7 +270,7 @@ function printss() {
   done < "$statusfile" 1>&2    # print to stderr
 }
 
-function cleanup() {
+cleanup() {
   # capture exit status, clean up, & exit with captured exit status.
   # args: none
 
