@@ -118,7 +118,7 @@ export NC='\033[0m'         # no color
 # -- for use of logical operator `||` within command substitution `$()`, see 
 #    https://fvue.nl/wiki/Bash:_Error_handling -- NOTE: this doesn't work!!!
 
-function addpath() {
+addpath() {
   # by design, we introduce NEWPATH, a temp, that stores value of new path, 
   # formed from PATH, for PREPENDING custom path to PATH.  After creation of 
   # NEWPATH, we ensure NEWPATH is neither empty nor null, and only then set PATH 
