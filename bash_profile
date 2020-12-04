@@ -128,7 +128,12 @@ function addpath() {
   local IFS   # we localize `IFS` changes; see https://mywiki.wooledge.org/BashPitfalls
 
   NEWPATH='' custom_path="$1"
-  if [[ ! -d "$custom_path" ]]; then echo -e "\n${ORANGE}warning => custom path \"${custom_path}\" not a directory, so can not add it to PATH.${NC}"; return; fi
+  if [[ ! -d "$custom_path" ]]; then
+    msg="-bash: ${RED}custom path \"${custom_path}\" not a directory, "
+    msg+="so can not add it to PATH.${NC}"
+    printf '\n%b\n' "$msg" 1>&2
+    return
+  fi
   set -f
   IFS=':'   # for parsing PATH
   for DIR in $PATH; do    # don't quote $PATH
@@ -137,16 +142,20 @@ function addpath() {
     fi
   done
   set +f
-  alert="$(printf "${RED}can not be empty/null. Aborted adding \"${custom_path}\" to PATH, as it will result in invalid PATH. NO custom paths added to PATH.${NC}")"
-  : ${NEWPATH:?"${alert}"}
+  alert="${RED}can not be empty/null. Aborted adding \"${custom_path}\" "
+  alert+="to PATH. NO custom paths added to PATH.${NC}"
+  : ${NEWPATH:?"$(printf '%b' "$alert")"}
   PATH="$1":"$NEWPATH"
 }
 
 # ref: for path breakup idea, done here in reverse, see:
 # https://github.com/paulirish/dotfiles
-pathexec="${HOME}/dotfiles/bash/bin/pathhelper"   # customized path-init executable
+pathexec="${HOME}/dotfiles/bash/bin/pathhelper"   # custom path-init executable
 if [[ ! -x "$pathexec" ]]; then
-  echo -e "\n${RED}customized PATH-initialization executable \"${pathexec}\" missing or does not have execute permission. as a result, PATH may be missing custom paths.${NC}"
+  msg="-bash: ${RED}customized PATH-initialization executable \"${pathexec}\" "
+  msg+="missing or does not have execute permission. as a result, "
+  msg+="PATH may be missing custom paths.${NC}"
+  printf '%b\n' "$msg" 1>&2
 elif pathcmd="$("$pathexec")"; then
   eval "$pathcmd"
   addpath "${HOME}/.cabal/bin"  # haskell cabal binaries
@@ -154,7 +163,9 @@ elif pathcmd="$("$pathexec")"; then
   addpath "${HOME}/bin"
   export PATH
 else
-  echo -e "\n${RED}customized PATH initialization failed; as a result, PATH may be missing custom paths.${NC}"
+  msg="-bash: ${RED}customized PATH initialization failed; as a result, "
+  msg+="PATH may be missing custom paths.${NC}"
+  printf '\n%b\n' "$msg" 1>&2
 fi
 
 ################ TERMINAL PROMPT SETTINGS -- FORMAT & COLOR
