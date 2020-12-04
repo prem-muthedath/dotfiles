@@ -145,7 +145,7 @@ function addpath() {
   alert="${RED}can not be empty/null. Aborted adding \"${custom_path}\" "
   alert+="to PATH. NO custom paths added to PATH.${NC}"
   : ${NEWPATH:?"$(printf '%b' "$alert")"}
-  PATH="$1":"$NEWPATH"
+  PATH="${custom_path}:${NEWPATH}"
 }
 
 # ref: for path breakup idea, done here in reverse, see:
