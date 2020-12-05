@@ -140,8 +140,9 @@ fromfile() {
   # https://mywiki.wooledge.org/BashFAQ/001#trimming
   # REF: for fpath="${fpath:+${fpath}:}${path}", see /u/ sancho.s @ 
   # https://tinyurl.com/y3ts4mle (so)
+  # IFS scope in `while IFS= read -r`, see https://tinyurl.com/y3z8tkcu
   local path dup
-  while IFS= read -r path
+  while IFS= read -r path   # NOTE: IFS scope limited just to `read`
   do
     path="${path/#~/${HOME}}" # replace '~' (if any) @ start with home directory
     dup="(^|:)${path}(:|$)"   # `path` pattern for duplicate check
@@ -224,12 +225,12 @@ help() {
   # help format: https://mywiki.wooledge.org/BashFAQ/035
   # printf usage with multiline string: https://tinyurl.com/yxzgx5a7
   # NOTE: `NC` restricts color to just this output.
-  printf "${LGREEN}"'%s'"${NC}\n" \
-    "Usage: ${0##*/} [-hs]" \
+  printf '%b\n' \
+    "${LGREEN}Usage: ${0##*/} [-hs]" \
     "Customized PATH initialization." \
     "This script SHOULD be run in a subshell." \
     "   -h      display this help and exit." \
-    "   -s      silent mode."
+    "   -s      silent mode.${NC}"
 }
 
 setopt() {
@@ -249,7 +250,7 @@ setopt() {
       :
       ;;
     *)    # bad option -- warn, print usage info to console, & exit
-      printf "${ORANGE}"'%s'"${NC}\n" "unknown option: '${opts}'" 1>&2
+      printf '%b\n' "${ORANGE}unknown option: '${opts}'${NC}" 1>&2
       setopt '-h'
       ;;
   esac
@@ -262,7 +263,8 @@ printss() {
   # prints each line in file `"$statusfile"` to stderr.
   # args: none
   errorpattern="${0##*/}"   # which is nothing but this script's name.
-  while IFS= read -r line; do
+  # IFS scope in `while IFS= read -r`, see https://tinyurl.com/y3z8tkcu
+  while IFS= read -r line; do   # NOTE: IFS scope limited just to `read`
   if [[ "$line" =~ $errorpattern ]]; then
     line="${RED}ERROR => ${line}${NC}"    # tag & color error line.
   fi
@@ -283,7 +285,7 @@ cleanup() {
     } ||
     # capture (failed) status code & print error message to stderr.
     { ARG=$?
-      printf "${RED}"'%s'"${NC}\n" "ERROR => failed to remove ${statusfile}." 1>&2
+      printf '%b\n' "${RED}ERROR => failed to remove '${statusfile}'.${NC}" 1>&2
     }
   fi
   set +f    # clean up
