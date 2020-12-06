@@ -285,7 +285,9 @@ cleanup() {
     } ||
     # capture (failed) status code & print error message to stderr.
     { ARG=$?
-      printf '%b\n' "${RED}ERROR => failed to remove '${statusfile}'.${NC}" 1>&2
+      errmsg="${RED}ERROR => failed to remove temporary status file "
+      errmsg+="'${statusfile}'.${NC}"
+      printf '%b\n' "${errmsg}" 1>&2
     }
   fi
   set +f    # clean up
