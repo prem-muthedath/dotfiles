@@ -87,15 +87,17 @@ export NC='\033[0m'         # no color
 # (b) has paths (both custom & system) in expected order
 #
 # DESIGN:
-# 1. initialize PATH, no what matter what, to system path, the core PATH Apple 
-#    sets from /etc/profile during first-time bash_profile load. to do this, we 
-#    call ~/dotfiles/bash/bin/pathhelper executable from ~/.bash_profile 
-#    whenever you load/source ~/.bash_profile.  since PATH is initialized/reset 
-#    to system path, instead of reusing PATH value from existing session, as 
-#    Apple does, we build PATH afresh from scratch every time, avoiding dups & 
+# whenever you load/source ~/.bash_profile, we call `setpath()` in 
+# ~/.bash_profile to set PATH.  `setpath()`, by design, does the following:
+# 1. initializes PATH, no what matter what, to system path, the core PATH Apple 
+#    sets from /etc/profile during first-time bash_profile load. to do this PATH 
+#    initialization, calls `~/dotfiles/bash/bin/pathhelper` executable. since 
+#    PATH is initialized/reset to system path whenever you load/source
+#    ~/.bash_profile, instead of reusing PATH value from existing session, as 
+#    Apple does, PATH is built afresh from scratch every time, avoiding dups & 
 #    bad path order.  see pathhelper file for details.
-# 2. if (1) succeeds, in ~/.bash_profile, we PREPEND each user-defined custom 
-#    path to PATH by calling `addpath()`.  `addpath()` ensures the following:
+# 2. if (1) succeeds, PREPENDS each user-defined custom path to PATH by calling 
+#    `addpath()`.  `addpath()` ensures the following:
 #       a) no duplicates -- before prepending to PATH -- see b) -- the 
 #          to-be-added path is first searched in PATH, and, if found, all 
 #          instances of path are removed from PATH;
@@ -124,7 +126,7 @@ addpath() {
   # NEWPATH, we ensure NEWPATH is neither empty nor null, and only then set PATH 
   # = custom-path:NEWPATH.  we thus insulate PATH from being invalid.
   # args: custom_path
-  local NEWPATH custom_path DIR
+  local NEWPATH custom_path DIR msg alert
   local IFS   # we localize `IFS` changes; see https://mywiki.wooledge.org/BashPitfalls
 
   NEWPATH='' custom_path="$1"
@@ -144,29 +146,37 @@ addpath() {
   set +f
   alert="${RED}can not be empty/null. Aborted adding \"${custom_path}\" "
   alert+="to PATH. NO custom paths added to PATH.${NC}"
-  : ${NEWPATH:?"$(printf '%b' "$alert")"}
+  : "${NEWPATH:?"$(printf '%b' "$alert")"}"
   PATH="${custom_path}:${NEWPATH}"
 }
 
-# ref: for path breakup idea, done here in reverse, see:
-# https://github.com/paulirish/dotfiles
-pathexec="${HOME}/dotfiles/bash/bin/pathhelper"   # custom path-init executable
-if [[ ! -x "$pathexec" ]]; then
-  msg="-bash: ${RED}customized PATH-initialization executable \"${pathexec}\" "
-  msg+="missing or does not have execute permission. as a result, "
-  msg+="PATH may be missing custom paths.${NC}"
-  printf '%b\n' "$msg" 1>&2
-elif pathcmd="$("$pathexec")"; then
-  eval "$pathcmd"
-  addpath "${HOME}/.cabal/bin"  # haskell cabal binaries
-  addpath "${HOME}/.local/bin"
-  addpath "${HOME}/bin"
-  export PATH
-else
-  msg="-bash: ${RED}customized PATH initialization failed; as a result, "
-  msg+="PATH may be missing custom paths.${NC}"
-  printf '\n%b\n' "$msg" 1>&2
-fi
+setpath() {
+  # sets PATH, in two steps: (1) initializes PATH, using custom path-init 
+  # executable; (2) if step 1 succeeds, adds custom paths to PATH.
+  # args: none
+  local pathexec msg
+  pathexec="${HOME}/dotfiles/bash/bin/pathhelper"   # custom path-init executable
+  if [[ ! -x "$pathexec" ]]; then
+    msg="-bash: ${RED}customized PATH-initialization executable \"${pathexec}\" "
+    msg+="missing or does not have execute permission. as a result, "
+    msg+="PATH may be missing custom paths.${NC}"
+    printf '%b\n' "$msg" 1>&2
+  elif pathcmd="$("$pathexec")"; then
+    eval "$pathcmd"
+    # ref: for path breakup idea, done here in reverse, see:
+    # https://github.com/paulirish/dotfiles
+    addpath "${HOME}/.cabal/bin"  # haskell cabal binaries
+    addpath "${HOME}/.local/bin"
+    addpath "${HOME}/bin"
+    export PATH
+  else
+    msg="-bash: ${RED}customized PATH initialization failed; as a result, "
+    msg+="PATH may be missing custom paths.${NC}"
+    printf '\n%b\n' "$msg" 1>&2
+  fi
+}
+
+setpath  # set PATH
 
 ################ TERMINAL PROMPT SETTINGS -- FORMAT & COLOR
 # PS1, PS2 prompt colored -- see taylor mcgann @ 
