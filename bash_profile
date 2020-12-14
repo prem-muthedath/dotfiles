@@ -110,7 +110,10 @@ export NC='\033[0m'         # no color
 # REFERENCES:
 # -- reset PATH using `source /etc/profile`, see /u/ rjferguson @ 
 #    https://goo.gl/Vf96oX (apple.SE)
-# -- for PATH iteration idea using IFS, see http://mywiki.wooledge.org/IFS
+# -- for PATH iteration using local IFS (no longer used), see 
+#    http://mywiki.wooledge.org/IFS
+# -- for PATH iteration using `IFS=: read -ra`, see 
+#    https://mywiki.wooledge.org/Arguments
 # -- for NEWPATH="${NEWPATH:+${NEWPATH}:}${DIR}", see /u/ sancho.s @ 
 #    https://tinyurl.com/y3ts4mle
 # -- for use of ${NEWPATH:?error-message}, see /u/ chepner, /u/ jens @ 
@@ -126,8 +129,7 @@ addpath() {
   # NEWPATH, we ensure NEWPATH is neither empty nor null, and only then set PATH 
   # = custom-path:NEWPATH.  we thus insulate PATH from being invalid.
   # args: custom_path
-  local NEWPATH custom_path DIR msg alert
-  local IFS   # we localize `IFS` changes; see https://mywiki.wooledge.org/BashPitfalls
+  local NEWPATH custom_path pathsarray DIR msg
 
   NEWPATH='' custom_path="$1"
   if [[ ! -d "$custom_path" ]]; then
@@ -136,17 +138,14 @@ addpath() {
     printf '\n%b\n' "$msg" 1>&2
     return
   fi
-  set -f
-  IFS=':'   # for parsing PATH
-  for DIR in $PATH; do    # don't quote $PATH
-    if [[ "$DIR" != "$custom_path" ]]; then   # ignore duplicate
-      NEWPATH="${NEWPATH:+${NEWPATH}:}${DIR}"
-    fi
+  IFS=: read -ra pathsarray <<< "$PATH"  # `IFS` setting applies just to `read`
+  for DIR in "${pathsarray[@]}"; do
+    [[ "$DIR" = "$custom_path" ]] && continue   # ignore duplicate
+    NEWPATH="${NEWPATH:+${NEWPATH}:}${DIR}"
   done
-  set +f
-  alert="${RED}can not be empty/null. Aborted adding \"${custom_path}\" "
-  alert+="to PATH. NO custom paths added to PATH.${NC}"
-  : "${NEWPATH:?"$(printf '%b' "$alert")"}"
+  msg="${RED}can not be empty/null. Aborted adding \"${custom_path}\" "
+  msg+="to PATH. NO custom paths added to PATH.${NC}"
+  : "${NEWPATH:?"$(printf '%b' "$msg")"}"
   PATH="${custom_path}:${NEWPATH}"
 }
 
