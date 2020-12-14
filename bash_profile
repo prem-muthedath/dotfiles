@@ -153,7 +153,7 @@ setpath() {
   # sets PATH, in two steps: (1) initializes PATH, using custom path-init 
   # executable; (2) if step 1 succeeds, adds custom paths to PATH.
   # args: none
-  local pathexec msg
+  local pathexec msg pathcmd
   pathexec="${HOME}/dotfiles/bash/bin/pathhelper"   # custom path-init executable
   if [[ ! -x "$pathexec" ]]; then
     msg="-bash: ${RED}customized PATH-initialization executable \"${pathexec}\" "
