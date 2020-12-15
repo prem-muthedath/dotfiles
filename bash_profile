@@ -124,11 +124,11 @@ export NC='\033[0m'         # no color
 #    https://fvue.nl/wiki/Bash:_Error_handling -- NOTE: this doesn't work!!!
 
 addpath() {
+  # prepends a custom path to PATH; args: custom_path.
   # by design, we introduce NEWPATH, a temp, that stores value of new path, 
   # formed from PATH, for PREPENDING custom path to PATH.  After creation of 
   # NEWPATH, we ensure NEWPATH is neither empty nor null, and only then set PATH 
   # = custom-path:NEWPATH.  we thus insulate PATH from being invalid.
-  # args: custom_path
   local NEWPATH custom_path pathsarray DIR msg
 
   NEWPATH='' custom_path="$1"
