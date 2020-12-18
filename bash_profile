@@ -152,8 +152,8 @@ addpath() {
 setpath() {
   # sets PATH, in two steps: (1) initializes PATH, using custom path-init 
   # executable; (2) if step 1 succeeds, adds custom paths to PATH.
-  # args: none
-  local pathexec msg pathcmd
+  # args: custom_paths
+  local pathexec msg pathcmd custom_path
   pathexec="${HOME}/dotfiles/bash/bin/pathhelper"   # custom path-init executable
   if [[ ! -x "$pathexec" ]]; then
     msg="-bash: ${RED}customized PATH-initialization executable \"${pathexec}\" "
@@ -162,11 +162,9 @@ setpath() {
     printf '%b\n' "$msg" 1>&2
   elif pathcmd="$("$pathexec")"; then
     eval "$pathcmd"
-    # ref: for path breakup idea, done here in reverse, see:
-    # https://github.com/paulirish/dotfiles
-    addpath "${HOME}/.cabal/bin"  # haskell cabal binaries
-    addpath "${HOME}/.local/bin"
-    addpath "${HOME}/bin"
+    for custom_path in "${@}"; do
+      addpath "$custom_path"
+    done
     export PATH
   else
     msg="-bash: ${RED}customized PATH initialization failed; as a result, "
@@ -175,7 +173,14 @@ setpath() {
   fi
 }
 
-setpath  # set PATH
+# set path by calling `setpath()` with custom paths as args.
+# for path breakup idea, done here in reverse, see:
+# https://github.com/paulirish/dotfiles
+# see https://tinyurl.com/yavgqenw (so) for line comment trick.
+setpath \
+  "${HOME}/.cabal/bin" `# haskell cabal binaries` \
+  "${HOME}/.local/bin" \
+  "${HOME}/bin"
 
 ################ TERMINAL PROMPT SETTINGS -- FORMAT & COLOR
 # PS1, PS2 prompt colored -- see taylor mcgann @ 
