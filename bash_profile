@@ -103,7 +103,7 @@ export NC='\033[0m'         # no color
 #          instances of path are removed from PATH;
 #       b) path order -- the to-be-added path is PREPENDED to PATH.
 #       c) mishaps -- on errors, skips prepending custom path to PATH.
-# 3. if (1) fails, display warning to user, and skip prepending any custom paths 
+# 3. if (1) fails, displays warning to user, & skips prepending any custom paths 
 #    to PATH.  PATH will then be that set by Apple's process.  PATH, at the very 
 #    least, will have system paths, so users will have a valid bash session.
 #
