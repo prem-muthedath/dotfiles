@@ -46,28 +46,10 @@
 # 5. PATH reset is logged (see `DESIGN`, item 4) both in default & silent modes.
 ################################################################################
 
-log() {
-  # log messages -- a string array -- to file, defined by $logfile.
-  # args: messages -- an array
-  #
-  # BUG FIX: code below redirects ALL for-loop stdout, rather than just printf 
-  # stdout, to file; this avoids mangled file content that results from 
-  # interspersed writes from different bash terminal sessions to file.  this 
-  # problem is particularly acute for large output -- i.e., when it takes longer 
-  # time for each bash terminal session to write to file.
-  # REF: https://mywiki.wooledge.org/BashGuide/InputAndOutput
-  local messages item
-  messages=("${@}")
-  for item in "${messages[@]}"; do
-    printf "\n%s" "$item"
-  done 1> "$logfile"
-}
-
 log_path_reset() {
-  # build path-reset message & log it.
+  # record path-reset information in log file.
   # args: none
-  local syspath messages
-  syspath="$SYSPATH"
+  local messages item
   messages=("***** $(date) *****"
       "***** WARNING: PATH not equal to SYSPATH *****"
       "***** @ start of .bash_profile load, we want PATH=SYSPATH, the core path Apple sets  *****"
@@ -76,20 +58,19 @@ log_path_reset() {
       "${PATH//:/$'\n'}"
       ""
       "SYSPATH:"
-      "${syspath//:/$'\n'}"
+      "${SYSPATH//:/$'\n'}"
       ""
       "***** Fix: reset PATH to SYSPATH  *****"
       "")
-  log "${messages[@]}"
-}
-
-reset() {
-  # warn path reset & return reset-PATH-to-SYSPATH command as string.
-  # args: none
-  local reset_path_cmd
-  log_path_reset
-  reset_path_cmd="PATH=\"${SYSPATH}\"; export PATH"
-  echo "$reset_path_cmd"
+  # BUG FIX: code below redirects ALL for-loop stdout, rather than just printf 
+  # stdout, to file; this avoids mangled file content that results from 
+  # interspersed writes from different bash terminal sessions to file.  this 
+  # problem is particularly acute for large output -- i.e., when it takes longer 
+  # time for each bash terminal session to write to file.
+  # REF: https://mywiki.wooledge.org/BashGuide/InputAndOutput
+  for item in "${messages[@]}"; do
+    printf "\n%s" "$item"
+  done 1> "$logfile"
 }
 
 ################################################################################
@@ -210,8 +191,10 @@ initialize() {
   declare -r SYSPATH="$(system)"
   : ${SYSPATH:?can not be null/empty.  Aborting PATH initialization ...}
   if [[ "$PATH" != "$SYSPATH" ]]; then
+    log_path_reset
     warn "RE-SETTING PATH -- see \"${logfile}\" for details."
-    reset
+    reset_path_command="PATH=\"${SYSPATH}\"; export PATH"
+    echo "$reset_path_command"
   else
     echo ":"
   fi
