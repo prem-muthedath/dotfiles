@@ -76,17 +76,18 @@ log_path_reset() {
 ################################################################################
 
 printc() {
-  # if not in silent mode, print to console (i.e., stderr), using colors.
+  # if not in silent mode, print to console (i.e., stderr).
   # arg: message
   #
   # NOTE: script's main output -- PATH -- goes to stdout, which is used by the 
   # calling program (i.e., bash_profile) to set PATH.  to avoid interfering with 
-  # PATH output, we print these messages (warnings, etc.) to stderr.  that way,
-  # user can see these console messages without screwing up PATH output.
+  # PATH output, we print these messages (warnings, etc.) to file descriptor 3, 
+  # a copy of original stderr.  that way, user can see these console messages 
+  # without screwing up PATH output.
   local msg;
   msg="$1"
   if [[ "$SILENT" = "false" ]]; then
-    printf '%b\n' "${msg}" 1>&2
+    printf '%b\n' "${msg}" 1>&3
   fi
 }
 
@@ -241,9 +242,9 @@ setopt() {
 
 ################################################################################
 
-printss() {
-  # print script status (i.e., warnings, errors, etc.).
-  # prints each line in file `"$statusfile"` to stderr.
+printerrors() {
+  # print logged runtime errors.
+  # prints each line in file `"$errorfile"` to stderr.
   # args: none
   errorpattern="${0##*/}"   # which is nothing but this script's name.
   # IFS scope in `while IFS= read -r`, see https://tinyurl.com/y3z8tkcu
@@ -252,7 +253,7 @@ printss() {
     line="${RED}ERROR => ${line}${NC}"    # tag & color error line.
   fi
   printf '%b\n' "${line}"
-  done < "$statusfile" 1>&2    # print to stderr
+  done < "$errorfile" 1>&2    # print to stderr
 }
 
 cleanup() {
@@ -261,19 +262,20 @@ cleanup() {
 
   # NOTE: capture the exit status first, BEFORE doing anything else!!
   local ARG=$?  # exit status of last executed command; non-zero => failure
-  if [[ -f "$statusfile" ]]; then
-    # print script status (warnings, errors, etc.) & then delete status file.
-    { printss &&
-      rm -f "$statusfile"
+  if [[ -f "$errorfile" ]]; then
+    # print logged runtime errors & then delete temp file.
+    { printerrors &&
+      rm -f "$errorfile"
     } ||
     # capture (failed) status code & print error message to stderr.
     { ARG=$?
-      errmsg="${RED}ERROR => failed to remove temporary status file "
-      errmsg+="'${statusfile}'.${NC}"
+      errmsg="${RED}ERROR => failed to remove temporary error file "
+      errmsg+="'${errorfile}'.${NC}"
       printf '%b\n' "${errmsg}" 1>&2
     }
   fi
-  set +f    # clean up
+  set +f      # clean up
+  exec 3>&-   # clean up -- close file descriptor 3
   exit "${ARG}"
 }
 
@@ -284,17 +286,22 @@ cleanup() {
 # REF: options parsing, see https://wiki.bash-hackers.org/scripting/posparams
 #
 # NOTES:
-# 1. we create a file with randomized name to capture, during execution, all 
-#    status, warnings, errors. by having a randomized file name, we ensure each 
-#    bash terminal session has a unique file, avoiding file-resource clashes 
-#    between sessions.  `cleanup()` removes this file before exit.
-# 2. stderr in a variable: see /u/ tripleee @ https://tinyurl.com/y5tyf4hh (so)
+# 1. we create a new file descriptor, 3, a copy of stderr, to write, in real 
+#    time, all status messages & warnings to console.
+# 2. we then redirect stderr to a temp file with randomized name to capture 
+#    runtime errors during PATH initialization.  by having a randomized file 
+#    name, we ensure each bash terminal session has a unique file, avoiding 
+#    file-resource clashes between sessions. we print contents of temp file to 
+#    console in `cleanup()`, the function the `EXIT` trap calls.
+# 3. before exit, `cleanup()` closes file descriptor 3 & removes the temp file.
+# 4. stderr in a variable: see /u/ tripleee @ https://tinyurl.com/y5tyf4hh (so)
 set -f  # disable file name generation (globbing); inherited by subshells.
-declare -r statusfile="${HOME}/dotfiles/bash/log/status${RANDOM}.txt"
+declare -r errorfile="${HOME}/dotfiles/bash/log/status${RANDOM}.txt"
 trap 'exit $?' ERR  # trap error & exit
 trap cleanup EXIT   # ensure clean exit
 setopt "$*"         # "$*" expands to "$1c$2c$3...$N"; 'c' is `IFS` 1st char.
-var="$(initialize 2>"$statusfile")"   # NOTE: `set -x` output will go to file.
+exec 3>&2           # copy stderr to new file descriptor 3.
+var="$(initialize 2>"$errorfile")"   # NOTE: `set -x` output will go to file.
 echo "$var"
 exit 0
 
