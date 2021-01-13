@@ -123,19 +123,24 @@ fromfile() {
   # REF: for fpath="${fpath:+${fpath}:}${path}", see /u/ sancho.s @ 
   # https://tinyurl.com/y3ts4mle (so)
   # IFS scope in `while IFS= read -r`, see https://tinyurl.com/y3z8tkcu
+  # path can not contain `:` -- see /u/ chepner @ https://tinyurl.com/y24mpfn9
+  # quoting within parameter expansion: https://mywiki.wooledge.org/BashFAQ/073
   local path dup
   while IFS= read -r path   # NOTE: IFS scope limited just to `read`
   do
     path="${path/#~/${HOME}}" # replace '~' (if any) @ start with home directory
     dup="(^|:)${path}(:|$)"   # `path` pattern for duplicate check
     # path MUST be a directory; if not (blanks, file, dummy, etc.), ignore it.
+    # path should not contain `:` -- if it does, ignore the path.
     # if fpath already contains path, do not include the path again.
     if [[ ! -d  "$path" ]]; then
-      warn "path \"${path}\" in file \"${file}\" not a directory, so not added to PATH."
+      warn "file: \"${file}\" | path \"${path}\" not a directory, so not added to PATH."
+    elif [[ "$path" =~ : ]]; then
+      warn "file: \"${file}\" | path \"${path}\" should not contain ':', so not added to PATH."
     elif [[ "$fpath" =~ $dup ]]; then
-      warn "path \"${path}\" in file \"${file}\" already in PATH, so not added to PATH again."
+      warn "file: \"${file}\" | path \"${path}\" already in PATH, so not added to PATH again."
     else
-      fpath="${fpath:+${fpath}:}${path}"
+      fpath="${fpath:+"${fpath}:"}${path}"
     fi
   done < "$file" || exit $?
   echo "$fpath"
