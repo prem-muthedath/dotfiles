@@ -138,10 +138,16 @@ addpath() {
     printf '\n%b\n' "$msg" 1>&2
     return
   fi
+  if [[ "$custom_path" =~ : ]]; then
+    msg="-bash: ${RED}custom path \"${custom_path}\" should not contain ':', "
+    msg+="so can not add it to PATH.${NC}"
+    printf '\n%b\n' "$msg" 1>&2
+    return
+  fi
   IFS=: read -ra pathsarray <<< "$PATH"  # `IFS` setting applies just to `read`
   for DIR in "${pathsarray[@]}"; do
     [[ "$DIR" = "$custom_path" ]] && continue   # ignore duplicate
-    NEWPATH="${NEWPATH:+${NEWPATH}:}${DIR}"
+    NEWPATH="${NEWPATH:+"${NEWPATH}:"}${DIR}"
   done
   msg="${RED}can not be empty/null. Aborted adding \"${custom_path}\" "
   msg+="to PATH. NO custom paths added to PATH.${NC}"
