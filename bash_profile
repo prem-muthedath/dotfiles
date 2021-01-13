@@ -118,7 +118,7 @@ export NC='\033[0m'         # no color
 #    https://tinyurl.com/y3ts4mle
 # -- for use of ${NEWPATH:?error-message}, see /u/ chepner, /u/ jens @ 
 #    https://goo.gl/QW52j8 (so)
-# -- for diffrence between `return` & output (using `echo`), see /u/ charles 
+# -- for difference between `return` & output (using `echo`), see /u/ charles 
 #    duffy, /u/ william pursell on `if var="$()"` @ https://tinyurl.com/y6rt9vlt
 # -- for use of logical operator `||` within command substitution `$()`, see 
 #    https://fvue.nl/wiki/Bash:_Error_handling -- NOTE: this doesn't work!!!
