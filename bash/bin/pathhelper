@@ -13,12 +13,14 @@
 # start of a bash session, as well as when you source ~/.bash_profile, PATH is 
 # always initialized/reset to the default system path that Apple sets.
 #
-# the word "helps" is key -- i.e., pathhelper doesn't actually initialize or set 
-# PATH; instead, it determines if PATH needs to be reset to Apple's default 
-# system path, and if so, it computes and returns the reset-path-command string 
-# to bash_profile.  using this string, bash_profile sets PATH.  bash_profile 
-# then PREPENDS user-defined custom paths to PATH.  this process always ensures 
-# a valid PATH -- no duplicates & with paths in right order.
+# note that the word "helps" is key -- i.e., pathhelper doesn't actually 
+# initialize or set PATH; instead, it determines if PATH needs to be reset to 
+# Apple's default system path, and if so, it computes and returns the 
+# reset-path-command string to bash_profile.
+#
+# using this string, bash_profile sets PATH.  bash_profile then PREPENDS 
+# user-defined custom paths to PATH.  this process always ensures a valid PATH 
+# -- no duplicates & with paths in right order.
 #
 # REF: see /u/ algal @ https://tinyurl.com/y574yqtw (so) on how Apple sets PATH
 #
