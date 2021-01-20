@@ -161,9 +161,10 @@ system() {
   # with `ls -f` on paths.d directory, so we do the same here.
   local fnames filler FPATH
 
-  fnames="$(/bin/ls -f "$pathsd")"    # file names from /etc/paths.d
-  filler='▶'                          # filler for blank in file name
-  FPATH="$(fromfile "$paths")"        # syspath built from /etc/paths
+  # we redirect `ls` command stderr from terminal to this function's stderr.
+  fnames="$(/bin/ls -f "$pathsd" 2>&2)"   # file names from /etc/paths.d
+  filler='▶'                              # filler for blank in file name
+  FPATH="$(fromfile "$paths")"            # syspath built from /etc/paths
   : ${FPATH:?from \""${paths}"\" can not be empty/null. Aborting ...}
 
   # for each file in /etc/paths.d, append computed path sequence to FPATH
@@ -251,13 +252,15 @@ printerrors() {
   # print logged runtime errors.
   # prints each line in file `"$errorfile"` to stderr.
   # args: none
-  errorpattern="${0##*/}"   # which is nothing but this script's name.
+  errorpattern="${0##*/}"   # this script's name, with path stripped.
   # IFS scope in `while IFS= read -r`, see https://tinyurl.com/y3z8tkcu
   while IFS= read -r line; do   # NOTE: IFS scope limited just to `read`
-  if [[ "$line" =~ $errorpattern ]]; then
-    line="${RED}ERROR => ${line}${NC}"    # tag & color error line.
-  fi
-  printf '%b\n' "${line}"
+    if [[ "$line" =~ $errorpattern ]]; then
+      line="${RED}ERROR => ${line}${NC}"        # tag & color error line.
+    elif [[ "$line" =~ ls: ]]; then             # `ls` command error string check
+      line="${RED}ERROR => ${0}: ${line}${NC}"  # add script name, then tag & color
+    fi
+    printf '%b\n' "${line}"
   done < "$errorfile" 1>&2    # print to stderr
 }
 
