@@ -9,16 +9,22 @@
 # pathhelper executable -- called from ~/.bash_profile
 # author: Prem Muthedath
 #
-# pathhelper ensures that @ start of a bash session, as well as when you source 
-# ~/.bash_profile, PATH is always initialized/reset to the default system path 
-# that Apple sets.  bash_profile then PREPENDS user-defined custom paths to 
-# PATH.  this ensures a valid PATH -- no duplicates & with paths in right order.
+# pathhelper, an executable called from bash_profile, "helps" ensure that @ 
+# start of a bash session, as well as when you source ~/.bash_profile, PATH is 
+# always initialized/reset to the default system path that Apple sets.
+#
+# the word "helps" is key -- i.e., pathhelper doesn't actually initialize or set 
+# PATH; instead, it determines if PATH needs to be reset to Apple's default 
+# system path, and if so, it computes and returns the reset-path-command string 
+# to bash_profile.  using this string, bash_profile sets PATH.  bash_profile 
+# then PREPENDS user-defined custom paths to PATH.  this process always ensures 
+# a valid PATH -- no duplicates & with paths in right order.
 #
 # REF: see /u/ algal @ https://tinyurl.com/y574yqtw (so) on how Apple sets PATH
 #
 # why is pathhelper needed at all?
-# 1. ensure correct PATH initialization -- no duplicates, right path order, etc.
-# 2. when you manually source bash_profile, ensure PATH integrity -- that is, 
+# 1. helps ensure correct PATH -- no duplicates, right path order, etc.
+# 2. when you manually source bash_profile, helps ensure PATH integrity -- i.e., 
 #    you don't end up with duplicate paths (Apple does this!) & bad path order.
 #
 # DESIGN:
@@ -31,7 +37,8 @@
 #    file to result from (a).
 #    (c) default system path = result from operations (a) & (b)
 # 2. in doing (1), ensure that system path does not contain duplicates.
-# 3. check if PATH == SYSPATH.  if yes, clean up, & exit with last exit status.
+# 3. check if PATH == SYSPATH.  if yes, output no-op command as string to 
+#    caller; finally, before exiting, clean up, & exit with last exit status.
 # 4. else, log warning to ~/dotfiles/bash/log/path.log, output 
 #    reset-PATH-to-SYSPATH command as string to caller; finally, before exiting, 
 #    capture exit status, clean up, & exit with captured exit status.
