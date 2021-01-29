@@ -313,7 +313,7 @@ cleanup() {
 # 3. before exit, `cleanup()` closes file descriptor 3 & removes the temp file.
 # 4. stderr in a variable: see /u/ tripleee @ https://tinyurl.com/y5tyf4hh (so)
 set -f  # disable file name generation (globbing); inherited by subshells.
-declare -r errorfile="${HOME}/dotfiles/bash/log/status${RANDOM}.txt"
+declare -r errorfile="${HOME}/dotfiles/bash/log/error${RANDOM}.txt"
 trap 'exit $?' ERR  # trap error & exit
 trap cleanup EXIT   # ensure clean exit
 setopt "$*"         # "$*" expands to "$1c$2c$3...$N"; 'c' is `IFS` 1st char.
