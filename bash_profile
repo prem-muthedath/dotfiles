@@ -157,7 +157,8 @@ addpath() {
 
 setpath() {
   # sets PATH, in two steps: (1) initializes PATH, using custom path-init 
-  # executable; (2) if step 1 succeeds, adds custom paths to PATH.
+  # executable, to default system path, the core PATH Apple sets during initial 
+  # bash_profile load; (2) if step 1 succeeds, adds custom paths to PATH.
   # args: custom_paths
   local pathexec msg pathcmd custom_path
   pathexec="${HOME}/dotfiles/bash/bin/pathhelper"   # custom path-init executable
