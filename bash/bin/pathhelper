@@ -312,6 +312,7 @@ cleanup() {
 #    console in `cleanup()`, the function the `EXIT` trap calls.
 # 3. before exit, `cleanup()` closes file descriptor 3 & removes the temp file.
 # 4. stderr in a variable: see /u/ tripleee @ https://tinyurl.com/y5tyf4hh (so)
+# 5. redirections: see https://wiki.bash-hackers.org/howto/redirection_tutorial
 set -f  # disable file name generation (globbing); inherited by subshells.
 declare -r errorfile="${HOME}/dotfiles/bash/log/error${RANDOM}.txt"
 trap 'exit $?' ERR  # trap error & exit
