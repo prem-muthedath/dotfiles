@@ -1,6 +1,6 @@
 augroup MyFileTypes
   autocmd!
-  
+
   " customized file types -- see https://goo.gl/A8CCWo (ian langworth)
   "  -- bash_profile ft -> sh  -> ~ .bash_profile
   "  -- .gitignore ft  -> git -> more readable
@@ -37,6 +37,19 @@ augroup MySyntax
         \| let g:haskell_enable_pattern_synonyms = 1
 augroup END
 
+augroup cabal
+  " set file type & syntax for *.cabal files.
+  autocmd!
+  autocmd BufNewFile,BufRead *.cabal set ft=haskell
+  autocmd BufNewFile,BufRead *.cabal set syntax=haskell
+augroup END
+
+augroup lhs
+  " set file type & syntax for *.lhs files (i.e., literal haskell)
+  autocmd!
+  autocmd BufNewFile,BufRead *.lhs set ft=haskell
+  autocmd BufNewFile,BufRead *.lhs set syntax=haskell
+augroup END
 
 
 

@@ -186,6 +186,7 @@ setpath() {
 # see https://tinyurl.com/yavgqenw (so) for line comment trick.
 setpath \
   "${HOME}/.cabal/bin" `# haskell cabal binaries` \
+  "${HOME}/.ghcup/bin" `# haskell binaries installed by ghcup` \
   "${HOME}/.local/bin" \
   "${HOME}/bin"
 

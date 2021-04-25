@@ -79,6 +79,8 @@ set directory=~/.vim/swap
 " NOTE:  :w !pbcopy copies line selections to OSX system clipboard
 "        see /u/ Brian @ https://tinyurl.com/y4n9njg7  (so)
 "        for set list, see /u/ derrick zhang @ https://tinyurl.com/y7gk2ncg
+"        ic: (in vsual mode), inserts vim-style comment (") @ line start.
+"        rc: (in visual mode), removes symbol (typcally a comment) @ start.
 "        ws: highlights blank lines & trailing white spaces.
 nmap      sa    :SyntaxAttr<CR>
 nmap      ch    :ToggleCommentHl<CR>
