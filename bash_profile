@@ -185,10 +185,10 @@ setpath() {
 # https://github.com/paulirish/dotfiles
 # see https://tinyurl.com/yavgqenw (so) for line comment trick.
 setpath \
-  "${HOME}/.cabal/bin" `# haskell cabal binaries` \
-  "${HOME}/.ghcup/bin" `# haskell binaries installed by ghcup` \
-  "${HOME}/.local/bin" \
-  "${HOME}/bin"
+  "/usr/local/sbin"     `# homebrew sbin` \
+  "${HOME}/.cabal/bin"  `# haskell cabal binaries` \
+  "${HOME}/.ghcup/bin"  `# haskell binaries installed by ghcup` \
+  "${HOME}/bin"         `# general-purpose, or useful/needed, binaries`
 
 ################ TERMINAL PROMPT SETTINGS -- FORMAT & COLOR
 # PS1, PS2 prompt colored -- see taylor mcgann @ 
@@ -204,8 +204,9 @@ export CLICOLOR=1
 export PYTHONDONTWRITEBYTECODE=1 # prevent python from creating .pyc files
 
 # https://opensource.com/article/19/5/python-3-default-mac
+# https://github.com/pyenv/pyenv  (uses `--path` instead of outdated `-`)
 if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
+  eval "$(pyenv init --path)"
 fi
 
 ################ HOMEBREW SETTINGS
