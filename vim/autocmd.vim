@@ -1,13 +1,5 @@
-augroup MyFileTypes
-  autocmd!
-
-  " customized file types -- see https://goo.gl/A8CCWo (ian langworth)
-  "  -- bash_profile ft -> sh  -> ~ .bash_profile
-  "  -- .gitignore ft  -> git -> more readable
-  autocmd BufNewFile,BufRead bash_profile set ft=sh
-  autocmd BufNewFile,BufRead .gitignore set ft=git
-augroup end
-
+" REF: https://learnvimscriptthehardway.stevelosh.com/chapters/12.html
+" author: Prem Muthedath
 augroup MyHighlights
   autocmd!
   " -- VertSplit, StatusLine/NC -> remove thick border!
@@ -37,19 +29,21 @@ augroup MySyntax
         \| let g:haskell_enable_pattern_synonyms = 1
 augroup END
 
-augroup cabal
-  " set file type & syntax for *.cabal files.
+augroup MyFileTypes
+  " customized file types -- see https://goo.gl/A8CCWo (ian langworth)
   autocmd!
+  "  bash_profile ft -> sh  -> ~ .bash_profile
+  autocmd BufNewFile,BufRead bash_profile set ft=sh
+  autocmd BufNewFile,BufRead bash_profile set syntax=sh
+  " .gitignore ft  -> git -> more readable
+  autocmd BufNewFile,BufRead .gitignore set ft=git
+  autocmd BufNewFile,BufRead .gitignore set syntax=git
+  " set file type & syntax for *.cabal files.
   autocmd BufNewFile,BufRead *.cabal set ft=haskell
   autocmd BufNewFile,BufRead *.cabal set syntax=haskell
-augroup END
-
-augroup lhs
   " set file type & syntax for *.lhs files (i.e., literal haskell)
-  autocmd!
   autocmd BufNewFile,BufRead *.lhs set ft=haskell
   autocmd BufNewFile,BufRead *.lhs set syntax=haskell
 augroup END
-
 
 
