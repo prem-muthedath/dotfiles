@@ -1,5 +1,5 @@
-" REF: https://learnvimscriptthehardway.stevelosh.com/chapters/12.html
 " author: Prem Muthedath
+" REF: https://learnvimscriptthehardway.stevelosh.com/chapters/12.html
 augroup MyHighlights
   autocmd!
   " -- VertSplit, StatusLine/NC -> remove thick border!
