@@ -4,6 +4,8 @@ augroup MyHighlights
   autocmd!
   " -- VertSplit, StatusLine/NC -> remove thick border!
   " -- EndOfBuffer -> remove ~; works only if vim >=8.0
+  " -- cursorline highlighting:
+  "    https://vim.fandom.com/wiki/Highlight_current_line
   autocmd ColorScheme solarized
         \ highlight VertSplit ctermfg=fg ctermbg=0
         \| highlight StatusLine cterm=NONE
@@ -16,6 +18,8 @@ augroup MyHighlights
         \| highlight ColorColumn ctermbg=236
         \| highlight EndOfBuffer ctermfg=bg
         \| highlight Function ctermfg=31
+        \| highlight CursorLine ctermbg=234
+        \| highlight CursorColumn ctermbg=236
 augroup END
 
 augroup MySyntax
@@ -46,4 +50,10 @@ augroup MyFileTypes
   autocmd BufNewFile,BufRead *.lhs set syntax=haskell
 augroup END
 
-
+" cursorline should appear only for the current window.
+" https://vim.fandom.com/wiki/Highlight_current_line
+augroup CursorLine
+  au!
+  au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+  au WinLeave * setlocal nocursorline
+augroup END

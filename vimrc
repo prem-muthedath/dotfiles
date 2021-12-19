@@ -61,7 +61,9 @@ set statusline+=\ [%l,%c]                 " line, column #
 set statusline+=\ %r                      " readonly?
 set statusline+=\ %m                      " file modified?
 
+" cursorline: https://vim.fandom.com/wiki/Highlight_current_line
 set fillchars=vert:\│                     " use this to show vsplit
+set cursorline                            " cursorline ON
 
 " ignore these file extensions
 set wildignore+=*.hi,*.o,*.class
@@ -82,6 +84,8 @@ set directory=~/.vim/swap
 "        ic: (in vsual mode), inserts vim-style comment (") @ line start.
 "        rc: (in visual mode), removes symbol (typcally a comment) @ start.
 "        ws: highlights blank lines & trailing white spaces.
+"        cl: toggle cursor line and cursor column,
+"        https://vim.fandom.com/wiki/Highlight_current_line
 nmap      sa    :SyntaxAttr<CR>
 nmap      ch    :ToggleCommentHl<CR>
 nmap      co    :colorscheme <C-Z><S-Tab>
@@ -97,6 +101,7 @@ vnoremap  ri    :Reindent<CR>
 vmap      cp    :w !pbcopy<CR><CR>
 map       sl    :set list! list? <CR>
 nmap      ws    :/^\s\+$\\|\s\+$/ <CR>
+:nnoremap cl    :set cursorline! cursorcolumn!<CR>
 " https://google.com
 
 
