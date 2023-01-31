@@ -77,6 +77,11 @@ set mouse=a       " no terminal scrollbar!
 set backupdir=~/.vim/backup
 set directory=~/.vim/swap
 
+" set print font (used by `hardcopy` when generating `*.ps` file)
+" syntax from /u/ doru @ https://tinyurl.com/y6t7rhck (linuxquestions.org)
+" see also https://vimhelp.org/print.txt.html
+set printfont=courier:h9
+
 " mappings
 " NOTE:  :w !pbcopy copies line selections to OSX system clipboard
 "        see /u/ Brian @ https://tinyurl.com/y4n9njg7  (so)
@@ -102,6 +107,23 @@ vmap      cp    :w !pbcopy<CR><CR>
 map       sl    :set list! list? <CR>
 nmap      ws    :/^\s\+$\\|\s\+$/ <CR>
 :nnoremap cl    :set cursorline! cursorcolumn!<CR>
+
+" these mappings below are for haskell completions in coc-vim
+" REF: https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+" `hc` mapping (i.e., by typing 'hc') brings up the haskell completion popup in 
+" insert mode. you can then navigate the pop up, while remaining in insert mode, 
+" using the built-in vim navigation with arrow keys.
+inoremap <silent><expr> hc
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+" this insert-mode mapping confirms (by hitting `ENTER`) the haskell name 
+" selection from the haskell completion pop up.
+inoremap <expr> <cr>
+      \ coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
+
 " https://google.com
-
-
