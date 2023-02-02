@@ -91,22 +91,22 @@ set printfont=courier:h9
 "        ws: highlights blank lines & trailing white spaces.
 "        cl: toggle cursor line and cursor column,
 "        https://vim.fandom.com/wiki/Highlight_current_line
-nmap      sa    :SyntaxAttr<CR>
-nmap      ch    :ToggleCommentHl<CR>
-nmap      co    :colorscheme <C-Z><S-Tab>
-nmap      ou    :OpenUrl<CR>
-noremap   ts    :ToggleHlSearch<CR>
-noremap   cs    :ClearSearch<CR>
+nnoremap  sa    :SyntaxAttr<CR>
+nnoremap  ch    :ToggleCommentHl<CR>
+nnoremap  co    :colorscheme <C-Z><S-Tab>
+nnoremap  ou    :OpenUrl<CR>
+nnoremap  ts    :ToggleHlSearch<CR>
+nnoremap  cs    :ClearSearch<CR>
 nnoremap  tc    :ToggleComment<CR>
 vnoremap  tc    :ToggleComments<CR>
 nnoremap  sc    :StartComment<CR>
 vnoremap  ic    :norm ^i" <CR>
 vnoremap  rc    :norm ^x<CR>
 vnoremap  ri    :Reindent<CR>
-vmap      cp    :w !pbcopy<CR><CR>
+vnoremap  cp    :w !pbcopy<CR><CR>
 map       sl    :set list! list? <CR>
-nmap      ws    :/^\s\+$\\|\s\+$/ <CR>
-:nnoremap cl    :set cursorline! cursorcolumn!<CR>
+nnoremap  ws    :/^\s\+$\\|\s\+$/ <CR>
+nnoremap  cl    :set cursorline! cursorcolumn!<CR>
 
 " these mappings below are for haskell completions in coc-vim
 " REF: https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources
@@ -114,16 +114,46 @@ function! CheckBackspace() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
+
+" this function simply re-organizes the code from the neoclide github page.
+" this code, when executed by `inorecmap <expr>`, triggers haskell completion.
+" for <SID>, see https://vimdoc.sourceforge.net/htmldoc/map.html#script-local
+" NOTE:
+"   1. orig code returned "\<Tab>" if `CheckBackspace()` = true.
+"   2. i removed "\<Tab>" because when preceeded by \s, it was inserting a \t.
+"   3. the orig code used <Tab> as the map key.
+"   4. so to free up <Tab> for normal use, the code had to return "\<Tab>".
+"   5. i replaced <Tab> as the map key here.
+"   6. so now the code returns the map key used if `CheckBackspace` = true.
+"   7. also, the code completion now is triggered only for haskell files.
+"   8. for non-haskell files, the code simply returns the map key.
+"   9. `==#` is case sensitive string comparison, by the way.
+" https://stackoverflow.com/questions/2779379/find-what-filetype-is-loaded-in-vim
+function! <SID>haskellCompletion(map_key) abort
+  if &filetype ==# 'haskell'
+    return
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? a:map_key : coc#refresh()
+  endif
+  return a:map_key
+endfunction
+
 " `hc` mapping (i.e., by typing 'hc') brings up the haskell completion popup in 
 " insert mode. you can then navigate the pop up, while remaining in insert mode, 
 " using the built-in vim navigation with arrow keys.
-inoremap <silent><expr> hc
-      \ coc#pum#visible() ? coc#pum#next(1) :
-      \ CheckBackspace() ? "\<Tab>" :
-      \ coc#refresh()
+" for <SID> usage, see https://vimdoc.sourceforge.net/htmldoc/map.html
+" REF: https://vim.fandom.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_1)
+inoremap <silent><expr> hc <SID>haskellCompletion("hc")
+
 " this insert-mode mapping confirms (by hitting `ENTER`) the haskell name 
 " selection from the haskell completion pop up.
-inoremap <expr> <cr>
-      \ coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
+" REF: https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources
+" REF: https://vim.fandom.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_1)
+" NOTE:
+"   1. the code here uses <CR> as the map key.
+"   2. it therefore needs to free up <CR> for normal use outside of the mapping.
+"   3. that's why the code returns "\<CR>" when the coc pop up is not visible.
+"   4. so if you do `<CR>` outside of the coc pop up, you'll get the usual <CR>.
+inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 
 " https://google.com

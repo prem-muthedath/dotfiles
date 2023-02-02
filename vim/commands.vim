@@ -27,7 +27,7 @@ command! ClearSearch let @/=""
 command! ToggleComment .call ToggleComments()
 command! -range=% ToggleComments <line1>,<line2>call ToggleComments()
 
-" start a comment line in insert mode:
+" start a comment line in normal mode and then switch to insert mode.
 "   -- if current line empty, make it a comment;
 "   -- otherwise, start a new comment line right below current line
 function! s:startcomment()
