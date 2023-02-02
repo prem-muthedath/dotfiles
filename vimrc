@@ -86,7 +86,10 @@ set printfont=courier:h9
 " NOTE:  :w !pbcopy copies line selections to OSX system clipboard
 "        see /u/ Brian @ https://tinyurl.com/y4n9njg7  (so)
 "        for set list, see /u/ derrick zhang @ https://tinyurl.com/y7gk2ncg
-"        ic: (in vsual mode), inserts vim-style comment (") @ line start.
+"        ch: toggle comment highlighting in normal mode.
+"        tc: toggle comments, both in visual and normal modes.
+"        sc: in visual mode, start a comment, switching to insert mode.
+"        ic: (in visual mode), inserts vim-style comment (") @ line start.
 "        rc: (in visual mode), removes symbol (typcally a comment) @ start.
 "        ws: highlights blank lines & trailing white spaces.
 "        cl: toggle cursor line and cursor column,
@@ -116,8 +119,7 @@ function! CheckBackspace() abort
 endfunction
 
 " this function simply re-organizes the code from the neoclide github page.
-" this code, when executed by `inorecmap <expr>`, triggers haskell completion.
-" for <SID>, see https://vimdoc.sourceforge.net/htmldoc/map.html#script-local
+" this code, executed by `inoremap <expr>`, triggers haskell code completion.
 " NOTE:
 "   1. orig code returned "\<Tab>" if `CheckBackspace()` = true.
 "   2. i removed "\<Tab>" because when preceeded by \s, it was inserting a \t.
@@ -128,6 +130,7 @@ endfunction
 "   7. also, the code completion now is triggered only for haskell files.
 "   8. for non-haskell files, the code simply returns the map key.
 "   9. `==#` is case sensitive string comparison, by the way.
+" for <SID>, see https://vimdoc.sourceforge.net/htmldoc/map.html#script-local
 " https://stackoverflow.com/questions/2779379/find-what-filetype-is-loaded-in-vim
 function! <SID>haskellCompletion(map_key) abort
   if &filetype ==# 'haskell'
@@ -141,8 +144,9 @@ endfunction
 " `hc` mapping (i.e., by typing 'hc') brings up the haskell completion popup in 
 " insert mode. you can then navigate the pop up, while remaining in insert mode, 
 " using the built-in vim navigation with arrow keys.
-" for <SID> usage, see https://vimdoc.sourceforge.net/htmldoc/map.html
+" REF: https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources
 " REF: https://vim.fandom.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_1)
+" for <SID>, see https://vimdoc.sourceforge.net/htmldoc/map.html#script-local
 inoremap <silent><expr> hc <SID>haskellCompletion("hc")
 
 " this insert-mode mapping confirms (by hitting `ENTER`) the haskell name 
