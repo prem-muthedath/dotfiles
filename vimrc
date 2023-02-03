@@ -1,8 +1,7 @@
 " vimrc -- author: Prem Muthedath, JUN 2018
 
 " load modules -- keep the order!
-source ~/dotfiles/vim/autocmd.vim
-source ~/dotfiles/vim/commands.vim
+source ~/dotfiles/vim/plugin/autocmds.vim
 
 " load ftplugin & indent files; highlight syntax
 filetype plugin on
