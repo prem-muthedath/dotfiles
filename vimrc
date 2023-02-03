@@ -121,15 +121,14 @@ endfunction
 " this function simply re-organizes the code from the neoclide github page.
 " this code, executed by `inoremap <expr>`, triggers haskell code completion.
 " NOTE:
-"   1. orig code returned "\<Tab>" if `CheckBackspace()` = true.
-"   2. i removed "\<Tab>" because when preceeded by \s, it was inserting a \t.
-"   3. the orig code used <Tab> as the map key.
-"   4. so to free up <Tab> for normal use, the code had to return "\<Tab>".
-"   5. i replaced <Tab> as the map key here.
-"   6. so now the code returns the map key used if `CheckBackspace` = true.
-"   7. also, the code completion now is triggered only for haskell files.
-"   8. for non-haskell files, the code simply returns the map key.
-"   9. `==#` is case sensitive string comparison, by the way.
+"   1. the orig code used <Tab> as the map key.
+"   2. and that code returned "\<Tab>" if `CheckBackspace()` = true.
+"   3. it did so to free up <Tab> for normal use outside of the mapping.
+"   4. i replaced <Tab> as the map key here.
+"   5. so now the code returns the map key used if `CheckBackspace()` = true.
+"   6. also, the code completion now is triggered only for haskell files.
+"   7. for non-haskell files, the code simply returns the map key.
+"   8. `==#` is case sensitive string comparison, by the way.
 " for <SID>, see https://vimdoc.sourceforge.net/htmldoc/map.html#script-local
 " https://stackoverflow.com/questions/2779379/find-what-filetype-is-loaded-in-vim
 function! <SID>haskellCompletion(map_key) abort
@@ -146,6 +145,7 @@ endfunction
 " using the built-in vim navigation with arrow keys.
 " REF: https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources
 " REF: https://vim.fandom.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_1)
+" REF: https://stackoverflow.com/questions/34817344/c-r-versus-expr-in-mappings
 " for <SID>, see https://vimdoc.sourceforge.net/htmldoc/map.html#script-local
 inoremap <silent><expr> hc <SID>haskellCompletion("hc")
 
@@ -153,6 +153,7 @@ inoremap <silent><expr> hc <SID>haskellCompletion("hc")
 " selection from the haskell completion pop up.
 " REF: https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources
 " REF: https://vim.fandom.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_1)
+" REF: https://stackoverflow.com/questions/34817344/c-r-versus-expr-in-mappings
 " NOTE:
 "   1. the code here uses <CR> as the map key.
 "   2. it therefore needs to free up <CR> for normal use outside of the mapping.
