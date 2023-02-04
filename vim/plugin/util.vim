@@ -1,4 +1,7 @@
 " This has just a collection of utility functions written as and when needed.
+"
+" history: created 7 - 28 AUG 2018.
+" author: Prem Muthedath
 
 function! Csformat()
   " Format file -- such as ~/dotfiles/vim/notes/cs.vim -- containing list of 

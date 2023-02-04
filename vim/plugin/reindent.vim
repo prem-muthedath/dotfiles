@@ -1,6 +1,7 @@
 " Reindent a block of lines
 "   -- preserves trailing spaces
 "   -- works with vim, bash, but not haskell; untested for others
+"   -- history: created 19-22 JUL 2018.
 "   -- author: Prem Muthedath
 
 "   usage:

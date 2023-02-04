@@ -63,6 +63,8 @@
 " 4. http://www.unix.com/shell-programming-and-scripting/137634-sed-error-unescaped-newline.html
 " 5. https://goo.gl/z21rDQ
 " 6. https://google.com, https://apple.com
+"
+" history: edited 13 - 22 JUL 2018 by Prem Muthedath.
 
 function! OpenUrlUnderCursor()
     let l:path="/Applications/Safari.app"

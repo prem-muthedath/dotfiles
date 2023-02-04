@@ -7,6 +7,9 @@
 "   --  handles both 1-part & 3-part (c-style) comments
 "   --  extracts comment symbols from &commestring and &comments
 "   --  uses normal mode commands, almost entirely, for comment/uncomment
+"
+" history: created, edited 13 JUL -- 29 AUG 2018.
+" author: Prem Muthedath.
 
 function! s:emptyllendpat() abort
   " Return regex pattern for end of an empty last line (ll) in comment block

@@ -2,6 +2,8 @@
 "
 " Show the syntax group name of the item under cursor.
 "	map -a	:call SyntaxAttr()<CR>
+"
+" downloaded from the internet (don't know from where), 13 JUL 2018.
 
 function! SyntaxAttr()
      let synid = ""
