@@ -43,11 +43,17 @@ augroup MyFileTypes
   autocmd BufNewFile,BufRead .gitignore set ft=git
   autocmd BufNewFile,BufRead .gitignore set syntax=git
   " set file type & syntax for *.cabal files.
-  autocmd BufNewFile,BufRead *.cabal set ft=haskell
-  autocmd BufNewFile,BufRead *.cabal set syntax=haskell
+  autocmd BufNewFile,BufRead *.cabal set ft=cabal
+  autocmd BufNewFile,BufRead *.cabal set syntax=cabal
   " set file type & syntax for *.lhs files (i.e., literal haskell)
   autocmd BufNewFile,BufRead *.lhs set ft=haskell
   autocmd BufNewFile,BufRead *.lhs set syntax=haskell
+  " set file type & syntax for ghci.conf files (i.e., haskell ghci config)
+  autocmd BufNewFile,BufRead ghci.conf,ghci.config set ft=cabalconfig
+  autocmd BufNewFile,BufRead ghci.conf,ghci.config set syntax=cabalconfig
+  " set file type & syntax for cabal config files (i.e., haskell cabal config)
+  autocmd BufNewFile,BufRead cabal.config,cabal.config.* set ft=cabalconfig
+  autocmd BufNewFile,BufRead cabal.config,cabal.config.* set syntax=cabalconfig
 augroup END
 
 " cursorline should appear only for the current window.

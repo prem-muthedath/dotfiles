@@ -20,6 +20,7 @@ endfunction
 command! ToggleCommentHl call s:toggleCommentHl('ctermfg=245')
 
 " hl search -- toggle, clear (pattern)
+" NOTE: @/ is the search register.
 command! ToggleHlSearch set hls! | set hls?
 command! ClearSearch let @/=""
 
