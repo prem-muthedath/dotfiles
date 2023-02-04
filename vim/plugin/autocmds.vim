@@ -1,5 +1,8 @@
+" autocommands for vimrc.
 " author: Prem Muthedath
 " REF: https://learnvimscriptthehardway.stevelosh.com/chapters/12.html
+
+" autocommands for look-and-feel highlighting.
 augroup MyHighlights
   autocmd!
   " -- VertSplit, StatusLine/NC -> remove thick border!
@@ -22,6 +25,7 @@ augroup MyHighlights
         \| highlight CursorColumn ctermbg=236
 augroup END
 
+" autocommands for setting haskell syntax preferences.
 augroup MySyntax
   autocmd!
   " -- set preferences for raichoo's haskell syntax
@@ -33,6 +37,7 @@ augroup MySyntax
         \| let g:haskell_enable_pattern_synonyms = 1
 augroup END
 
+" autocommands to customize filetype & syntax.
 augroup MyFileTypes
   " customized file types -- see https://goo.gl/A8CCWo (ian langworth)
   autocmd!

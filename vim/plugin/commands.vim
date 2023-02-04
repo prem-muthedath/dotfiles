@@ -1,3 +1,6 @@
+" user-defined commands.
+" author: Prem muthedath
+
 " open url under cursor; plugin: OpenUrl
 command! OpenUrl call OpenUrlUnderCursor()
 

@@ -51,8 +51,9 @@ set flp+=\\\|^\\s*[ivxIVX]\\+[.)]\\s\\+   " i. , i) , ii. , ii) , ...
 " make your own statusline
 set laststatus=2                          " statusline ON, always
 set statusline=%t                         " filename
-set statusline+=\ %y                      " file type
-set statusline+=\ [%{&ff}]                " file format
+set statusline+=\ ft:%y                   " file type
+set statusline+=\ syx:[%{GetSyntax()}]    " syntax
+set statusline+=\ for:[%{&ff}]            " file format
 set statusline+=\ fo:[%{&fo}]             " format options
 set statusline+=\ cs:[%{g:colors_name}]   " colorscheme
 set statusline+=%=                        " seperate left & right

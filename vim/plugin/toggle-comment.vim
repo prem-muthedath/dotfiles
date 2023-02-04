@@ -1,7 +1,7 @@
 " source: https://gist.github.com/dave-kennedy/2188b3dd839ac4f73fe298799bb15f3b
 " -- orig source: https://stackoverflow.com/a/24046914/2571881
 " -- dave-kennedy's code a refinement of so code. for an exact copy of dave 
-"    kennedy's code, see  ~/dotfiles/vim/ext/togglecomment.vim
+"    kennedy's code, see  ~/dotfiles/vim/arch/ext/togglecomment.vim
 " Prem:
 "   --  entirely re-designed -> almost no resemblance to dave-kennedy's code
 "   --  handles both 1-part & 3-part (c-style) comments
