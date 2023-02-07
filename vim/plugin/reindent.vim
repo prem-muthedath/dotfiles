@@ -8,6 +8,11 @@
 "   -- select >= 2 lines, and call Reindent(), and all selected lines (except 
 "      1st) will be reindented with respect to the 1st line in selection.
 "   -- reindent works only if you select > 1 line.
+"   NOTE: <CR>  = carriage return => CTRL-M = ^M
+"         <Esc> = escape          => CTRL-[ = ^[
+"         execute  "normal i" => execute "normal i" . "\<CR>" . "\<Esc>"
+"         sequence: enter insert mode, then <CR>, then escape to normal mode.
+"         REF: :help key-notation
 function! s:reindentline() abort
   " Reindent the next line"
   execute "normal J"
