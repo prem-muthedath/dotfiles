@@ -52,7 +52,7 @@ set flp+=\\\|^\\s*[ivxIVX]\\+[.)]\\s\\+   " i. , i) , ii. , ii) , ...
 
 " make your own statusline
 " filename: https://vim.fandom.com/wiki/Get_the_name_of_the_current_file
-" filename code: see :help statusline for use of `%{%exp%}
+" filename code: see :help statusline for use of `%{%exp%}`
 " syntax display -- on how to get syntax, as well as on possible errors, see:
 "   REF: https://tinyurl.com/mvy94a4u (so)
 "   REF: https://tinyurl.com/mra9x6f7 (vi.SE)
