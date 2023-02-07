@@ -1,4 +1,6 @@
 " vimrc -- author: Prem Muthedath, JUN 2018
+" organize your vimrc: https://vimways.org/2018/from-vimrc-to-vim/
+" ==============================================================================
 
 " load file containing autocommands first!
 source ~/dotfiles/vim/plugin/autocmds.vim
@@ -49,17 +51,21 @@ set flp+=\\\|^\\s*\\w[.)]\\s\\+           " a. , a) , b. , b) , ...
 set flp+=\\\|^\\s*[ivxIVX]\\+[.)]\\s\\+   " i. , i) , ii. , ii) , ...
 
 " make your own statusline
-set laststatus=2                          " statusline ON, always
-set statusline=%t                         " filename
-set statusline+=\ ft:%y                   " file type
-set statusline+=\ syx:[%{GetSyntax()}]    " syntax
-set statusline+=\ for:[%{&ff}]            " file format
-set statusline+=\ fo:[%{&fo}]             " format options
-set statusline+=\ cs:[%{g:colors_name}]   " colorscheme
-set statusline+=%=                        " seperate left & right
-set statusline+=\ [%l,%c]                 " line, column #
-set statusline+=\ %r                      " readonly?
-set statusline+=\ %m                      " file modified?
+" syntax display -- on how to get syntax, as well as on possible errors, see:
+"   REF: https://tinyurl.com/mvy94a4u (so)
+"   REF: https://tinyurl.com/mra9x6f7 (vi.SE)
+set laststatus=2                                " statusline ON, always
+set statusline=%f                               " filename
+set statusline+=\ ft:%y                         " file type
+set statusline+=\ syx:[%{&syntax}]              " syntax
+set statusline+=\ cms:[%{split(&cms,'%s')[0]}]  " commentstring
+set statusline+=\ ff:[%{&ff}]                   " file format
+set statusline+=\ fo:[%{&fo}]                   " format options
+set statusline+=\ cs:[%{g:colors_name}]         " colorscheme
+set statusline+=%=                              " separate left & right
+set statusline+=\ [%l,%c]                       " line, column #
+set statusline+=\ %r                            " readonly?
+set statusline+=\ %m                            " file modified?
 
 " cursorline: https://vim.fandom.com/wiki/Highlight_current_line
 set fillchars=vert:\│                     " use this to show vsplit
@@ -162,3 +168,4 @@ inoremap <silent><expr> hc <SID>haskellCompletion("hc")
 inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 
 " https://google.com
+" ==============================================================================

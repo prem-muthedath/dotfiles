@@ -1,6 +1,7 @@
 " autocommands for vimrc.
 " author: Prem Muthedath
 " REF: https://learnvimscriptthehardway.stevelosh.com/chapters/12.html
+" ==============================================================================
 
 " autocommands for look-and-feel highlighting.
 augroup MyHighlights
@@ -10,12 +11,12 @@ augroup MyHighlights
   " -- cursorline highlighting:
   "    https://vim.fandom.com/wiki/Highlight_current_line
   autocmd ColorScheme solarized
-        \ highlight VertSplit ctermfg=fg ctermbg=0
+        \  highlight VertSplit ctermfg=fg ctermbg=0
         \| highlight StatusLine cterm=NONE
         \| highlight StatusLineNC cterm=NONE
         \| highlight EndOfBuffer ctermfg=bg
   autocmd ColorScheme apprentice,sorcerer
-        \ highlight VertSplit ctermfg=fg ctermbg=0
+        \  highlight VertSplit ctermfg=fg ctermbg=0
         \| highlight StatusLine ctermfg=NONE ctermbg=238
         \| highlight StatusLineNC ctermfg=12 ctermbg=238
         \| highlight ColorColumn ctermbg=236
@@ -31,34 +32,45 @@ augroup MySyntax
   " -- set preferences for raichoo's haskell syntax
   " -- for details, see https://github.com/raichoo/haskell-vim
   autocmd Syntax haskell
-        \ let g:haskell_classic_highlighting = 1
+        \  let g:haskell_classic_highlighting = 1
         \| let g:haskell_enable_quantification = 1
         \| let g:haskell_enable_recursivedo = 1
         \| let g:haskell_enable_pattern_synonyms = 1
 augroup END
 
-" autocommands to customize filetype & syntax.
+augroup MyCommentStrings
+" autocommands to set commentstring.
+" REF: commentstring: /u/ kiteloopdesign @ https://tinyurl.com/rzu86654 (so)
+" To DO: put each line in `~/.vim/ftplugin/` in their respective file.
+  autocmd!
+  autocmd FileType git setlocal commentstring=#\ %s
+  autocmd FileType cabal setlocal commentstring=--\ %s
+  autocmd FileType cabalconfig setlocal commentstring=--\ %s
+augroup END
+
+" autocommands to customize filetype.
+" use `:setfiletype <Ctrl+D>` to list all filetypes; see:
+" REF: https://vi.stackexchange.com/questions/5780/list-known-filetypes
+" NOTE: no longer setting `ft` for `bash_profile`, as its `ft` is already `sh`.
+" TO DO: put each of these `autocmd`s in a separate file in `~/.vim/ftdetect/`
 augroup MyFileTypes
   " customized file types -- see https://goo.gl/A8CCWo (ian langworth)
   autocmd!
-  "  bash_profile ft -> sh  -> ~ .bash_profile
-  autocmd BufNewFile,BufRead bash_profile set ft=sh
-  autocmd BufNewFile,BufRead bash_profile set syntax=sh
-  " .gitignore ft  -> git -> more readable
-  autocmd BufNewFile,BufRead .gitignore set ft=git
-  autocmd BufNewFile,BufRead .gitignore set syntax=git
-  " set file type & syntax for *.cabal files.
-  autocmd BufNewFile,BufRead *.cabal set ft=cabal
-  autocmd BufNewFile,BufRead *.cabal set syntax=cabal
-  " set file type & syntax for *.lhs files (i.e., literal haskell)
-  autocmd BufNewFile,BufRead *.lhs set ft=haskell
-  autocmd BufNewFile,BufRead *.lhs set syntax=haskell
-  " set file type & syntax for ghci.conf files (i.e., haskell ghci config)
-  autocmd BufNewFile,BufRead ghci.conf,ghci.config set ft=cabalconfig
-  autocmd BufNewFile,BufRead ghci.conf,ghci.config set syntax=cabalconfig
-  " set file type & syntax for cabal config files (i.e., haskell cabal config)
-  autocmd BufNewFile,BufRead cabal.config,cabal.config.* set ft=cabalconfig
-  autocmd BufNewFile,BufRead cabal.config,cabal.config.* set syntax=cabalconfig
+  "set .gitignore ft  -> git -> more readable
+  autocmd BufNewFile,BufRead
+        \ .gitignore
+        \ setfiletype git
+  " set file type for *.lhs files (i.e., literal haskell)
+  autocmd BufNewFile,BufRead
+        \ *.lhs
+        \ setfiletype haskell
+  " set file type for haskell cabal config, ghci.conf files
+  autocmd BufNewFile,BufRead
+        \ cabal.config
+        \,cabal.config.*
+        \,ghci.conf
+        \,ghci.config
+        \ setfiletype cabalconfig
 augroup END
 
 " cursorline should appear only for the current window.
@@ -68,3 +80,4 @@ augroup CursorLine
   au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
   au WinLeave * setlocal nocursorline
 augroup END
+" ==============================================================================
