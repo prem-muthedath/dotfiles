@@ -58,10 +58,10 @@ function! s:uncomment(first) abort
   "   4. next, pattern match offset with `e-`; see :help search-offset.
   "
   "      by default, if a match is found, vim positions the cursor on the first 
-  "      (leftmost) character of the match. but in our case, that default 
-  "      position may not always be suitable, because the leftmost match 
-  "      position may sometimes be a space character, as our pattern allows the 
-  "      possibility that 0 or more space characters may precede the comment 
+  "      (leftmost) character of the match. but that default position may not 
+  "      always be suitable here, because the leftmost match position may 
+  "      sometimes be a space character, as our pattern allows the possibility 
+  "      that 0 or more space characters may immediately precede the comment 
   "      string. what we want instead is to always position the cursor on the 
   "      first (leftmost) character of the comment string. this is done using:
   "
@@ -88,7 +88,7 @@ function! s:uncomment(first) abort
   "
   "         'normal ' . width(cs) . '"_x'
   "=============================================================================
-  " NOTE: previous code version code (differs only in cosmetic formatting):
+  " NOTE: previous code version (differs only in cosmetic formatting):
   " execute 'normal 0/' . "\\%" . line('.') . 'l^\s*' . s:esc(a:first) . '/e-' .
   "       \ (strdisplaywidth(a:first)-1) . "\<CR>"
   "=============================================================================
