@@ -32,8 +32,74 @@ endfunction
 
 function! s:uncomment(first) abort
   " Uncomment the line but do not delete any spaces
-  execute 'normal 0/' . "\\%" . line('.') . 'l^\s*' . s:esc(a:first) . '/e-' .
-        \ (strdisplaywidth(a:first)-1) . "\<CR>"
+  "
+  " this function uses a 2-step strategy to uncomment:
+  "   a) first, it locates, using a search pattern, the comment string and 
+  "      positions the cursor at the start of the comment string.
+  "   b) it then walks through the entire comment string, left to right, 
+  "      character by character, deleting each character.
+  "
+  " STEP (a) DETAILS:
+  "   the entire step (a) is executed in normal mode. details below.
+  "   1. `normal 0` -> get to the first character in the line;
+  "   2. search for the comment symbol pattern in the current line.
+  "
+  "       search syntax: /{pattern}/{offset}<CR>; see :help search-commands.
+  "
+  "   3. the `pattern` in (2) is of the form:
+  "         /"\\" . %line('.') . 'l' . '^' . '\s*' . comment-string/
+  "
+  "         / .. /                  => part of search syntax
+  "         "\\%" . line('.'). 'l'` => search current line in file; `l` => line
+  "         '^'                     => search from 1st non-blank char of line
+  "         '\s*'                   => match for 0+ \s that immediately follow
+  "         comment-string (cs)     => then match for cs that immediately follow
+  "
+  "   4. next, pattern match offset with `e-`; see :help search-offset.
+  "
+  "      by default, if a match is found, vim positions the cursor on the first 
+  "      (leftmost) character of the match. but in our case, that default 
+  "      position may not always be suitable, because the leftmost match 
+  "      position may sometimes be a space character, as our pattern allows the 
+  "      possibility that 0 or more space characters may precede the comment 
+  "      string. what we want instead is to always position the cursor on the 
+  "      first (leftmost) character of the comment string. this is done using:
+  "
+  "         'e-' . (width(comment-string) - 1)
+  "
+  "   5. finally we've a "\<CR>" to complete the search syntax.  so the entire 
+  "      thing looks like (NOTE: '/' => search syntax; `cs`: comment string):
+  "
+  "       `normal 0' . '/' . "\\%" . line('.') . 'l' .  '^\s*' . cs . '/'
+  "                  . 'e-' . ((width(cs) - 1) . "\<CR>"
+  "
+  " STEP (b) DETAILS:
+  "   after step (a), we've the cursor on the 1st (leftmost) character of the 
+  "   comment string.
+  "
+  "   in step (b), executed fully in normal mode, we begin deleting the comment 
+  "   string, left to right, character by character, starting from the leftmost.
+  "
+  "   we use the blackhole register `"_`, so the deleted characters are not
+  "   stored in any register.
+  "
+  "   the pseudocode is below (NOTE: `cs`: comment string; the # of characters 
+  "   in `cs`, given by `width(cs)`, gives the count of deletions):
+  "
+  "         'normal ' . width(cs) . '"_x'
+  "=============================================================================
+  " NOTE: previous code version code (differs only in cosmetic formatting):
+  " execute 'normal 0/' . "\\%" . line('.') . 'l^\s*' . s:esc(a:first) . '/e-' .
+  "       \ (strdisplaywidth(a:first)-1) . "\<CR>"
+  "=============================================================================
+  execute 'normal 0'
+              \ . '/'
+                    \ . "\\%" . line('.') . 'l'
+                    \ . '^'
+                    \ . '\s*' . s:esc(a:first)
+              \ . '/'
+              \ . 'e-' .  (strdisplaywidth(a:first)-1)
+              \ . "\<CR>"
   execute 'normal ' . (strdisplaywidth(a:first)) . '"_x'
 endfunction
 

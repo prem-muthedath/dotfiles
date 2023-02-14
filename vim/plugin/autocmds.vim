@@ -10,6 +10,8 @@ augroup MyHighlights
   " -- EndOfBuffer -> remove ~; works only if vim >=8.0
   " -- cursorline highlighting:
   "    https://vim.fandom.com/wiki/Highlight_current_line
+  "    print highlight defns on commandline: `:highlight VertSplit`
+  "    see /u/ ralph @ https://tinyurl.com/5rncjhwc (vi.SE)
   autocmd ColorScheme solarized
         \  highlight VertSplit ctermfg=fg ctermbg=0
         \| highlight StatusLine cterm=NONE
