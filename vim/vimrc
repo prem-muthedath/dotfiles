@@ -102,22 +102,23 @@ set printfont=courier:h9
 "        ws: highlights blank lines & trailing white spaces.
 "        cl: toggle cursor line and cursor column,
 "        https://vim.fandom.com/wiki/Highlight_current_line
-nnoremap  sa    :SyntaxAttr<CR>
-nnoremap  ch    :ToggleCommentHl<CR>
-nnoremap  co    :colorscheme <C-Z><S-Tab>
-nnoremap  ou    :OpenUrl<CR>
-nnoremap  ts    :ToggleHlSearch<CR>
-nnoremap  cs    :ClearSearch<CR>
-nnoremap  tc    :ToggleComment<CR>
-vnoremap  tc    :ToggleComments<CR>
-nnoremap  sc    :StartComment<CR>
-vnoremap  ic    :norm ^i" <CR>
-vnoremap  rc    :norm ^x<CR>
-vnoremap  ri    :Reindent<CR>
-vnoremap  cp    :w !pbcopy<CR><CR>
-map       sl    :set list! list? <CR>
-nnoremap  ws    :/^\s\+$\\|\s\+$/ <CR>
-nnoremap  cl    :set cursorline! cursorcolumn!<CR>
+"        for use of <silent>, see https://tinyurl.com/2p84nkpu (vi.SE)
+nnoremap            sa    :SyntaxAttr<CR>
+nnoremap            ch    :ToggleCommentHl<CR>
+nnoremap            co    :colorscheme <C-Z><S-Tab>
+nnoremap            ou    :OpenUrl<CR>
+nnoremap            ts    :ToggleHlSearch<CR>
+nnoremap            cs    :ClearSearch<CR>
+nnoremap  <silent>  tc    :ToggleComment<CR>
+vnoremap  <silent>  tc    :ToggleComments<CR>
+nnoremap            sc    :StartComment<CR>
+vnoremap            ic    :norm ^i" <CR>
+vnoremap            rc    :norm ^x<CR>
+vnoremap            ri    :Reindent<CR>
+vnoremap            cp    :w !pbcopy<CR><CR>
+map                 sl    :set list! list? <CR>
+nnoremap            ws    :/^\s\+$\\|\s\+$/ <CR>
+nnoremap            cl    :set cursorline! cursorcolumn!<CR>
 
 " these mappings below are for haskell completions in coc-vim
 " REF: https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources

@@ -27,7 +27,12 @@ endfunction
 function! s:uncomment1(first) abort
   " Uncomment the line + remove 1 space, if any, that immediately follows
   call s:uncomment(a:first)
-  silent! execute 's/\%' . virtcol('.') . 'v\s//'
+  " NOTE:
+    " '\%' . virtcol('.') .'v'        => ex: \%23v implies virtual col 23.
+    " '\%' . virtcol('.') .'v\s'      => matches a \s in the virt col.
+    " 's/\%' . virtcol('.') . 'v\s//' => replaces a \s with // in the virt col.
+    " see :help ordinary-atom
+  silent execute 's/\%' . virtcol('.') . 'v\s//'
 endfunction
 
 function! s:uncomment(first) abort
@@ -47,7 +52,7 @@ function! s:uncomment(first) abort
   "       search syntax: /{pattern}/{offset}<CR>; see :help search-commands.
   "
   "   3. the `pattern` in (2) is of the form:
-  "         /"\\" . %line('.') . 'l' . '^' . '\s*' . comment-string/
+  "         /"\\%" . line('.') . 'l' . '^' . '\s*' . comment-string/
   "
   "         / .. /                  => part of search syntax
   "         "\\%" . line('.'). 'l'` => search current line in file; `l` => line
@@ -92,9 +97,12 @@ function! s:uncomment(first) abort
   " execute 'normal 0/' . "\\%" . line('.') . 'l^\s*' . s:esc(a:first) . '/e-' .
   "       \ (strdisplaywidth(a:first)-1) . "\<CR>"
   "=============================================================================
-  execute 'normal 0'
+  " NOTE:
+  "   1. "\\%" = '\%'; /u/ luc hermitte @ https://tinyurl.com/4wn5wphn (vi.SE)
+  "   2. on use of `\` for line continuation, see :help line-continuation
+  silent execute 'normal 0'
               \ . '/'
-                    \ . "\\%" . line('.') . 'l'
+                    \ . '\%' . line('.') . 'l'
                     \ . '^'
                     \ . '\s*' . s:esc(a:first)
               \ . '/'
