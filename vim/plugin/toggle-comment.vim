@@ -34,7 +34,7 @@ function! s:uncomment1(first) abort
     " see :help ordinary-atom
     "
     " why use `silent!` which ignores all errors?  well, the virtual col that 
-    " imeediately follows may not always contain \s. we only execute a deletion 
+    " immediately follows may not always contain \s. we only execute a deletion 
     " when \s is present; otherwise, we want to not do anything with the virtual 
     " col at all. using `silent!' allows us to do exactly that. when the virtul 
     " col contains \s, deletion succeeds and all is well, but when there is no 
@@ -154,7 +154,7 @@ function! s:uncommentend(second) abort
       " see :help ordinary-atom
       "
       " why use `silent!` which ignores all errors?  well, the virtual col that 
-      " imeediately precedes may not always contain \s. we only execute a 
+      " immediately precedes may not always contain \s. we only execute a 
       " deletion when \s is present; otherwise, we want to not do anything with 
       " the virtual col at all. using `silent!' allows us to do exactly that.  
       " when the virtul col contains \s, deletion succeeds and all is well, but 
