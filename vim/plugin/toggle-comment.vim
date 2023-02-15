@@ -29,10 +29,18 @@ function! s:uncomment1(first) abort
   call s:uncomment(a:first)
   " NOTE:
     " '\%' . virtcol('.') .'v'        => ex: \%23v implies virtual col 23.
-    " '\%' . virtcol('.') .'v\s'      => matches a \s in the virt col.
-    " 's/\%' . virtcol('.') . 'v\s//' => replaces a \s with // in the virt col.
+    " '\%' . virtcol('.') .'v\s'      => matches \s in the virt col.
+    " 's/\%' . virtcol('.') . 'v\s//' => replaces \s with '' in the virt col.
     " see :help ordinary-atom
-  silent execute 's/\%' . virtcol('.') . 'v\s//'
+    "
+    " why use `silent!` which ignores all errors?  well, the virtual col that 
+    " imeediately follows may not always contain \s. we only execute a deletion 
+    " when \s is present; otherwise, we want to not do anything with the virtual 
+    " col at all. using `silent!' allows us to do exactly that. when the virtul 
+    " col contains \s, deletion succeeds and all is well, but when there is no 
+    " \s, deletion throws up an error, which is then suppressed by `silent!`, 
+    " allowing us to ignore the error (& the virtual col).
+  silent! execute 's/\%' . virtcol('.') . 'v\s//'
 endfunction
 
 function! s:uncomment(first) abort
@@ -93,13 +101,14 @@ function! s:uncomment(first) abort
   "
   "         'normal ' . width(cs) . '"_x'
   "=============================================================================
-  " NOTE: previous code version (differs only in cosmetic formatting):
+  " NOTE: previous code version (same except for silent & cosmetic formatting):
   " execute 'normal 0/' . "\\%" . line('.') . 'l^\s*' . s:esc(a:first) . '/e-' .
   "       \ (strdisplaywidth(a:first)-1) . "\<CR>"
   "=============================================================================
   " NOTE:
   "   1. "\\%" = '\%'; /u/ luc hermitte @ https://tinyurl.com/4wn5wphn (vi.SE)
   "   2. on use of `\` for line continuation, see :help line-continuation
+  "   3. we added `silent` to silence the search message in the command line.
   silent execute 'normal 0'
               \ . '/'
                     \ . '\%' . line('.') . 'l'
@@ -113,10 +122,53 @@ endfunction
 
 function! s:uncommentend(second) abort
   " Uncomment line end, if needed, & remove 1 immediate preceeding \s, if any
+  "
+  " this function does pretty much similiar stuff as `s:uncomment1()`, except 
+  " that the uncommenting is done at line end, rather than at the start.  so 
+  " most of the detailed comments for `s:uncomment()` apply here.  differences, 
+  " wherevever they exist, are explained below.
   if len(a:second)
-    execute 'normal 0/' . "\\%" . line('.') . 'l' .
-          \ s:esc(a:second) . '\s*$' . "\<CR>"
+    " search pattern: /{pattern}[/]<CR>; see :help search-commands
+    "===========================================================================
+    " NOTE: previous code version (same except for silent & cosmetic format):
+    "    execute 'normal 0/' .  "\\%" .  line('.') . 'l' .
+    "       \ s:esc(a:second) . '\s*$' . "\<CR>"
+    "===========================================================================
+    " NOTE:
+    "   1. unlike in `s:uncomment()`, we do not use search offset here, because 
+    "      over here our pattern begins with the comment string (cs), instead of 
+    "      spaces, so the 1st thing vim matches on is cs, making vim's cursor 
+    "      position on a match the 1st (leftmost) character of cs.
+    "   2. we added `silent` to silence the search message in the command line.
+    silent execute 'normal 0'
+              \ . '/'
+                    \ . "\\%" . line('.') . 'l'
+                    \ . s:esc(a:second) . '\s*$'
+              \ . '/'
+              \ . "\<CR>"
     execute 'normal ' . (strdisplaywidth(a:second)) . '"_x'
+    " NOTE:
+      " '\%' . virtcol('.') .'v'        => ex: \%23v implies virtual col 23.
+      " '\%' . virtcol('.') .'v\s'      => matches \s in the virt col.
+      " 's/\%' . virtcol('.') . 'v\s//' => replaces \s with '' in the virt col.
+      " see :help ordinary-atom
+      "
+      " why use `silent!` which ignores all errors?  well, the virtual col that 
+      " imeediately precedes may not always contain \s. we only execute a 
+      " deletion when \s is present; otherwise, we want to not do anything with 
+      " the virtual col at all. using `silent!' allows us to do exactly that.  
+      " when the virtul col contains \s, deletion succeeds and all is well, but 
+      " when there is no \s, deletion throws up an error, which is then 
+      " suppressed by `silent!`, allowing us to ignore the error (& virt col).
+      "
+      " examples:
+      "   1. /* some code */  -> match for \s before last `*/`
+      "   2. /* some code
+      "       * some code
+      "       * some code*/   -> no match for \s before last `*/'
+      "
+      " without `silent!`, example 1 will pass, but example 2 will throw an 
+      " error. but with `silent!`, both (1) & (2) will be fine.
     silent! execute 's/\%' . virtcol('.') . 'v\s//'
   endif
 endfunction
