@@ -63,7 +63,7 @@ function! s:startcomment() abort
     "     " CURSOR      -> after :startinsert!
     " 2. comment line:
     "     " blahh       -> originally, CURSOR somewhere on this line
-    "     " CURSOR      -> after 'normal o' (new line right below '" blahh`)
+    "     " CURSOR      -> after 'normal o' (new line right below `" blahh`)
     "     CUR"SOR       -> after 'normal o' . "\<Esc>"
     "     " CURSOR      -> after 'normal o' . "\<Esc>" . 'A' . ' '
     "     "CURSOR       -> after 'normal o' . "\<Esc>" . 'A' . ' ' .  "\<Esc>"
