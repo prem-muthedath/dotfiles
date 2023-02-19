@@ -96,9 +96,9 @@ set printfont=courier:h9
 "        for set list, see /u/ derrick zhang @ https://tinyurl.com/y7gk2ncg
 "        ch: toggle comment highlighting in normal mode.
 "        tc: toggle comments, both in visual and normal modes.
-"        sc: in visual mode, start a comment, switching to insert mode.
+"        sc: in normal mode, start a comment, switching to insert mode.
 "        ic: (in visual mode), inserts vim-style comment (") @ line start.
-"        rc: (in visual mode), removes symbol (typcally a comment) @ start.
+"        rc: (in visual mode), remove symbol (typcally a comment) @ start.
 "        ws: highlights blank lines & trailing white spaces.
 "        cl: toggle cursor line and cursor column,
 "        https://vim.fandom.com/wiki/Highlight_current_line
