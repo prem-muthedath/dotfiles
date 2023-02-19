@@ -50,7 +50,7 @@ command! -range=% ToggleComments <line1>,<line2>call ToggleComments()
 " ==============================================================================
 function! s:startcomment() abort
   let l:emptyline = '^$'
-  if len(Cs()) == 1
+  if len(Cs()) == 1       " 1-part comment (for example, vim comment)
     " ==========================================================================
     " what really happens, especially with cursor positions, in all these 
     " commands?  well, below is a step-by-step look for a vim file.
@@ -63,14 +63,14 @@ function! s:startcomment() abort
     "     " CURSOR      -> after :startinsert!
     " 2. comment line:
     "     " blahh       -> originally, CURSOR somewhere on this line
-    "     " CURSOR      -> after 'normal o' (new line below)
+    "     " CURSOR      -> after 'normal o' (new line right below '" blahh`)
     "     CUR"SOR       -> after 'normal o' . "\<Esc>"
     "     " CURSOR      -> after 'normal o' . "\<Esc>" . 'A' . ' '
     "     "CURSOR       -> after 'normal o' . "\<Esc>" . 'A' . ' ' .  "\<Esc>"
     "     " CURSOR      -> after :startinsert!
     " 3. non-comment line:
     "     blahh         -> originally, CURSOR somewhere on this line
-    "     CURSOR @ ^    -> after 'normal o' (new line below)
+    "     CURSOR @ ^    -> after 'normal o' (new line right below `blahh`)
     "     CURSOR @ ^    -> after 'normal o' . "\<Esc>"
     "     "CURSOR       -> after 'normal o' . "\<Esc>" . 'tc'
     "     "CURSOR       -> after 'normal o' . "\<Esc>" . 'tc' . '=='
@@ -85,7 +85,7 @@ function! s:startcomment() abort
             \ getline('.') =~ l:emptyline ? l:samelinecmt :
             \ getline('.') =~ l:comment ? l:nextlineOcmt : l:nextlinecmt
     :execute l:execstr | :startinsert!
-  elseif len(Cs()) == 3
+  elseif len(Cs()) == 3   " 3-part comment (for example, C block comment)
     " ==========================================================================
     " why do we need a cursor shift?
     "
