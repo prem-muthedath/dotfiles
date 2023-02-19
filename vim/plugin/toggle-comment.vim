@@ -64,7 +64,7 @@ function! s:uncomment(first) abort
   "
   "         / .. /                  => part of search syntax
   "         "\\%" . line('.'). 'l'` => search current line in file; `l` => line
-  "         '^'                     => search from 1st non-blank char of line
+  "         '^'                     => search from start-of-line
   "         '\s*'                   => match for 0+ \s that immediately follow
   "         comment-string (cs)     => then match for cs that immediately follow
   "
