@@ -120,6 +120,15 @@ map                 sl    :set list! list? <CR>
 nnoremap            ws    :/^\s\+$\\|\s\+$/ <CR>
 nnoremap            cl    :set cursorline! cursorcolumn!<CR>
 
+" ==============================================================================
+" coc-vim stuff
+" REF: https://github.com/neoclide/coc.nvim
+" we use coc-vim right now only for haskell.
+" ==============================================================================
+" define CocFloating highlight group
+" https://github.com/neoclide/coc.nvim/wiki/F.A.Q
+hi link CocFloating Normal
+
 " these mappings below are for haskell completions in coc-vim
 " REF: https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources
 function! CheckBackspace() abort
@@ -170,6 +179,25 @@ inoremap <silent><expr> hc <SID>haskellCompletion("hc")
 "   3. that's why the code returns "\<CR>" when the coc pop up is not visible.
 "   4. so if you do `<CR>` outside of the coc pop up, you'll get the usual <CR>.
 inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
+
+" coc-vim: documentation on hover.
+" used right now just for haskell.
+" code from: https://github.com/neoclide/coc.nvim
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
+
+" Use K to show documentation in preview window
+" NOTE: K also shows vim :help for word under cursor; see /u/ ingo karkat @ 
+" https://tinyurl.com/9vuthwf4 (so).  so our `ShowDocumentation()` works even 
+" for vim, because it calls `feedkeys ('K', 'in')` when no `hover` is present.
+" code from: https://github.com/neoclide/coc.nvim
+nnoremap <silent> K :call ShowDocumentation()<CR>
+" ==============================================================================
 
 " https://google.com
 " ==============================================================================
