@@ -197,6 +197,11 @@ endfunction
 " for vim, because it calls `feedkeys ('K', 'in')` when no `hover` is present.
 " code from: https://github.com/neoclide/coc.nvim
 nnoremap <silent> K :call ShowDocumentation()<CR>
+
+" close popup window.
+" see :h coc-floating, :h coc-nvim
+" see also https://github.com/neoclide/coc.nvim
+nnoremap <silent> C :call popup_clear()<CR>
 " ==============================================================================
 
 " https://google.com
