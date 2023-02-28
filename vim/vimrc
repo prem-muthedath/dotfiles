@@ -123,6 +123,7 @@ nnoremap            cl    :set cursorline! cursorcolumn!<CR>
 " ==============================================================================
 " coc-vim stuff
 " REF: https://github.com/neoclide/coc.nvim
+" see :h coc-nvim
 " we use coc-vim right now only for haskell.
 " ==============================================================================
 " define CocFloating highlight group
