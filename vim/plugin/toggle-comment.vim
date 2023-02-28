@@ -36,7 +36,7 @@ function! s:uncomment1(first) abort
     " why use `silent!` which ignores all errors?  well, the virtual col that 
     " immediately follows may not always contain \s. we only execute a deletion 
     " when \s is present; otherwise, we want to not do anything with the virtual 
-    " col at all. using `silent!' allows us to do exactly that. when the virtul 
+    " col at all. using `silent!' allows us to do exactly that. when the virtual 
     " col contains \s, deletion succeeds and all is well, but when there is no 
     " \s, deletion throws up an error, which is then suppressed by `silent!`, 
     " allowing us to ignore the error (& the virtual col).
@@ -157,7 +157,7 @@ function! s:uncommentend(second) abort
       " immediately precedes may not always contain \s. we only execute a 
       " deletion when \s is present; otherwise, we want to not do anything with 
       " the virtual col at all. using `silent!' allows us to do exactly that.  
-      " when the virtul col contains \s, deletion succeeds and all is well, but 
+      " when the virtual col contains \s, deletion succeeds and all is well, but 
       " when there is no \s, deletion throws up an error, which is then 
       " suppressed by `silent!`, allowing us to ignore the error (& virt col).
       "
