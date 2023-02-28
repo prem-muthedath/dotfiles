@@ -6,7 +6,7 @@
 "   substantially revised in FEB 2023.
 "   file created on 28 FEB 2023.
 "
-" author: Prem muthedath
+" author: Prem Muthedath
 " ==============================================================================
 " start a comment line in normal mode and then switch to insert mode.
 "   -- if current line empty, make it a comment;
@@ -80,7 +80,7 @@ function! StartComment() abort
     "   1. first move the cursor to 1st non-blank char on the line, using ^ in 
     "      normal mode:
     "
-    "         CURSOR/*  */
+    "         CUR/SOR*  */
     "
     "   2. then, remaining in normal mode, shift cursor by len(Cs()[0]) + 1 to 
     "      the right.  for C-comment, this shift would be 3l, 'l' implying right 
