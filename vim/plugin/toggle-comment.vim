@@ -135,15 +135,29 @@ function! s:uncommentend(second) abort
     "       \ s:esc(a:second) . '\s*$' . "\<CR>"
     "===========================================================================
     " NOTE:
-    "   1. unlike in `s:uncomment()`, we do not use search offset here, because 
+    "   1. we assume block comments are not nested and follow the standard in 
+    "      the C manual (chapter 3, "Lexical Conventions", columbia univ):
+    "
+    "         The /* characters introduce a comment; the */ characters terminate 
+    "         a comment. They do not indicate a comment when occurring within a 
+    "         string literal. Comments do not nest. Once the /* introducing a 
+    "         comment is seen, all other characters are ignored until the ending 
+    "         */ is encountered.
+    "
+    "   2. Based on (1), we only search for the first occurence of the closing 
+    "      comment symbol (for C, this is `*/`) in the line, even if the line 
+    "      may have more than 1 closing comment symbol. this works because if 
+    "      comments are not nested, as they should be, then finding and deleting 
+    "      this 1st occurrence is the only way to uncomment the line.
+    "   3. unlike in `s:uncomment()`, we do not use search offset here, because 
     "      over here our pattern begins with the comment string (cs), instead of 
     "      spaces, so the 1st thing vim matches on is cs, making vim's cursor 
     "      position on a match the 1st (leftmost) character of cs.
-    "   2. we added `silent` to silence the search message in the command line.
+    "   4. we added `silent` to silence the search message in the command line.
     silent execute 'normal 0'
               \ . '/'
                     \ . "\\%" . line('.') . 'l'
-                    \ . s:esc(a:second) . '\s*$'
+                    \ . s:esc(a:second)
               \ . '/'
               \ . "\<CR>"
     execute 'normal ' . (strdisplaywidth(a:second)) . '"_x'

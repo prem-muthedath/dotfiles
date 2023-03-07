@@ -138,7 +138,7 @@ function! StartComment() abort
     "
     "         The /* characters introduce a comment; the */ characters terminate 
     "         a comment. They do not indicate a comment when occurring within a 
-    "         string "literal. Comments do not nest. Once the /* introducing a 
+    "         string literal. Comments do not nest. Once the /* introducing a 
     "         comment is seen, all other characters are ignored until the ending 
     "         */ is encountered.
     "

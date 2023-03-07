@@ -202,7 +202,7 @@ nnoremap <silent> K :call ShowDocumentation()<CR>
 " close popup window.
 " see :h coc-floating, :h coc-nvim
 " see also https://github.com/neoclide/coc.nvim
-nnoremap <silent> C :call popup_clear()<CR>
+nnoremap <silent> PC :call popup_clear()<CR>
 " ==============================================================================
 
 " https://google.com
