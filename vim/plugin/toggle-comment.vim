@@ -121,12 +121,13 @@ function! s:uncomment(first) abort
 endfunction
 
 function! s:uncommentend(second) abort
-  " Uncomment line end, if needed, & remove 1 immediate preceeding \s, if any
+  " Remove closing comment, if needed, & 1 immediate preceeding \s, if any
   "
-  " this function does pretty much similiar stuff as `s:uncomment1()`, except 
-  " that the uncommenting is done at line end, rather than at the start.  so 
-  " most of the detailed comments for `s:uncomment()` apply here.  differences, 
-  " wherevever they exist, are explained below.
+  " this function follows the same logic as `s:uncomment1()` -- find and delete 
+  " the comment symbol. however, over here, we are removing the closing comment 
+  " symbol, which usually (but not always) occurs at line end, rather than at 
+  " the start. still, most of the detailed comments for `s:uncomment()` apply 
+  " here.  differences, wherevever they exist, are explained below.
   if len(a:second)
     " search pattern: /{pattern}[/]<CR>; see :help search-commands
     "===========================================================================
