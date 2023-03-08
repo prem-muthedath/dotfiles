@@ -33,6 +33,20 @@ function! s:uncomment1(first) abort
   " */ in C, this function will only remove the starting comment symbol; you 
   " will then need to call `uncommentend()` to find & remove the closing comment 
   " symbol in such cases.
+  "
+  " we assume comments, both 1-part & 3-part, are not nested and follow the 
+  " standard in the C manual (chapter 3, "Lexical Conventions", columbia univ):
+  "
+  "     The /* characters introduce a comment; the */ characters terminate a 
+  "     comment. They do not indicate a comment when occurring within a string 
+  "     literal. Comments do not nest. Once the /* introducing a comment is 
+  "     seen, all other characters are ignored until the ending */ is 
+  "     encountered.
+  "
+  " so, over here, we only find and remove the first occurrence of the starting 
+  " comment symbol in the line. this works just fine, because if comments are 
+  " not nested, as they should be, then removing this first occurrence is the 
+  " only way to wholly uncomment, or begin to uncomment, the line.
   call s:uncomment(a:first)
   " NOTE:
     " '\%' . virtcol('.') .'v'        => ex: \%23v implies virtual col 23.
@@ -59,6 +73,20 @@ function! s:uncomment(first) abort
   " */ in C, this function will only remove the starting comment symbol; you 
   " will then need to call `uncommentend()` to find & remove the closing comment 
   " symbol in such cases.
+  "
+  " we assume comments, both 1-part & 3-part, are not nested and follow the 
+  " standard in the C manual (chapter 3, "Lexical Conventions", columbia univ):
+  "
+  "     The /* characters introduce a comment; the */ characters terminate a 
+  "     comment. They do not indicate a comment when occurring within a string 
+  "     literal. Comments do not nest. Once the /* introducing a comment is 
+  "     seen, all other characters are ignored until the ending */ is 
+  "     encountered.
+  "
+  " so, over here, we only find and remove the first occurrence of the starting 
+  " comment symbol in the line. this works just fine, because if comments are 
+  " not nested, as they should be, then removing this first occurrence is the 
+  " only way to wholly uncomment, or begin to uncomment, the line.
   "
   " this function uses a 2-step strategy to uncomment:
   "   a) first, it locates, using a search pattern, the comment string and 
@@ -159,7 +187,7 @@ function! s:uncommentend(second) abort
     "         comment is seen, all other characters are ignored until the ending 
     "         */ is encountered.
     "
-    "   2. Based on (1), we only search for the first occurence of the closing 
+    "   2. Based on (1), we only search for the first occurrence of the closing 
     "      comment symbol (for C, this is `*/`) in the line, even if the line 
     "      may have more than 1 closing comment symbol. this works because if 
     "      comments are not nested, as they should be, then finding and deleting 
