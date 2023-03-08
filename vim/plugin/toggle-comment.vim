@@ -26,6 +26,13 @@ endfunction
 
 function! s:uncomment1(first) abort
   " Uncomment the line + remove 1 space, if any, that immediately follows
+  "
+  " 'uncomment' here means finding and removing the comment symbol that occurs 
+  " at, or somewhere near, the line start, ignoring spaces. this works fine for 
+  " a 1-part comment, such as " in vim, but for block comments, such as /* ...  
+  " */ in C, this function will only remove the starting comment symbol; you 
+  " will then need to call `uncommentend()` to find & remove the closing comment 
+  " symbol in such cases.
   call s:uncomment(a:first)
   " NOTE:
     " '\%' . virtcol('.') .'v'        => ex: \%23v implies virtual col 23.
@@ -44,7 +51,14 @@ function! s:uncomment1(first) abort
 endfunction
 
 function! s:uncomment(first) abort
-  " Uncomment the line but do not delete any spaces
+  " Uncomment the line but do not delete any spaces.
+  "
+  " 'uncomment' here means finding and removing the comment symbol that occurs 
+  " at, or somewhere near, the line start, ignoring spaces. this works fine for 
+  " a 1-part comment, such as " in vim, but for block comments, such as /* ...  
+  " */ in C, this function will only remove the starting comment symbol; you 
+  " will then need to call `uncommentend()` to find & remove the closing comment 
+  " symbol in such cases.
   "
   " this function uses a 2-step strategy to uncomment:
   "   a) first, it locates, using a search pattern, the comment string and 
@@ -123,7 +137,7 @@ endfunction
 function! s:uncommentend(second) abort
   " Remove closing comment, if needed, & 1 immediate preceeding \s, if any
   "
-  " this function follows the same logic as `s:uncomment1()` -- find and delete 
+  " this function follows the same logic as `s:uncomment()` -- find and delete 
   " the comment symbol. however, over here, we are removing the closing comment 
   " symbol, which usually (but not always) occurs at line end, rather than at 
   " the start. still, most of the detailed comments for `s:uncomment()` apply 
