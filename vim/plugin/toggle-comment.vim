@@ -43,10 +43,11 @@ function! s:uncomment1(first) abort
   "     seen, all other characters are ignored until the ending */ is 
   "     encountered.
   "
-  " so, over here, we only find and remove the first occurrence of the starting 
-  " comment symbol in the line. this works just fine, because if comments are 
-  " not nested, as they should be, then removing this first occurrence is the 
-  " only way to wholly uncomment, or begin to uncomment, the line.
+  " so, over here, we find and remove just the 1st occurrence of the starting 
+  " comment symbol in the line, even if the line has more of the same comment 
+  " symbol further on. this works just fine, because if comments are not nested, 
+  " as they should be, then removing just this first occurrence is the only way 
+  " to wholly uncomment, or begin to uncomment, the line.
   call s:uncomment(a:first)
   " NOTE:
     " '\%' . virtcol('.') .'v'        => ex: \%23v implies virtual col 23.
@@ -83,10 +84,11 @@ function! s:uncomment(first) abort
   "     seen, all other characters are ignored until the ending */ is 
   "     encountered.
   "
-  " so, over here, we only find and remove the first occurrence of the starting 
-  " comment symbol in the line. this works just fine, because if comments are 
-  " not nested, as they should be, then removing this first occurrence is the 
-  " only way to wholly uncomment, or begin to uncomment, the line.
+  " so, over here, we find and remove just the 1st occurrence of the starting 
+  " comment symbol in the line, even if the line has more of the same comment 
+  " symbol further on. this works just fine, because if comments are not nested, 
+  " as they should be, then removing just this first occurrence is the only way 
+  " to wholly uncomment, or begin to uncomment, the line.
   "
   " this function uses a 2-step strategy to uncomment:
   "   a) first, it locates, using a search pattern, the comment string and 
