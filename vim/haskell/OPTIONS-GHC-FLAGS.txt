@@ -1,0 +1,587 @@
+================================================================================
+========================== GHC FLAG REFERENCE ==================================
+== https://downloads.haskell.org/~ghc/8.10.4/docs/html/users_guide/flags.html
+== author: Prem Muthedath, 17 MAR 2023
+================================================================================
+============== VEROSITY OPTIONS
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-fabstract-refinement-hole-fits	dynamic	-fno-abstract-refinement-hole-fits
+-fdefer-diagnostics	dynamic	
+-fdiagnostics-color=⟨always|auto|never⟩	dynamic	
+-fdiagnostics-show-caret	dynamic	-fno-diagnostics-show-caret
+-ferror-spans	dynamic	
+-fhide-source-paths	dynamic	
+-fkeep-going	dynamic	
+-fmax-refinement-hole-fits=⟨n⟩	dynamic	-fno-max-refinement-hole-fits
+-fmax-relevant-binds=⟨n⟩	dynamic	-fno-max-relevant-binds
+-fmax-valid-hole-fits=⟨n⟩	dynamic	-fno-max-valid-hole-fits
+-fno-show-valid-hole-fits	dynamic	
+-fno-sort-valid-hole-fits	dynamic	-fsort-valid-hole-fits
+-fprint-axiom-incomps	dynamic	-fno-print-axiom-incomps
+-fprint-equality-relations	dynamic	-fno-print-equality-relations
+-fprint-expanded-synonyms	dynamic	-fno-print-expanded-synonyms
+-fprint-explicit-coercions	dynamic	-fno-print-explicit-coercions
+-fprint-explicit-foralls	dynamic	-fno-print-explicit-foralls
+-fprint-explicit-kinds	dynamic	-fno-print-explicit-kinds
+-fprint-explicit-runtime-reps	dynamic	-fno-print-explicit-runtime-reps
+-fprint-potential-instances	dynamic	-fno-print-potential-instances
+-fprint-typechecker-elaboration	dynamic	-fno-print-typechecker-elaboration
+-fprint-unicode-syntax	dynamic	-fno-print-unicode-syntax
+-frefinement-level-hole-fits=⟨n⟩	dynamic	-fno-refinement-level-hole-fits
+-freverse-errors	dynamic	-fno-reverse-errors
+-fshow-docs-of-hole-fits	dynamic	-fno-show-docs-of-hole-fits
+-fshow-hole-constraints	dynamic	
+-fshow-hole-matches-of-hole-fits	dynamic	-fno-show-hole-matches-of-hole-fits
+-fshow-provenance-of-hole-fits	dynamic	-fno-show-provenance-of-hole-fits
+-fshow-type-app-of-hole-fits	dynamic	-fno-show-type-app-of-hole-fits
+-fshow-type-app-vars-of-hole-fits	dynamic	-fno-show-type-app-vars-of-hole-fits
+-fshow-type-of-hole-fits	dynamic	-fno-type-of-hole-fits
+-funclutter-valid-hole-fits	dynamic	
+-Rghc-timing	dynamic	
+-v	dynamic	
+-v⟨n⟩	dynamic	
+================================================================================
+============== WHICH PAHSES TO RUN
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-F	dynamic
+-x ⟨suffix⟩	dynamic
+================================================================================
+============== REDIRECTING OUTPUT
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+--exclude-module=⟨file⟩	dynamic
+-ddump-mod-cycles	dynamic
+-dep-makefile ⟨file⟩	dynamic
+-dep-suffix ⟨suffix⟩	dynamic
+-dumpdir ⟨dir⟩	dynamic
+-hcsuf ⟨suffix⟩	dynamic
+-hidir ⟨dir⟩	dynamic
+-hiedir ⟨dir⟩	dynamic
+-hiesuf ⟨suffix⟩	dynamic
+-hisuf ⟨suffix⟩	dynamic
+-include-cpp-deps	dynamic
+-include-pkg-deps	dynamic
+-o ⟨file⟩	dynamic
+-odir ⟨dir⟩	dynamic
+-ohi ⟨file⟩	dynamic
+-osuf ⟨suffix⟩	dynamic
+-outputdir ⟨dir⟩	dynamic
+-stubdir ⟨dir⟩	dynamic
+================================================================================
+============== KEEPING INTERMEDIATE FILES
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-keep-hc-file, -keep-hc-files	dynamic
+-keep-hi-files	dynamic	-no-keep-hi-files
+-keep-hscpp-file, -keep-hscpp-files	dynamic
+-keep-llvm-file, -keep-llvm-files	dynamic
+-keep-o-files	dynamic	-no-keep-o-files
+-keep-s-file, -keep-s-files	dynamic
+-keep-tmp-files	dynamic
+================================================================================
+============== TEMPORARY FILES
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-tmpdir ⟨dir⟩ dynamic
+================================================================================
+============== FINDING IMPORTS
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-i dynamic
+-i⟨dir⟩[:⟨dir⟩]* dynamic
+================================================================================
+============== INTERFACE FILE OPTIONS
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-ddump-hi dynamic
+-ddump-hi-diffs dynamic
+-ddump-minimal-imports dynamic
+================================================================================
+============== RECOMPILATION CHECKING
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-fforce-recomp	dynamic	-fno-force-recomp
+-fignore-hpc-changes	dynamic	-fno-ignore-hpc-changes
+-fignore-optim-changes	dynamic	-fno-ignore-optim-changes
+================================================================================
+============== INTERACTIVE-MODE OPTIONS
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-fbreak-on-error	dynamic	-fno-break-on-error
+-fbreak-on-exception	dynamic	-fno-break-on-exception
+-fghci-hist-size=⟨n⟩	dynamic
+-fghci-leak-check	dynamic	-fno-ghci-leak-check
+-flocal-ghci-history	dynamic	-fno-local-ghci-history
+-fno-it	dynamic	-fno-no-it
+-fprint-bind-result	dynamic	-fno-print-bind-result
+-fprint-evld-with-show	dynamic
+-fshow-loaded-modules	dynamic
+-ghci-script	dynamic
+-ignore-dot-ghci	dynamic
+-interactive-print ⟨name⟩	dynamic
+================================================================================
+============== PACKAGES
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-clear-package-db	dynamic
+-distrust ⟨pkg⟩	dynamic
+-distrust-all-packages	dynamic
+-fpackage-trust	dynamic
+-global-package-db	dynamic
+-hide-all-packages	dynamic
+-hide-package ⟨pkg⟩	dynamic
+-ignore-package ⟨pkg⟩	dynamic
+-no-auto-link-packages	dynamic
+-no-global-package-db	dynamic
+-no-user-package-db	dynamic
+-package ⟨pkg⟩	dynamic
+-package-db ⟨file⟩	dynamic
+-package-env ⟨file⟩|⟨name⟩	dynamic
+-package-id ⟨unit-id⟩	dynamic
+-this-unit-id ⟨unit-id⟩	dynamic
+-trust ⟨pkg⟩	dynamic
+-user-package-db	dynamic
+================================================================================
+============== WARNINGS
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-fdefer-out-of-scope-variables	dynamic	-fno-defer-out-of-scope-variables
+-fdefer-type-errors	dynamic	-fno-defer-type-errors
+-fdefer-typed-holes	dynamic	-fno-defer-typed-holes
+-fenable-th-splice-warnings	dynamic	-fno-enable-th-splices
+-fhelpful-errors	dynamic	-fno-helpful-errors
+-fmax-pmcheck-models=⟨n⟩	dynamic
+-fshow-warning-groups	dynamic	-fno-show-warning-groups
+-fvia-C	dynamic
+-W	dynamic	-w
+-w	dynamic
+-Wall	dynamic	-w
+-Wall-missed-specialisations	dynamic	-Wno-all-missed-specialisations
+-Wcompat	dynamic	-Wno-compat
+-Wcompat-unqualified-imports	dynamic	-Wno-compat-unqualified-imports
+-Wcpp-undef	dynamic
+-Wdeferred-out-of-scope-variables	dynamic	-Wno-deferred-out-of-scope-variables
+-Wdeferred-type-errors	dynamic	-Wno-deferred-type-errors
+-Wdeprecated-flags	dynamic	-Wno-deprecated-flags
+-Wdeprecations	dynamic	-Wno-deprecations
+-Wderiving-defaults	dynamic	-Wno-deriving-defaults
+-Wdodgy-exports	dynamic	-Wno-dodgy-exports
+-Wdodgy-foreign-imports	dynamic	-Wno-dodgy-foreign-import
+-Wdodgy-imports	dynamic	-Wno-dodgy-imports
+-Wduplicate-constraints	dynamic	-Wno-duplicate-constraints
+-Wduplicate-exports	dynamic	-Wno-duplicate-exports
+-Wempty-enumerations	dynamic	-Wno-empty-enumerations
+-Werror	dynamic	-Wwarn
+-Weverything	dynamic
+-Whi-shadowing	dynamic	-Wno-hi-shadowing
+-Widentities	dynamic	-Wno-identities
+-Wimplicit-kind-vars	dynamic	-Wno-implicit-kind-vars
+-Wimplicit-prelude	dynamic	-Wno-implicit-prelude
+-Winaccessible-code	dynamic	-Wno-inaccessible-code
+-Wincomplete-patterns	dynamic	-Wno-incomplete-patterns
+-Wincomplete-record-updates	dynamic	-Wno-incomplete-record-updates
+-Wincomplete-uni-patterns	dynamic	-Wno-incomplete-uni-patterns
+-Winline-rule-shadowing	dynamic	-Wno-inline-rule-shadowing
+-Wmissed-extra-shared-lib	dynamic	-Wno-missed-extra-shared-lib
+-Wmissed-specialisations	dynamic	-Wno-missed-specialisations
+-Wmissing-deriving-strategies	dynamic	-Wno-missing-deriving-strategies
+-Wmissing-export-lists	dynamic	-fnowarn-missing-export-lists
+-Wmissing-exported-signatures	dynamic	-Wno-missing-exported-signatures
+-Wmissing-exported-sigs	dynamic	-Wno-missing-exported-sigs
+-Wmissing-fields	dynamic	-Wno-missing-fields
+-Wmissing-home-modules	dynamic	-Wno-missing-home-modules
+-Wmissing-import-lists	dynamic	-fnowarn-missing-import-lists
+-Wmissing-local-signatures	dynamic	-Wno-missing-local-signatures
+-Wmissing-local-sigs	dynamic	-Wno-missing-local-sigs
+-Wmissing-methods	dynamic	-Wno-missing-methods
+-Wmissing-monadfail-instances	dynamic	-Wno-missing-monadfail-instances
+-Wmissing-pattern-synonym-signatures	dynamic	-Wno-missing-pattern-synonym-signatures
+-Wmissing-signatures	dynamic	-Wno-missing-signatures
+-Wmonomorphism-restriction	dynamic	-Wno-monomorphism-restriction
+-Wname-shadowing	dynamic	-Wno-name-shadowing
+-Wno-compat	dynamic	-Wcompat
+-Wnoncanonical-monad-instances	dynamic	-Wno-noncanonical-monad-instances
+-Wnoncanonical-monadfail-instances	dynamic	-Wno-noncanonical-monadfail-instances
+-Wnoncanonical-monoid-instances	dynamic	-Wno-noncanonical-monoid-instances
+-Worphans	dynamic	-Wno-orphans
+-Woverflowed-literals	dynamic	-Wno-overflowed-literals
+-Woverlapping-patterns	dynamic	-Wno-overlapping-patterns
+-Wpartial-fields	dynamic	-Wno-partial-fields
+-Wpartial-type-signatures	dynamic	-Wno-partial-type-signatures
+-Wredundant-constraints	dynamic	-Wno-redundant-constraints
+-Wredundant-record-wildcards	dynamic	-Wno-redundant-record-wildcards
+-Wsafe	dynamic	-Wno-safe
+-Wsemigroup	dynamic	-Wno-semigroup
+-Wsimplifiable-class-constraints	dynamic	-Wno-simplifiable-class-constraints
+-Wspace-after-bang	dynamic	-Wno-missing-space-after-bang
+-Wstar-binder	dynamic	-Wno-star-binder
+-Wstar-is-type	dynamic	-Wno-star-is-type
+-Wtabs	dynamic	-Wno-tabs
+-Wtrustworthy-safe	dynamic	-Wno-safe
+-Wtype-defaults	dynamic	-Wno-type-defaults
+-Wtyped-holes	dynamic	-Wno-typed-holes
+-Wunbanged-strict-patterns	dynamic	-Wno-unbanged-strict-patterns
+-Wunrecognised-pragmas	dynamic	-Wno-unrecognised-pragmas
+-Wunrecognised-warning-flags	dynamic	-Wno-unrecognised-warning-flags
+-Wunsafe	dynamic	-Wno-unsafe
+-Wunsupported-calling-conventions	dynamic	-Wno-unsupported-calling-conventions
+-Wunsupported-llvm-version	dynamic	-Wno-monomorphism-restriction
+-Wunticked-promoted-constructors	dynamic	-Wno-unticked-promoted-constructors
+-Wunused-binds	dynamic	-Wno-unused-binds
+-Wunused-do-bind	dynamic	-Wno-unused-do-bind
+-Wunused-foralls	dynamic	-Wno-unused-foralls
+-Wunused-imports	dynamic	-Wno-unused-imports
+-Wunused-local-binds	dynamic	-Wno-unused-local-binds
+-Wunused-matches	dynamic	-Wno-unused-matches
+-Wunused-packages	dynamic	-Wno-unused-packages
+-Wunused-pattern-binds	dynamic	-Wno-unused-pattern-binds
+-Wunused-record-wildcards	dynamic	-Wno-unused-record-wildcards
+-Wunused-top-binds	dynamic	-Wno-unused-top-binds
+-Wunused-type-patterns	dynamic	-Wno-unused-type-patterns
+-Wwarn	dynamic	-Werror
+-Wwarnings-deprecations	dynamic	-Wno-warnings-deprecations
+-Wwrong-do-bind	dynamic	-Wno-wrong-do-bind
+================================================================================
+============== OPTIMISATION LEVELS
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-O, -O1	dynamic	-O0
+-O0	dynamic	
+-O2	dynamic	-O0
+-O⟨n⟩	dynamic	-O0
+================================================================================
+============== INDIVIDUAL OPTIMISATIONS
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-fasm-shortcutting	dynamic	-fno-asm-shortcutting
+-fbinary-blob-threshold=⟨n⟩	dynamic
+-fblock-layout-cfg	dynamic	-fno-block-layout-cfg
+-fblock-layout-weightless	dynamic	-fno-block-layout-weightless
+-fblock-layout-weights	dynamic
+-fcall-arity	dynamic	-fno-call-arity
+-fcase-folding	dynamic	-fno-case-folding
+-fcase-merge	dynamic	-fno-case-merge
+-fcmm-elim-common-blocks	dynamic	-fno-cmm-elim-common-blocks
+-fcmm-sink	dynamic	-fno-cmm-sink
+-fcpr-anal	dynamic	-fno-cpr-anal
+-fcross-module-specialise	dynamic	-fno-cross-module-specialise
+-fcse	dynamic	-fno-cse
+-fdicts-cheap	dynamic	-fno-dicts-cheap
+-fdicts-strict	dynamic	-fno-dicts-strict
+-fdmd-tx-dict-sel	dynamic	-fno-dmd-tx-dict-sel
+-fdo-eta-reduction	dynamic	-fno-do-eta-reduction
+-fdo-lambda-eta-expansion	dynamic	-fno-do-lambda-eta-expansion
+-feager-blackholing	dynamic
+-fenable-rewrite-rules	dynamic	-fno-enable-rewrite-rules
+-fexcess-precision	dynamic	-fno-excess-precision
+-fexitification	dynamic	-fno-exitification
+-fexpose-all-unfoldings	dynamic	-fno-expose-all-unfoldings
+-ffloat-in	dynamic	-fno-float-in
+-ffull-laziness	dynamic	-fno-full-laziness
+-ffun-to-thunk	dynamic	-fno-fun-to-thunk
+-fignore-asserts	dynamic	-fno-ignore-asserts
+-fignore-interface-pragmas	dynamic	-fno-ignore-interface-pragmas
+-flate-dmd-anal	dynamic	-fno-late-dmd-anal
+-flate-specialise	dynamic	-fno-late-specialise
+-fliberate-case	dynamic	-fno-liberate-case
+-fliberate-case-threshold=⟨n⟩	dynamic	-fno-liberate-case-threshold
+-fllvm-pass-vectors-in-regs	dynamic	-fno-llvm-pass-vectors-in-regs
+-floopification	dynamic	-fno-loopification
+-fmax-inline-alloc-size=⟨n⟩	dynamic
+-fmax-inline-memcpy-insns=⟨n⟩	dynamic
+-fmax-inline-memset-insns=⟨n⟩	dynamic
+-fmax-simplifier-iterations=⟨n⟩	dynamic
+-fmax-uncovered-patterns=⟨n⟩	dynamic
+-fmax-worker-args=⟨n⟩	dynamic
+-fno-opt-coercion	dynamic
+-fno-pre-inlining	dynamic
+-fno-state-hack	dynamic
+-fomit-interface-pragmas	dynamic	-fno-omit-interface-pragmas
+-fomit-yields	dynamic	-fno-omit-yields
+-foptimal-applicative-do	dynamic	-fno-optimal-applicative-do
+-fpedantic-bottoms	dynamic	-fno-pedantic-bottoms
+-fregs-graph	dynamic	-fno-regs-graph
+-fregs-iterative	dynamic	-fno-regs-iterative
+-fsimpl-tick-factor=⟨n⟩	dynamic
+-fsimplifier-phases=⟨n⟩	dynamic
+-fsolve-constant-dicts	dynamic	-fno-solve-constant-dicts
+-fspec-constr	dynamic	-fno-spec-constr
+-fspec-constr-count=⟨n⟩	dynamic	-fno-spec-constr-count
+-fspec-constr-keen	dynamic	-fno-spec-constr-keen
+-fspec-constr-threshold=⟨n⟩	dynamic	-fno-spec-constr-threshold
+-fspecialise	dynamic	-fno-specialise
+-fspecialise-aggressively	dynamic	-fno-specialise-aggressively
+-fstatic-argument-transformation	dynamic	-fno-static-argument-transformation
+-fstg-cse	dynamic	-fno-stg-cse
+-fstg-lift-lams	dynamic	-fno-stg-lift-lams
+-fstg-lift-lams-known	dynamic	-fno-stg-lift-lams-known
+-fstg-lift-lams-non-rec-args	dynamic	-fno-stg-lift-lams-non-rec-args-any
+-fstg-lift-lams-rec-args	dynamic	-fno-stg-lift-lams-rec-args-any
+-fstrictness	dynamic	-fno-strictness
+-fstrictness-before=⟨n⟩	dynamic
+-funbox-small-strict-fields	dynamic	-fno-unbox-small-strict-fields
+-funbox-strict-fields	dynamic	-fno-unbox-strict-fields
+-funfolding-creation-threshold=⟨n⟩	dynamic
+-funfolding-dict-discount=⟨n⟩	dynamic
+-funfolding-fun-discount=⟨n⟩	dynamic
+-funfolding-keeness-factor=⟨n⟩	dynamic
+-funfolding-use-threshold=⟨n⟩	dynamic
+-fworker-wrapper	dynamic
+================================================================================
+============== PROFILING OPTIONS
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-fno-prof-auto	dynamic	-fprof-auto
+-fno-prof-cafs	dynamic	-fprof-cafs
+-fno-prof-count-entries	dynamic	-fprof-count-entries
+-fprof-auto	dynamic	-fno-prof-auto
+-fprof-auto-calls	dynamic	-fno-prof-auto-calls
+-fprof-auto-exported	dynamic	-fno-prof-auto
+-fprof-auto-top	dynamic	-fno-prof-auto
+-fprof-cafs	dynamic	-fno-prof-cafs
+-prof	dynamic
+-ticky	dynamic
+================================================================================
+============== PROGRAM COVERAGE OPTIONS
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-fhpc dynamic
+================================================================================
+============== C PRE-PROCESSOR OPTIONS
+================================================================================
+====  Flag                        Type	        Reverse
+================================================================================
+-cpp	dynamic	
+-D⟨symbol⟩[=⟨value⟩]	dynamic	-U⟨symbol⟩
+-I⟨dir⟩	dynamic	
+-U⟨symbol⟩	dynamic	
+================================================================================
+============== CODE GENERATION OPTIONS
+================================================================================
+-dynamic-too	dynamic	
+-fasm	dynamic	-fllvm
+-fbyte-code	dynamic	
+-fexternal-dynamic-refs	dynamic	
+-fllvm	dynamic	-fasm
+-fno-code	dynamic	
+-fobject-code	dynamic	
+-fPIC	dynamic	
+-fPIE	dynamic	
+-fwrite-interface	dynamic	
+================================================================================
+============== LINKING OPTIONS
+================================================================================
+-debug	dynamic
+-dylib-install-name ⟨path⟩	dynamic
+-dynamic	dynamic
+-dynload	dynamic
+-eventlog	dynamic
+-fno-embed-manifest	dynamic
+-fno-gen-manifest	dynamic
+-fno-shared-implib	dynamic
+-framework ⟨name⟩	dynamic
+-framework-path ⟨dir⟩	dynamic
+-fwhole-archive-hs-libs	dynamic
+-keep-cafs	dynamic
+-L ⟨dir⟩	dynamic
+-l ⟨lib⟩	dynamic
+-main-is ⟨thing⟩	dynamic
+-no-hs-main	dynamic
+-no-rtsopts-suggestions	dynamic
+-package ⟨name⟩	dynamic
+-pie	dynamic
+-rdynamic	dynamic
+-rtsopts[=⟨none|some|all|ignore|ignoreAll⟩]	dynamic
+-shared	dynamic
+-split-sections	dynamic
+-static	dynamic
+-staticlib	dynamic
+-threaded	dynamic
+-with-rtsopts=⟨opts⟩	dynamic
+================================================================================
+============== PLUGIN OPTIONS
+================================================================================
+-fclear-plugins	dynamic
+-fplugin-opt=⟨module⟩:⟨args⟩	dynamic
+-fplugin-trustworthy	dynamic
+-fplugin=⟨module⟩	dynamic
+-hide-all-plugin-packages	dynamic
+-plugin-package ⟨pkg⟩	dynamic
+-plugin-package-id ⟨pkg-id⟩	dynamic
+================================================================================
+============== REPLACING PHASES
+================================================================================
+-pgma ⟨cmd⟩	dynamic
+-pgmc ⟨cmd⟩	dynamic
+-pgmdll ⟨cmd⟩	dynamic
+-pgmF ⟨cmd⟩	dynamic
+-pgmi ⟨cmd⟩	dynamic
+-pgminstall_name_tool ⟨cmd⟩	dynamic
+-pgmL ⟨cmd⟩	dynamic
+-pgml ⟨cmd⟩	dynamic
+-pgmlc ⟨cmd⟩	dynamic
+-pgmlibtool ⟨cmd⟩	dynamic
+-pgmlm ⟨cmd⟩	dynamic
+-pgmlo ⟨cmd⟩	dynamic
+-pgmotool ⟨cmd⟩	dynamic
+-pgmP ⟨cmd⟩	dynamic
+-pgms ⟨cmd⟩	dynamic
+-pgmwindres ⟨cmd⟩	dynamic
+================================================================================
+============== FORCING OPTIONS TO PARTICULAR PHASES
+================================================================================
+-opta ⟨option⟩	dynamic
+-optc ⟨option⟩	dynamic
+-optcxx ⟨option⟩	dynamic
+-optdll ⟨option⟩	dynamic
+-optF ⟨option⟩	dynamic
+-opti ⟨option⟩	dynamic
+-optL ⟨option⟩	dynamic
+-optl ⟨option⟩	dynamic
+-optlc ⟨option⟩	dynamic
+-optlm ⟨option⟩	dynamic
+-optlo ⟨option⟩	dynamic
+-optP ⟨option⟩	dynamic
+-optwindres ⟨option⟩	dynamic
+-pgmc-supports-no-pie	dynamic
+================================================================================
+============== PLATFORM-SPECIFIC OPTIONS
+================================================================================
+-mbmi2	dynamic	
+-msse2	dynamic	
+-msse4.2	dynamic	
+================================================================================
+============== COMPILER DEBUGGING OPTIONS
+================================================================================
+-dcmm-lint	dynamic	
+-dcore-lint	dynamic	
+-ddump-asm	dynamic	
+-ddump-asm-expanded	dynamic	
+-ddump-asm-liveness	dynamic	
+-ddump-asm-native	dynamic	
+-ddump-asm-regalloc	dynamic	
+-ddump-asm-regalloc-stages	dynamic	
+-ddump-asm-stats	dynamic	
+-ddump-bcos	dynamic	
+-ddump-cfg-weights	dynamic	
+-ddump-cmm	dynamic	
+-ddump-cmm-caf	dynamic	
+-ddump-cmm-cbe	dynamic	
+-ddump-cmm-cfg	dynamic	
+-ddump-cmm-cps	dynamic	
+-ddump-cmm-from-stg	dynamic	
+-ddump-cmm-info	dynamic	
+-ddump-cmm-proc	dynamic	
+-ddump-cmm-procmap	dynamic	
+-ddump-cmm-raw	dynamic	
+-ddump-cmm-sink	dynamic	
+-ddump-cmm-sp	dynamic	
+-ddump-cmm-split	dynamic	
+-ddump-cmm-switch	dynamic	
+-ddump-cmm-verbose	dynamic	
+-ddump-cmm-verbose-by-proc	dynamic	
+-ddump-core-stats	dynamic	
+-ddump-cse	dynamic	
+-ddump-deriv	dynamic	
+-ddump-ds, -ddump-ds-preopt	dynamic	
+-ddump-ec-trace	dynamic	
+-ddump-file-prefix=⟨str⟩	dynamic	
+-ddump-foreign	dynamic	
+-ddump-hpc	dynamic	
+-ddump-if-trace	dynamic	
+-ddump-inlinings	dynamic	
+-ddump-json	dynamic	
+-ddump-llvm	dynamic	
+-ddump-mod-map	dynamic	
+-ddump-occur-anal	dynamic	
+-ddump-opt-cmm	dynamic	
+-ddump-parsed	dynamic	
+-ddump-parsed-ast	dynamic	
+-ddump-prep	dynamic	
+-ddump-rn	dynamic	
+-ddump-rn-ast	dynamic	
+-ddump-rn-stats	dynamic	
+-ddump-rn-trace	dynamic	
+-ddump-rtti	dynamic	
+-ddump-rule-firings	dynamic	
+-ddump-rule-rewrites	dynamic	
+-ddump-rules	dynamic	
+-ddump-simpl	dynamic	
+-ddump-simpl-iterations	dynamic	
+-ddump-simpl-stats	dynamic	
+-ddump-spec	dynamic	
+-ddump-splices	dynamic	
+-ddump-stg	dynamic	
+-ddump-stg-final	dynamic	
+-ddump-stg-unarised	dynamic	
+-ddump-str-signatures	dynamic	
+-ddump-stranal	dynamic	
+-ddump-tc	dynamic	
+-ddump-tc-ast	dynamic	
+-ddump-tc-trace	dynamic	
+-ddump-ticked	dynamic	
+-ddump-timings	dynamic	
+-ddump-to-file	dynamic	
+-ddump-types	dynamic	
+-ddump-worker-wrapper	dynamic	
+-dfaststring-stats	dynamic	
+-dhex-word-literals	dynamic	
+-dinitial-unique=⟨s⟩	dynamic	
+-dinline-check=⟨str⟩	dynamic	
+-dno-debug-output	dynamic	-ddebug-output
+-dno-typeable-binds	dynamic	
+-dppr-case-as-let	dynamic	
+-dppr-cols=⟨n⟩	dynamic	
+-dppr-debug	dynamic	
+-dppr-user-length	dynamic	
+-drule-check=⟨str⟩	dynamic	
+-dshow-passes	dynamic	
+-dstg-lint	dynamic	
+-dsuppress-all	dynamic	
+-dsuppress-coercions	dynamic	
+-dsuppress-idinfo	dynamic	
+-dsuppress-module-prefixes	dynamic	
+-dsuppress-stg-free-vars	dynamic	
+-dsuppress-ticks	dynamic	
+-dsuppress-timestamps	dynamic	
+-dsuppress-type-applications	dynamic	
+-dsuppress-type-signatures	dynamic	
+-dsuppress-unfoldings	dynamic	
+-dsuppress-uniques	dynamic	
+-dsuppress-var-kinds	dynamic	
+-dth-dec-file	dynamic	
+-dunique-increment=⟨i⟩	dynamic	
+-dverbose-core2core	dynamic	
+-dverbose-stg2stg	dynamic	
+-falignment-sanitisation	dynamic	
+-fcatch-bottoms	dynamic	
+-fllvm-fill-undef-with-garbage	dynamic	
+-fproc-alignment	dynamic	
+-g, -g⟨n⟩	dynamic	
+================================================================================
+============== MISCELLANEOUS COMPILER DEBUGGING OPTIONS
+================================================================================
+-fexternal-interpreter	dynamic	
+-fglasgow-exts	dynamic	-fno-glasgow-exts
+-ghcversion-file ⟨path to ghcversion.h⟩	dynamic	
+-H ⟨size⟩	dynamic	
+-j[⟨n⟩]	dynamic	
+================================================================================
+
