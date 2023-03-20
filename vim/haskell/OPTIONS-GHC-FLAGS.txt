@@ -2,8 +2,25 @@
 ========================== GHC FLAG REFERENCE ==================================
 == https://downloads.haskell.org/~ghc/8.10.4/docs/html/users_guide/flags.html
 == author: Prem Muthedath, 17 MAR 2023
+
+== the haskell.org link for GHC 8.10.4 given above is the source of all data.
+== this file contains manually edited "raw" data of GHC flags from that link.
+== this data is needed to create a list of OPTIONS_GHC flags for vim pragma completion
+
+== Prem manually created this file using the following steps:
+==  1. the haskell.org link for GHC 8.10.4 given above is source of all data
+==  2. from that link, copied all data for 'Type' `dynamic` for a sub-heading
+==  3. next, deleted `description` data for all rows of copied `dynamic` data
+==  4. steps (2) & (3) done in Apple's Numbers spreadsheet
+==  5. copied data from spreadsheet to this file
+==  6. added headings in this file for easy read
+==  7. steps (2) - (6) repeated until all sub-headings have been exhausted
+
+== NOTE: for changes to flags since GHC 8.0, see
+== https://downloads.haskell.org/ghc/latest/docs/users_guide/using-warnings.html
+
 ================================================================================
-============== VEROSITY OPTIONS
+============== VERBOSITY OPTIONS
 ================================================================================
 ====  Flag                        Type	        Reverse
 ================================================================================
