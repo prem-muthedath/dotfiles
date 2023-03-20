@@ -1,5 +1,5 @@
 ================================================================================
-========================== GHC FLAG REFERENCE ==================================
+====================== GHC FLAG REFERENCE (ORIGINAL) ===========================
 == https://downloads.haskell.org/~ghc/8.10.4/docs/html/users_guide/flags.html
 == author: Prem Muthedath, 17 MAR 2023
 
