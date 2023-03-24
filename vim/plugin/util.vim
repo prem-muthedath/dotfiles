@@ -8,14 +8,18 @@ function! Csformat()
   " Format file -- such as ~/dotfiles/vim/arch/notes/cs.vim -- containing list
   " of filenames and &comments into neatly seperated columns;
   " sample output: ~/dotfiles/vim/arch/notes/cs-col.vim
-  let l:m=0
+  "
+  " NOTES: the structure of this function is same as `OptionsGhcFlagsFormat()`, 
+  " even though the format of input file here is different, so the overall flow 
+  " of extensive comments given for `OptionsGhcFlagsFormat()` applies here.
+  let l:maxcol=0
   g/vim:/
-        \ execute 'normal ' . "/^.*vim:/e" . "\<CR>"
-        \ | let l:m = max([l:m, virtcol('.')])
+        \ execute 'normal' . '/^.*vim:/e' . "\<CR>"
+        \ | let l:maxcol = max([l:maxcol, virtcol('.')])
   g/vim:/
         \ execute 's/\(^\S\+\.vim:\)[^=]*\(comment\|com\)/\1\2'
-        \ | execute 'normal 0' . "/^.*vim:/e" . "\<CR>"
-        \ | let l:diff = l:m - virtcol('.') + 3
+        \ | execute 'normal' . '/^.*vim:/e' . "\<CR>"
+        \ | let l:diff = l:maxcol - virtcol('.') + 3
         \ | execute 'normal a' . repeat(" ", l:diff)
 endfunction
 
