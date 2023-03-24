@@ -15,12 +15,12 @@
 "     a) we treat 1-part and 3-part comment separately;
 "     b) for both types of comment, however, the high-level logic is the same;
 "     c) here is the high-level logic:
-"         -- check if we've a blank line; if yes, make it a comment using `tc`;
+"         -- check if we've a blank line; if yes, make it a comment using `_tc`;
 "         -- if not, then check if the line is a comment; if yes, then start a 
 "            comment line right below the current line, with same indent, using 
 "            the `normal o` operation.
 "         -- if the line is neither blank nor a comment, then start a comment 
-"            right below the current line, with the same indent, using `tc`.
+"            right below the current line, with the same indent, using `_tc`.
 "     d) if we come across a file whose comment string, denoted by Cs(), is 
 "        neither 1-part nor 3-part, then throw an error.
 " ==============================================================================
@@ -34,8 +34,8 @@ function! StartComment() abort
     " 1. blank line:
     "     CURSOR at ^   -> originally
     "     CURSOR at ^   -> after 'normal 0'
-    "     "CURSOR       -> after 'normal 0' . 'tc'
-    "     "CURSOR       -> after 'normal 0' . 'tc' . '=='
+    "     "CURSOR       -> after 'normal 0' . '_tc'
+    "     "CURSOR       -> after 'normal 0' . '_tc' . '=='
     "     " CURSOR      -> after :startinsert!
     " 2. comment line:
     "     " blahh       -> originally, CURSOR somewhere on this line
@@ -48,15 +48,15 @@ function! StartComment() abort
     "     blahh         -> originally, CURSOR somewhere on this line
     "     CURSOR @ ^    -> after 'normal o' (new line right below `blahh`)
     "     CURSOR @ ^    -> after 'normal o' . "\<Esc>"
-    "     "CURSOR       -> after 'normal o' . "\<Esc>" . 'tc'
-    "     "CURSOR       -> after 'normal o' . "\<Esc>" . 'tc' . '=='
+    "     "CURSOR       -> after 'normal o' . "\<Esc>" . '_tc'
+    "     "CURSOR       -> after 'normal o' . "\<Esc>" . '_tc' . '=='
     "     " CURSOR      -> after :startinsert!
     " ==========================================================================
-    let l:samelinecmt   = 'normal 0' . 'tc' . '=='
+    let l:samelinecmt   = 'normal 0' . '_tc' . '=='
     " pattern to test if line is comment; for vim file, this would be: ^\s*".*$
     let l:comment       = '^'. '\s*' . escape(Cs()[0], ' *\') . '.*$'
     let l:nextlineOcmt  = 'normal o' . "\<Esc>" . 'A' . ' ' . "\<Esc>"
-    let l:nextlinecmt   = 'normal o' . "\<Esc>" . 'tc' . '=='
+    let l:nextlinecmt   = 'normal o' . "\<Esc>" . '_tc' . '=='
     let l:execstr       =
             \ getline('.') =~ l:emptyline ? l:samelinecmt :
             \ getline('.') =~ l:comment ? l:nextlineOcmt : l:nextlinecmt
@@ -65,7 +65,7 @@ function! StartComment() abort
     " ==========================================================================
     " why do we need a cursor shift?
     "
-    " well, when we do a 3-part comment using `tc`, the cursor is positioned 
+    " well, when we do a 3-part comment using `_tc`, the cursor is positioned 
     " right after the closing comment at the end of the line.  for a C comment, 
     " it would look like this (in normal mode):
     "
@@ -122,7 +122,7 @@ function! StartComment() abort
     "          * blah*/
     " ==========================================================================
     let l:cursorshift   = len(Cs()[0]) + 1
-    let l:samelinecmt   = 'normal 0' . 'tc' . '==' . '^' . l:cursorshift . 'l'
+    let l:samelinecmt   = 'normal 0' . '_tc' . '==' . '^' . l:cursorshift . 'l'
     " ==========================================================================
     " pattern to test if line is a "part" comment, what does this mean?
     "   1. "part" comment means that the line has a comment symbol (for C, /* or 
@@ -243,7 +243,7 @@ function! StartComment() abort
                             \ . escape(Cs()[1], ' *\')
                           \ . '\)'
     let l:nextlineOcmt  = 'normal o' . "\<Esc>" . 'A' . ' ' . "\<Esc>"
-    let l:nextlinecmt   = 'normal o' . "\<Esc>" . 'tc' . '==' . '^' . l:cursorshift . 'l'
+    let l:nextlinecmt   = 'normal o' . "\<Esc>" . '_tc' . '==' . '^' . l:cursorshift . 'l'
     " see :help :starinsert
     if getline('.') =~ l:emptyline
       :execute l:samelinecmt | :startinsert

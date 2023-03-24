@@ -1,4 +1,3 @@
-" vimrc -- author: Prem Muthedath, JUN 2018
 " organize your vimrc: https://vimways.org/2018/from-vimrc-to-vim/
 " ==============================================================================
 
@@ -21,6 +20,9 @@ set softtabstop=2
 
 " `CTRL-K F B` to get space symbol in listchars;
 " REF: see /u/ randy morris @ https://tinyurl.com/y97g3akv
+" REF: setting dictionary file:
+"   1. for system dict file, see https://tinyurl.com/4bb8zd3z (vi.SE)
+"   2. to set dict file, see /u/ romainl @ https://tinyurl.com/4789kmdv (so)
 set autoindent                                " auto indent for all ft
 set number                                    " show line number
 set wrap                                      " wrap lines (for display)
@@ -30,7 +32,9 @@ set wildmenu                                  " <Tab> cl-completion
 set wildcharm=<C-Z>                           " allow <Tab> in map completion
 set listchars=space:█,trail:█,eol:¬,tab:▸\    " show these on :set list
 set hlsearch                                  " highlight search ON, as default
+set incsearch                                 " incremental search ON
 set history=1000                              " keep large history
+set dictionary+=/usr/share/dict/words         " add dictionary file to default
 
 " format options: format comments but not code
 set fo=
@@ -40,9 +44,9 @@ set fo+=r      " insert comment leader on return
 set fo+=j      " smartly join two comments
 set fo+=w      " spot as same paragraph if trailing whitespace
 set fo+=l      " don't break existing long lines
-set fo+=a      " autoformat paragraphs
+set fo+=a      " autoformat paragraphs (with `c` option, applies only to comments)
 set fo+=n      " spot numbered lists
-set fo+=q      " allow gq to format
+set fo+=q      " allow gq to format comments
 set fo-=t      " no text autowrap
 
 " add these 'bullet' format list patterns to default
@@ -56,18 +60,18 @@ set flp+=\\\|^\\s*[ivxIVX]\\+[.)]\\s\\+   " i. , i) , ii. , ii) , ...
 " syntax display -- on how to get syntax, as well as on possible errors, see:
 "   REF: https://tinyurl.com/mvy94a4u (so)
 "   REF: https://tinyurl.com/mra9x6f7 (vi.SE)
-set laststatus=2                                      " statusline ON, always
-set statusline=%{%len(expand('%:f'))<=30?'%f':'%t'%}  " filename
-set statusline+=\ ft:%y                               " file type
-set statusline+=\ syx:[%{&syntax}]                    " syntax
-set statusline+=\ cms:[%{split(&cms,'%s')[0]}]        " commentstring
-set statusline+=\ ff:[%{&ff}]                         " file format
-set statusline+=\ fo:[%{&fo}]                         " format options
-set statusline+=\ cs:[%{g:colors_name}]               " colorscheme
-set statusline+=%=                                    " separate left & right
-set statusline+=\ [%l,%c]                             " line, column #
-set statusline+=\ %r                                  " readonly?
-set statusline+=\ %m                                  " file modified?
+set laststatus=2                                          " statusline ON, always
+set stl=%{%len(expand('%:f'))<=30?'%f':'%t'%}             " filename
+set stl+=\ ft:%y                                          " file type
+set stl+=\ syx:[%{&syntax}]                               " syntax
+set stl+=\ cms:[%{len(&cms)>0?split(&cms,'%s')[0]:''}]    " commentstring
+set stl+=\ ff:[%{&ff}]                                    " file format
+set stl+=\ fo:[%{&fo}]                                    " format options
+set stl+=\ cs:[%{g:colors_name}]                          " colorscheme
+set stl+=%=                                               " separate left & right
+set stl+=\ [%l,%c]                                        " line, column #
+set stl+=\ %r                                             " readonly?
+set stl+=\ %m                                             " file modified?
 
 " cursorline: https://vim.fandom.com/wiki/Highlight_current_line
 set fillchars=vert:\│                     " use this to show vsplit
@@ -94,31 +98,31 @@ set printfont=courier:h9
 " NOTE:  :w !pbcopy copies line selections to OSX system clipboard
 "        see /u/ Brian @ https://tinyurl.com/y4n9njg7  (so)
 "        for set list, see /u/ derrick zhang @ https://tinyurl.com/y7gk2ncg
-"        ch: toggle comment highlighting in normal mode.
-"        tc: toggle comments, both in visual and normal modes.
-"        sc: in normal mode, start a comment, switching to insert mode.
-"        ic: (in visual mode), inserts vim-style comment (") @ line start.
-"        rc: (in visual mode), remove symbol (typcally a comment) @ start.
-"        ws: highlights blank lines & trailing white spaces.
-"        cl: toggle cursor line and cursor column,
+"        _ch: toggle comment highlighting in normal mode.
+"        _tc: toggle comments, both in visual and normal modes.
+"        _sc: in normal mode, start a comment, switching to insert mode.
+"        _ic: (in visual mode), inserts vim-style comment (") @ line start.
+"        _rc: (in visual mode), remove symbol (typcally a comment) @ start.
+"        _ws: highlights blank lines & trailing white spaces.
+"        _cl: toggle cursor line and cursor column,
 "        https://vim.fandom.com/wiki/Highlight_current_line
 "        for use of <silent>, see https://tinyurl.com/2p84nkpu (vi.SE)
-nnoremap            sa    :SyntaxAttr<CR>
-nnoremap            ch    :ToggleCommentHl<CR>
-nnoremap            co    :colorscheme <C-Z><S-Tab>
-nnoremap            ou    :OpenUrl<CR>
-nnoremap            ts    :ToggleHlSearch<CR>
-nnoremap            cs    :ClearSearch<CR>
-nnoremap  <silent>  tc    :ToggleComment<CR>
-vnoremap  <silent>  tc    :ToggleComments<CR>
-nnoremap            sc    :StartComment<CR>
-vnoremap            ic    :norm ^i" <CR>
-vnoremap            rc    :norm ^x<CR>
-vnoremap            ri    :Reindent<CR>
-vnoremap            cp    :w !pbcopy<CR><CR>
-map                 sl    :set list! list? <CR>
-nnoremap            ws    :/^\s\+$\\|\s\+$/ <CR>
-nnoremap            cl    :set cursorline! cursorcolumn!<CR>
+nnoremap            _sa    :SyntaxAttr<CR>
+nnoremap            _ch    :ToggleCommentHl<CR>
+nnoremap            _co    :colorscheme <C-Z><S-Tab>
+nnoremap            _ou    :OpenUrl<CR>
+nnoremap            _ts    :ToggleHlSearch<CR>
+nnoremap            _cs    :ClearSearch<CR>
+nnoremap  <silent>  _tc    :ToggleComment<CR>
+vnoremap  <silent>  _tc    :ToggleComments<CR>
+nnoremap            _sc    :StartComment<CR>
+vnoremap            _ic    :norm ^i" <CR>
+vnoremap            _rc    :norm ^x<CR>
+vnoremap            _ri    :Reindent<CR>
+vnoremap            _cp    :w !pbcopy<CR><CR>
+map                 _sl    :set list! list? <CR>
+nnoremap            _ws    :/^\s\+$\\|\s\+$/ <CR>
+nnoremap            _cl    :set cursorline! cursorcolumn!<CR>
 
 " ==============================================================================
 " coc-vim stuff
@@ -202,8 +206,23 @@ nnoremap <silent> K :call ShowDocumentation()<CR>
 " close popup window.
 " see :h coc-floating, :h coc-nvim
 " see also https://github.com/neoclide/coc.nvim
-nnoremap <silent> PC :call popup_clear()<CR>
+nnoremap <silent> _pc :call popup_clear()<CR>
 " ==============================================================================
+" haskell pragma completion code.
+" this code at this time is still experimental.
+" this code should eventually be moved to a separate file in vim/plugin.
+" author: Prem Muthedath
+function! InsertHaskellPragma(arg)
+  let l:pragma = '{-# ' . a:arg . ' #-}'
+  " let l:cmdstr = 'normal ^' . 'i' . l:pragma . "\<Esc>" . 'gE' . 'a ' . "\<Esc>" . 'l'
+  let l:cmdstr = 'normal gI' . l:pragma . "\<Esc>" . 'gE' . 'a ' . "\<Esc>" . 'l'
+  if getline('.') !~ '^$'
+    :execute 'normal o' . "\<Esc>"
+  endif
+  :execute l:cmdstr | :startinsert
+endfunction
+nnoremap  _lp :call InsertHaskellPragma("LANGUAGE") <CR>
+nnoremap  _op :call InsertHaskellPragma("OPTIONS_GHC") <CR>
 
 " https://google.com
 " ==============================================================================
