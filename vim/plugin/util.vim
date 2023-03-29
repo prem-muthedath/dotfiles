@@ -226,7 +226,7 @@ function! ParseOptionsGhcFlags() abort
 endfunction
 
 " ==============================================================================
-function! CountOptionGhcFlags() abort
+function! CountOptionsGhcFlags() abort
   " count the number of OPTIONS_GHC flags.
   "
   " this count acts as a rule-of-thumb test for the generated 
@@ -237,7 +237,7 @@ function! CountOptionGhcFlags() abort
   " replaced `v` with `g` here; of course, the patterns apply only for use here.
   "
   " usage: open vim/haskell/OPTIONS-GHC-FLAGS-FORMATTED.txt and then invoke 
-  " :echo CountOptionGhcFlags() on the vim commandline.
+  " :echo CountOptionsGhcFlags() on the vim commandline.
   "
   " NOTE (vim doc):
   " \@! matches with zero width if the preceding atom does NOT match at the 
