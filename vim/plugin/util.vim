@@ -4,128 +4,127 @@
 " author: Prem Muthedath
 
 " ==============================================================================
-function! Csformat()
+function! FormatCsFile()
   " Format file -- such as ~/dotfiles/vim/arch/notes/cs.vim -- containing list
-  " of filenames and &comments into neatly seperated columns;
+  " of filenames and &comments into neatly separated columns.
   " sample output: ~/dotfiles/vim/arch/notes/cs-col.vim
+  " author: Prem Muthedath, 2018.
   "
-  " NOTES: the structure of this function is same as `OptionsGhcFlagsFormat()`, 
+  " NOTe: `Cs` stands for comment symbol.
+  "
+  " usage:
+  "   1) cpoy ~/dotfiles/vim/arch/notes/cs.vim;
+  "   2) then open the copy in vim;
+  "   3) and invoke :call FormatCsFile() from vim commandline.
+  "
+  " NOTES: this function's structure is same as `FormatOptionsGhcFlagsFile()`, 
   " even though the format of input file here is different, so the overall flow 
-  " of extensive comments given for `OptionsGhcFlagsFormat()` applies here.
+  " of extensive comments given for `FormatOPtionsGhcFlagsFile()` applies here.
+  " see below REFs for :execute and `normal` and `normal!` usage:
+  "   1. https://learnvimscriptthehardway.stevelosh.com/chapters/28.html
+  "   2. https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
+  "   3. https://learnvimscriptthehardway.stevelosh.com/chapters/30.html
   let l:maxcol=0
   g/vim:/
-        \ execute 'normal' . '/^.*vim:/e' . "\<CR>"
+        \ execute 'normal ' . '/^.*vim:/e' . "\<CR>"
         \ | let l:maxcol = max([l:maxcol, virtcol('.')])
   g/vim:/
         \ execute 's/\(^\S\+\.vim:\)[^=]*\(comment\|com\)/\1\2'
-        \ | execute 'normal' . '/^.*vim:/e' . "\<CR>"
+        \ | execute 'normal ' . '/^.*vim:/e' . "\<CR>"
         \ | let l:diff = l:maxcol - virtcol('.') + 3
         \ | execute 'normal a' . repeat(" ", l:diff)
 endfunction
 
 " ==============================================================================
-function! OptionsGhcFlagsFormat()
+function! FormatOPtionsGhcFlagsFile()
   " Format OPTIONS-GHC-FLAGS-ORIGINAL.txt file in ~/dotfiles/vim/haskell/
   " sample output: ~/dotfiles/vim/haskell/OPTIONS-GHC-FLAGS-FORMATTED.txt
-  " basically, this function formats data into columns of equal width.
+  " basically, this function formats line data into neatly separated columns.
   "
   " 19 MAR 2023; author: Prem Muthedath
   "
-  " well, how do you use this function? (a) first make a copy of 
-  " OPTIONS-GHC-FLAGS-ORIGINAL.txt; (b) then open that copy in vim; and (c) then 
-  " invoke :call OptionsGhcFlagsFormat() from vim commandline.
+  " well, how do you use this function?
+  "   (a) first make a copy of OPTIONS-GHC-FLAGS-ORIGINAL.txt;
+  "   (b) then open that copy in vim;
+  "   (c) then invoke :call FormatOptionsGhcFlagsFile() from vim commandline.
   "
   " NOTES:
-  "   1. `g/pattern/cmds` searches entire file & selects every line that matches 
-  "      the pattern and then runs `cmds` on each matched line. see :h :global
-  "   2. in our case we've data lines of the form:
+  "   1. in our case we've data lines of the form shown below. as you can see, 
+  "      the line data are staggered, instead of being separated into columns, 
+  "      which makes reading difficult.
   "         -blah     dynamic        -no-blah
   "         -bazooze     dynamic\s\s
-  "         -foo-dynamic         dynamic             -no-foo-dynamic
-  "   3. we use g/pattern/cmds 3 times to format this data. in the first 
-  "      g/pattern./cmds, we first remove the spaces between the 1st column 
+  "         -foo-dynamic         dynpamic             -no-foo-dynamic
+  "   2. to get stuff separated into columns, we use `g/pattern/cmds`, which 
+  "      searches the entire file & selects every line that matches the pattern 
+  "      and then runs `cmds` on each matched line. see :h :global
+  "   3. we use g/pattern/cmds 3 times to format our data. in the first 
+  "      g/pattern./cmds, we first remove the spaces between the 1st data column 
   "      (blah, bazooze, -foo-dynamic) and the 2nd column `dynaamic` using:
   "         execute 's/\s\+\(dynamic\)\(\s*$\|\s\+-\)/\1\2'
-  "
-  "      NOTE: we use the pattern \s+\(dynamic\)\(\s*$\|\s\+-\) because we've or 
-  "      could have lines like:
+  "      we use \s+\(dynamic\)\(\s*$\|\s\+-\) because we could have lines like:
   "           ^-dynamic   dynamic
   "           ^-rdynamic    dynamic
   "           ^-fi-dynamic    dynamic     -no-fi-dynamic
-  "         so the way to distinguish the middle `dynamic` (the one we want) is 
-  "         to ensure that we're looking for a dynamic always preceeded by \s+ 
-  "         and always followed either by \s\+- or by \s*$
-  "
-  "      after this command, we have
+  "      so to get the middle `dynamic` (the one we want), we search for a 
+  "      `dynamic` always preceeded by \s+ & followed either by \s\+- or by \s*$
+  "      after this command, we have:
   "         -blahdynamic        -no-blah
   "         -bazoozedynamic\s\s
   "         -foo-dynamicdynamic             -no-foo-dynamic
-  "   4. then, continuing with the same g/pattern/, we stndardize the seperation 
-  "      between `dynamic` and -no-blah to 3 \s; that is, we standardize the 
-  "      space between the middle `dynamic` and the 3rd column to 3 \s.
+  "   4. then, continuing with the same g/pattern/, we standardize the spacing 
+  "      between the 2nd column (`dynamic`) and the 3rd column to 3 \s.
   "         execute 's/\(dynamic\)\s\+\(-\)/\1   \2'
-  "
-  "      after this command, we have
+  "      after this command, we have:
   "         -blahdynamic   -no-blah
   "         -bazoozedynamic\s\s
   "         -foo-dynamicdynamic   -no-foo-dynamic
-  "   5. still with the same g/pattern, we then remove trailing spaces after 
-  "      `dynamic` when nothing follows it:
+  "   5. still with the same g/pattern/, we chop any trailing \s after `dynamic` 
+  "      (the one merged at 1st column end) when no 3rd column follows it:
   "         execute 's/\(dynamic\)\s\+$/\1'
-  "
-  "      after this command, we have
+  "      after this command, we have:
   "         -blahdynamic   -no-blah
   "         -bazoozedynamic
   "         -foo-dynamicdynamic   -no-foo-dynamic
   "   6. next, we run the 2nd g/pattern/cmds, first to do pattern search and 
   "      place the cursor just before `d` in `dynamic` to extract the column #:
-  "         execute 'normal' .
+  "         execute 'normal ' .
   "                 \ '/^.*\zsdynamic\ze\(\s\+-\|$\)/e-' .  (l:offset) .
   "                 \ ""\<CR>"
-  "
-  "      NOTE: we've lines like the ones below in the file:
+  "      we've lines like the ones below in the file:
   "           ^-dynamic   dynamic
   "           ^-rdynamic    dynamic
-  "         so we use the greedy pattern /^.*\zsdynamic\ze/\(\s\+-\|$\) which 
-  "         will match the `dynamic` (the one we want) that is either followed 
-  "         by \s+- or followed by nothing (which is EOL). \zs and \ze define 
-  "         part of the match for selection, which in our case is `dynamic`.
-  "
-  "       after this, we've cursor on the CAPS alphabet shown below
-  "         -blaHdynamic   -no-blah
-  "         -bazoozEdynamic
-  "         -foo-dynamiCdynamic   -no-foo-dynamic
+  "      the greedy pattern /^.*\zsdynamic\ze/\(\s\+-\|$\) will match the 
+  "      `dynamic` (the one we want) that is either followed by \s+- or followed 
+  "      by EOL. \zs & \ze define match selection, which here is `dynamic`.
+  "      after this, we've cursor on the CAPS alphabet shown below:
+  "           -blaHdynamic   -no-blah
+  "           -bazoozEdynamic
+  "           -foo-dynamiCdynamic   -no-foo-dynamic
   "   7. as step 6 is done on each g/pattern/ matched line, we also concurrently 
-  "      update the max col #, so that when we have got through all matched 
-  "      lines, we will have the final and correct max col #:
+  "      update the max col #, the max width of data column 1, so that when we 
+  "      get through all matched lines, we will have the final max col #:
   "         let l:maxcol = max([l:maxcol, virtcol('.')])
   "   8. finally, we run the 3rd g/pattern/cmds, first repeating step 
   "      6 to position the cursor just before `d` in `dynamic`:
-  "         execute 'normal' .
+  "         execute 'normal ' .
   "                 \ '/^.*\zsdynamic\ze\(\s\+-\|$\)/e-' .  (l:offset) .
   "                 \ ""\<CR>"
-  "         execute 'normal ' . '/^.*dynamic/e-' . (l:offset) . "\<CR>"
-  "
-  "      NOTE: we've lines like the ones below in the file:
+  "      we've lines like the ones below in the file:
   "           ^-dynamic   dynamic
   "           ^-rdynamic    dynamic
-  "         so we use the greedy pattern /^.*dynamic/(\s\+-\|$\) which will 
-  "         match the `dynamic` (the one we want) that is either followed by 
-  "         \s+- or followed by nothing (which is EOL). \zs and \ze define part 
-  "         of the match for selection, which in our case is `dynamic`.
-  "
+  "      the greedy pattern /^.*\zsdynamic\ze/\(\s\+-\|$\) will match the 
+  "      `dynamic` (the one we want) that is either followed by \s+- or followed 
+  "      by EOL. \zs & \ze define match selection, which here is `dynamic`.
   "      after this, we've cursor on the CAPS alphabet shown below
   "         -blaHdynamic   -no-blah
   "         -bazoozEdynamic
   "         -foo-dynamiCdynamic   -no-foo-dynamic
-  "   9. then, as step 8 is done on each g/pattern/ matched line, using the 
-  "      final max col # from step 7, we also concurrently insert spaces between 
-  "      `dynamic` & the 1eft column to get uniform separation for that line, so 
-  "      that when we've got through all g/pattern/ matched lines, we'll have 
-  "      this uniform separation for all matched lines:
+  "   9. as step 8 is done on each g/pattern/ matched line, we use the max col # 
+  "      from step 7 to concurrently insert spaces between `dynamic` & the  1eft 
+  "      (1st) column to get the same 1st column width for each matched line.
   "         let l:diff = l:maxcol - virtcol('.') + 3
   "         execute 'normal a' . repeat(" ", l:diff)
-  "
   "      after this, we've the following result:
   "         -blah          dynamic   -no-blah
   "         -bazooze       dynamic
@@ -134,7 +133,6 @@ function! OptionsGhcFlagsFormat()
   "         -blah     dynamic        -no-blah
   "         -bazooze     dynamic\s\s
   "         -foo-dynamic         dynamic             -no-foo-dynamic
-  "
   "       to:
   "         -blah          dynamic   -no-blah
   "         -bazooze       dynamic
@@ -145,20 +143,136 @@ function! OptionsGhcFlagsFormat()
   " no difference between the results of multiiple runs on the same file. this 
   " test is necessary but not sufficient, by the way.
   " ============================================================================
+  " see below REFs for :execute and `normal` and `normal!` usage:
+  "   1. https://learnvimscriptthehardway.stevelosh.com/chapters/28.html
+  "   2. https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
+  "   3. https://learnvimscriptthehardway.stevelosh.com/chapters/30.html
+  " good comments: /u/ martin tournoij @ https://tinyurl.com/xn6fbrmm (vi.SE)
   let l:maxcol=0
   let l:offset=len('dynamic')
-  let l:pat='normal' . '/^.*\zsdynamic\ze\(\s\+-\|$\)/e-' . (l:offset) . "\<CR>"
+  let l:pat='normal ' . '/^.*\zsdynamic\ze\(\s\+-\|$\)/e-' . (l:offset) . "\<CR>"
+  " for all g-matched lines,
+  "   1) merge data column 1 & data column 2 (contains `dynamic`);
+  "   2) set 3 \s separation between data columns 2 (now merged) and 3;
+  "   3) if no data column 3, trim any trailing \s+ of data column 2 (merged).
   g/^-.*dynamic/
         \ execute 's/\s\+\(dynamic\)\(\s*$\|\s\+-\)/\1\2'
         \ | execute 's/\(dynamic\)\s\+\(-\)/\1   \2'
         \ | execute 's/\(dynamic\)\s\+$/\1'
+  " get max width of 1st data column
   g/^-.*dynamic/
         \ execute l:pat
         \ | let l:maxcol = max([l:maxcol, virtcol('.')])
+  " have all lines conform to same width for 1st data column.
   g/^-.*dynamic/
         \ execute l:pat
         \ | let l:diff = l:maxcol - virtcol('.') + 3
         \ | execute 'normal a' . repeat(" ", l:diff)
 endfunction
+
+" ==============================================================================
+function! ParseOptionsGhcFlags() abort
+  " reads vim/haskell/OPTIONS-GHC-FLAGS-FORMATTED.txt, extracts OPTIONS_GHC 
+  " flags, & prints them to vim/haskell/OPTIONS-GHC-FLAGS-PARSED-LIST.txt.
+  "
+  " author: Prem Muthedath, 27 MAR 2023.
+  "
+  " usage: open vimrc and run :call ParseOptionsGhcFlags() on the commandline.
+  "
+  " see below REFs for :execute and `normal` and `normal!` usage:
+  "   1. https://learnvimscriptthehardway.stevelosh.com/chapters/28.html
+  "   2. https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
+  "   3. https://learnvimscriptthehardway.stevelosh.com/chapters/30.html
+  " line =~ '\(^=\+[[:upper:]- ]\+$\)\|\(^-.*$\)' selects lines of type:
+  "   ^============== VERBOSITY OPTIONS
+  "   ^-fshow-type-of-hole-fits               dynamic   -fno-type-of-hole-fits
+  "   ^-funclutter-valid-hole-fits            dynamic
+  "   ^-keep-llvm-file, -keep-llvm-files      dynamic
+  "   ^-O, -O1                                dynamic   -O0
+  " l:pat1 => is used in splitting lines of the form:
+  "   ^-fshow-type-of-hole-fits               dynamic   -fno-type-of-hole-fits
+  "   ^-funclutter-valid-hole-fits            dynamic
+  " l:pat2 => is used in splitting lines of the form:
+  "   ^-keep-llvm-file, -keep-llvm-files      dynamic
+  "   ^-O, -O1                                dynamic   -O0
+  " l:pat => is used in splitting lines by l:pat1 or l:pat2 or both.
+  " NOTES:
+  "   1. split() > 1 delimeter: /u/ amadan @ https://tinyurl.com/mt4pr9hp (so)
+  "   2. previous version of code used below g-pattern instead of for-loop and 
+  "      `line =~ '..'` pattern match.
+  "         g/\(^=\+[[:upper:]- ]\+$\)\|\(^-.*$\)/
+  "            \ let l:lines=split(getline('.'), l:pat)
+  "            \ | :call writefile(l:lines, l:ofile, 'sa')
+  " ============================================================================
+  " good comments: /u/ martin tournoij @ https://tinyurl.com/xn6fbrmm (vi.SE)
+  " define & initialize some local variables.
+  :let l:ifile='vim/haskell/OPTIONS-GHC-FLAGS-FORMATTED.txt'
+  :let l:ofile='vim/haskell/OPTIONS-GHC-FLAGS-PARSED-LIST.txt'
+  :let l:pat1='\s\+dynamic\($\|\s\+\)'
+  :let l:pat2=',\s'
+  :let l:pat='\(' . l:pat1 . '\)' . '\|' . '\(' . l:pat2 . '\)'
+  " delete existing output file, if any, because we're going to overwrite it.
+  :call delete(l:ofile)
+  " read the input file, parse each line, and print results to output file.
+  :for line in readfile(l:ifile)
+    :if line =~ '\(^=\+[[:upper:]- ]\+$\)\|\(^-.*$\)'
+      :let l:lines=split(line, l:pat)
+      :call writefile(l:lines, l:ofile, 'sa')
+    :endif
+  :endfor
+  " open input and output files, so the user can visually verify things!
+  :execute ':vsp' l:ifile
+  :execute ':sp' l:ofile
+endfunction
+
+" ==============================================================================
+function! CountOptionGhcFlags() abort
+  " count the number of OPTIONS_GHC flags.
+  "
+  " this count acts as a rule-of-thumb test for the generated 
+  " vim/haskell/OPTIONS-GHC-FLAGS-PARSED-LIST.txt. the total number of lines in 
+  " that file should match the count reported by this function.
+  "
+  " code idea from /u/ mMontu @ https://tinyurl.com/y6s8mxpz (so).
+  " replaced `v` with `g` here; of course, the patterns apply only for use here.
+  "
+  " usage: open vim/haskell/OPTIONS-GHC-FLAGS-FORMATTED.txt and then invoke 
+  " :echo CountOptionGhcFlags() on the vim commandline.
+  "
+  " NOTE (vim doc):
+  " \@! matches with zero width if the preceding atom does NOT match at the 
+  " current position. :h \@!
+  "     foo\(bar\)\@!           any "foo" not followed by "bar"
+  "     /^\%(.*bar\)\@!.*\zsfoo
+  " this pattern first checks that there is not a single position in the
+  " line where "bar" matches.  if ".*bar" matches somewhere the \@! will reject 
+  " the pattern.  when there is no match any "foo" will be found.  The "\zs" is 
+  " to have the match start just before "foo".
+  " ============================================================================
+  " good comments: /u/ martin tournoij @ https://tinyurl.com/xn6fbrmm (vi.SE)
+  let l:count=0
+  " count 'comma' lines such as:
+  "   ^-keep-hscpp-file, -keep-hscpp-files  dynamic
+  "   ^-O, -O1                              dynamic   -O0
+  g/\v^-.*,\s/
+    \ if getline('.') =~ '\s\+dynamic\s\+-'
+    \ | let l:count+=3
+    \ | else
+    \ | let l:count+=2
+    \ | endif
+  " count lines such as:           ^-ddump-hi                     dynamic
+  " but don't count lines such as: ^-ddump-ds, -ddump-ds-preopt   dynamic
+  " we don't count 'comma' lines bcoz they've been already counted.
+  g/\v%(^-.*,\s)@!^-.*dynamic$/let l:count+=1
+  " count lines such as:    ^-fforce-recomp      dynamic   -fno-force-recomp
+  " but don't count these:  ^-O, -O1             dynamic   -O0
+  " we don't count 'comma' lines bcoz they've been already counted.
+  g/\v%(^-.*,\s)@!^-.*dynamic\s+-/let l:count+=2
+  " count headers of the form: ^========= VERBOSITY OPTIONS
+  " NOTE: bcoz '=' has special meaning in very magic, we used \= to denote '='
+  g/\v^\=+[[:upper:]- ]+$/let l:count+=1
+  return l:count
+endfunction
+
 " ==============================================================================
 

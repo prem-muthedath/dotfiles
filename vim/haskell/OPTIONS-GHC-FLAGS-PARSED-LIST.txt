@@ -1,0 +1,703 @@
+============== VERBOSITY OPTIONS
+-fabstract-refinement-hole-fits
+-fno-abstract-refinement-hole-fits
+-fdefer-diagnostics
+-fdiagnostics-color=⟨always|auto|never⟩
+-fdiagnostics-show-caret
+-fno-diagnostics-show-caret
+-ferror-spans
+-fhide-source-paths
+-fkeep-going
+-fmax-refinement-hole-fits=⟨n⟩
+-fno-max-refinement-hole-fits
+-fmax-relevant-binds=⟨n⟩
+-fno-max-relevant-binds
+-fmax-valid-hole-fits=⟨n⟩
+-fno-max-valid-hole-fits
+-fno-show-valid-hole-fits
+-fno-sort-valid-hole-fits
+-fsort-valid-hole-fits
+-fprint-axiom-incomps
+-fno-print-axiom-incomps
+-fprint-equality-relations
+-fno-print-equality-relations
+-fprint-expanded-synonyms
+-fno-print-expanded-synonyms
+-fprint-explicit-coercions
+-fno-print-explicit-coercions
+-fprint-explicit-foralls
+-fno-print-explicit-foralls
+-fprint-explicit-kinds
+-fno-print-explicit-kinds
+-fprint-explicit-runtime-reps
+-fno-print-explicit-runtime-reps
+-fprint-potential-instances
+-fno-print-potential-instances
+-fprint-typechecker-elaboration
+-fno-print-typechecker-elaboration
+-fprint-unicode-syntax
+-fno-print-unicode-syntax
+-frefinement-level-hole-fits=⟨n⟩
+-fno-refinement-level-hole-fits
+-freverse-errors
+-fno-reverse-errors
+-fshow-docs-of-hole-fits
+-fno-show-docs-of-hole-fits
+-fshow-hole-constraints
+-fshow-hole-matches-of-hole-fits
+-fno-show-hole-matches-of-hole-fits
+-fshow-provenance-of-hole-fits
+-fno-show-provenance-of-hole-fits
+-fshow-type-app-of-hole-fits
+-fno-show-type-app-of-hole-fits
+-fshow-type-app-vars-of-hole-fits
+-fno-show-type-app-vars-of-hole-fits
+-fshow-type-of-hole-fits
+-fno-type-of-hole-fits
+-funclutter-valid-hole-fits
+-Rghc-timing
+-v
+-v⟨n⟩
+============== WHICH PHASES TO RUN
+-F
+-x ⟨suffix⟩
+============== REDIRECTING OUTPUT
+--exclude-module=⟨file⟩
+-ddump-mod-cycles
+-dep-makefile ⟨file⟩
+-dep-suffix ⟨suffix⟩
+-dumpdir ⟨dir⟩
+-hcsuf ⟨suffix⟩
+-hidir ⟨dir⟩
+-hiedir ⟨dir⟩
+-hiesuf ⟨suffix⟩
+-hisuf ⟨suffix⟩
+-include-cpp-deps
+-include-pkg-deps
+-o ⟨file⟩
+-odir ⟨dir⟩
+-ohi ⟨file⟩
+-osuf ⟨suffix⟩
+-outputdir ⟨dir⟩
+-stubdir ⟨dir⟩
+============== KEEPING INTERMEDIATE FILES
+-keep-hc-file
+-keep-hc-files
+-keep-hi-files
+-no-keep-hi-files
+-keep-hscpp-file
+-keep-hscpp-files
+-keep-llvm-file
+-keep-llvm-files
+-keep-o-files
+-no-keep-o-files
+-keep-s-file
+-keep-s-files
+-keep-tmp-files
+============== TEMPORARY FILES
+-tmpdir ⟨dir⟩
+============== FINDING IMPORTS
+-i
+-i⟨dir⟩[:⟨dir⟩]*
+============== INTERFACE FILE OPTIONS
+-ddump-hi
+-ddump-hi-diffs
+-ddump-minimal-imports
+============== RECOMPILATION CHECKING
+-fforce-recomp
+-fno-force-recomp
+-fignore-hpc-changes
+-fno-ignore-hpc-changes
+-fignore-optim-changes
+-fno-ignore-optim-changes
+============== INTERACTIVE-MODE OPTIONS
+-fbreak-on-error
+-fno-break-on-error
+-fbreak-on-exception
+-fno-break-on-exception
+-fghci-hist-size=⟨n⟩
+-fghci-leak-check
+-fno-ghci-leak-check
+-flocal-ghci-history
+-fno-local-ghci-history
+-fno-it
+-fno-no-it
+-fprint-bind-result
+-fno-print-bind-result
+-fprint-evld-with-show
+-fshow-loaded-modules
+-ghci-script
+-ignore-dot-ghci
+-interactive-print ⟨name⟩
+============== PACKAGES
+-clear-package-db
+-distrust ⟨pkg⟩
+-distrust-all-packages
+-fpackage-trust
+-global-package-db
+-hide-all-packages
+-hide-package ⟨pkg⟩
+-ignore-package ⟨pkg⟩
+-no-auto-link-packages
+-no-global-package-db
+-no-user-package-db
+-package ⟨pkg⟩
+-package-db ⟨file⟩
+-package-env ⟨file⟩|⟨name⟩
+-package-id ⟨unit-id⟩
+-this-unit-id ⟨unit-id⟩
+-trust ⟨pkg⟩
+-user-package-db
+============== WARNINGS
+-fdefer-out-of-scope-variables
+-fno-defer-out-of-scope-variables
+-fdefer-type-errors
+-fno-defer-type-errors
+-fdefer-typed-holes
+-fno-defer-typed-holes
+-fenable-th-splice-warnings
+-fno-enable-th-splices
+-fhelpful-errors
+-fno-helpful-errors
+-fmax-pmcheck-models=⟨n⟩
+-fshow-warning-groups
+-fno-show-warning-groups
+-fvia-C
+-W
+-w
+-w
+-Wall
+-w
+-Wall-missed-specialisations
+-Wno-all-missed-specialisations
+-Wcompat
+-Wno-compat
+-Wcompat-unqualified-imports
+-Wno-compat-unqualified-imports
+-Wcpp-undef
+-Wdeferred-out-of-scope-variables
+-Wno-deferred-out-of-scope-variables
+-Wdeferred-type-errors
+-Wno-deferred-type-errors
+-Wdeprecated-flags
+-Wno-deprecated-flags
+-Wdeprecations
+-Wno-deprecations
+-Wderiving-defaults
+-Wno-deriving-defaults
+-Wdodgy-exports
+-Wno-dodgy-exports
+-Wdodgy-foreign-imports
+-Wno-dodgy-foreign-import
+-Wdodgy-imports
+-Wno-dodgy-imports
+-Wduplicate-constraints
+-Wno-duplicate-constraints
+-Wduplicate-exports
+-Wno-duplicate-exports
+-Wempty-enumerations
+-Wno-empty-enumerations
+-Werror
+-Wwarn
+-Weverything
+-Whi-shadowing
+-Wno-hi-shadowing
+-Widentities
+-Wno-identities
+-Wimplicit-kind-vars
+-Wno-implicit-kind-vars
+-Wimplicit-prelude
+-Wno-implicit-prelude
+-Winaccessible-code
+-Wno-inaccessible-code
+-Wincomplete-patterns
+-Wno-incomplete-patterns
+-Wincomplete-record-updates
+-Wno-incomplete-record-updates
+-Wincomplete-uni-patterns
+-Wno-incomplete-uni-patterns
+-Winline-rule-shadowing
+-Wno-inline-rule-shadowing
+-Wmissed-extra-shared-lib
+-Wno-missed-extra-shared-lib
+-Wmissed-specialisations
+-Wno-missed-specialisations
+-Wmissing-deriving-strategies
+-Wno-missing-deriving-strategies
+-Wmissing-export-lists
+-fnowarn-missing-export-lists
+-Wmissing-exported-signatures
+-Wno-missing-exported-signatures
+-Wmissing-exported-sigs
+-Wno-missing-exported-sigs
+-Wmissing-fields
+-Wno-missing-fields
+-Wmissing-home-modules
+-Wno-missing-home-modules
+-Wmissing-import-lists
+-fnowarn-missing-import-lists
+-Wmissing-local-signatures
+-Wno-missing-local-signatures
+-Wmissing-local-sigs
+-Wno-missing-local-sigs
+-Wmissing-methods
+-Wno-missing-methods
+-Wmissing-monadfail-instances
+-Wno-missing-monadfail-instances
+-Wmissing-pattern-synonym-signatures
+-Wno-missing-pattern-synonym-signatures
+-Wmissing-signatures
+-Wno-missing-signatures
+-Wmonomorphism-restriction
+-Wno-monomorphism-restriction
+-Wname-shadowing
+-Wno-name-shadowing
+-Wno-compat
+-Wcompat
+-Wnoncanonical-monad-instances
+-Wno-noncanonical-monad-instances
+-Wnoncanonical-monadfail-instances
+-Wno-noncanonical-monadfail-instances
+-Wnoncanonical-monoid-instances
+-Wno-noncanonical-monoid-instances
+-Worphans
+-Wno-orphans
+-Woverflowed-literals
+-Wno-overflowed-literals
+-Woverlapping-patterns
+-Wno-overlapping-patterns
+-Wpartial-fields
+-Wno-partial-fields
+-Wpartial-type-signatures
+-Wno-partial-type-signatures
+-Wredundant-constraints
+-Wno-redundant-constraints
+-Wredundant-record-wildcards
+-Wno-redundant-record-wildcards
+-Wsafe
+-Wno-safe
+-Wsemigroup
+-Wno-semigroup
+-Wsimplifiable-class-constraints
+-Wno-simplifiable-class-constraints
+-Wspace-after-bang
+-Wno-missing-space-after-bang
+-Wstar-binder
+-Wno-star-binder
+-Wstar-is-type
+-Wno-star-is-type
+-Wtabs
+-Wno-tabs
+-Wtrustworthy-safe
+-Wno-safe
+-Wtype-defaults
+-Wno-type-defaults
+-Wtyped-holes
+-Wno-typed-holes
+-Wunbanged-strict-patterns
+-Wno-unbanged-strict-patterns
+-Wunrecognised-pragmas
+-Wno-unrecognised-pragmas
+-Wunrecognised-warning-flags
+-Wno-unrecognised-warning-flags
+-Wunsafe
+-Wno-unsafe
+-Wunsupported-calling-conventions
+-Wno-unsupported-calling-conventions
+-Wunsupported-llvm-version
+-Wno-monomorphism-restriction
+-Wunticked-promoted-constructors
+-Wno-unticked-promoted-constructors
+-Wunused-binds
+-Wno-unused-binds
+-Wunused-do-bind
+-Wno-unused-do-bind
+-Wunused-foralls
+-Wno-unused-foralls
+-Wunused-imports
+-Wno-unused-imports
+-Wunused-local-binds
+-Wno-unused-local-binds
+-Wunused-matches
+-Wno-unused-matches
+-Wunused-packages
+-Wno-unused-packages
+-Wunused-pattern-binds
+-Wno-unused-pattern-binds
+-Wunused-record-wildcards
+-Wno-unused-record-wildcards
+-Wunused-top-binds
+-Wno-unused-top-binds
+-Wunused-type-patterns
+-Wno-unused-type-patterns
+-Wwarn
+-Werror
+-Wwarnings-deprecations
+-Wno-warnings-deprecations
+-Wwrong-do-bind
+-Wno-wrong-do-bind
+============== OPTIMISATION LEVELS
+-O
+-O1
+-O0
+-O0
+-O2
+-O0
+-O⟨n⟩
+-O0
+============== INDIVIDUAL OPTIMISATIONS
+-fasm-shortcutting
+-fno-asm-shortcutting
+-fbinary-blob-threshold=⟨n⟩
+-fblock-layout-cfg
+-fno-block-layout-cfg
+-fblock-layout-weightless
+-fno-block-layout-weightless
+-fblock-layout-weights
+-fcall-arity
+-fno-call-arity
+-fcase-folding
+-fno-case-folding
+-fcase-merge
+-fno-case-merge
+-fcmm-elim-common-blocks
+-fno-cmm-elim-common-blocks
+-fcmm-sink
+-fno-cmm-sink
+-fcpr-anal
+-fno-cpr-anal
+-fcross-module-specialise
+-fno-cross-module-specialise
+-fcse
+-fno-cse
+-fdicts-cheap
+-fno-dicts-cheap
+-fdicts-strict
+-fno-dicts-strict
+-fdmd-tx-dict-sel
+-fno-dmd-tx-dict-sel
+-fdo-eta-reduction
+-fno-do-eta-reduction
+-fdo-lambda-eta-expansion
+-fno-do-lambda-eta-expansion
+-feager-blackholing
+-fenable-rewrite-rules
+-fno-enable-rewrite-rules
+-fexcess-precision
+-fno-excess-precision
+-fexitification
+-fno-exitification
+-fexpose-all-unfoldings
+-fno-expose-all-unfoldings
+-ffloat-in
+-fno-float-in
+-ffull-laziness
+-fno-full-laziness
+-ffun-to-thunk
+-fno-fun-to-thunk
+-fignore-asserts
+-fno-ignore-asserts
+-fignore-interface-pragmas
+-fno-ignore-interface-pragmas
+-flate-dmd-anal
+-fno-late-dmd-anal
+-flate-specialise
+-fno-late-specialise
+-fliberate-case
+-fno-liberate-case
+-fliberate-case-threshold=⟨n⟩
+-fno-liberate-case-threshold
+-fllvm-pass-vectors-in-regs
+-fno-llvm-pass-vectors-in-regs
+-floopification
+-fno-loopification
+-fmax-inline-alloc-size=⟨n⟩
+-fmax-inline-memcpy-insns=⟨n⟩
+-fmax-inline-memset-insns=⟨n⟩
+-fmax-simplifier-iterations=⟨n⟩
+-fmax-uncovered-patterns=⟨n⟩
+-fmax-worker-args=⟨n⟩
+-fno-opt-coercion
+-fno-pre-inlining
+-fno-state-hack
+-fomit-interface-pragmas
+-fno-omit-interface-pragmas
+-fomit-yields
+-fno-omit-yields
+-foptimal-applicative-do
+-fno-optimal-applicative-do
+-fpedantic-bottoms
+-fno-pedantic-bottoms
+-fregs-graph
+-fno-regs-graph
+-fregs-iterative
+-fno-regs-iterative
+-fsimpl-tick-factor=⟨n⟩
+-fsimplifier-phases=⟨n⟩
+-fsolve-constant-dicts
+-fno-solve-constant-dicts
+-fspec-constr
+-fno-spec-constr
+-fspec-constr-count=⟨n⟩
+-fno-spec-constr-count
+-fspec-constr-keen
+-fno-spec-constr-keen
+-fspec-constr-threshold=⟨n⟩
+-fno-spec-constr-threshold
+-fspecialise
+-fno-specialise
+-fspecialise-aggressively
+-fno-specialise-aggressively
+-fstatic-argument-transformation
+-fno-static-argument-transformation
+-fstg-cse
+-fno-stg-cse
+-fstg-lift-lams
+-fno-stg-lift-lams
+-fstg-lift-lams-known
+-fno-stg-lift-lams-known
+-fstg-lift-lams-non-rec-args
+-fno-stg-lift-lams-non-rec-args-any
+-fstg-lift-lams-rec-args
+-fno-stg-lift-lams-rec-args-any
+-fstrictness
+-fno-strictness
+-fstrictness-before=⟨n⟩
+-funbox-small-strict-fields
+-fno-unbox-small-strict-fields
+-funbox-strict-fields
+-fno-unbox-strict-fields
+-funfolding-creation-threshold=⟨n⟩
+-funfolding-dict-discount=⟨n⟩
+-funfolding-fun-discount=⟨n⟩
+-funfolding-keeness-factor=⟨n⟩
+-funfolding-use-threshold=⟨n⟩
+-fworker-wrapper
+============== PROFILING OPTIONS
+-fno-prof-auto
+-fprof-auto
+-fno-prof-cafs
+-fprof-cafs
+-fno-prof-count-entries
+-fprof-count-entries
+-fprof-auto
+-fno-prof-auto
+-fprof-auto-calls
+-fno-prof-auto-calls
+-fprof-auto-exported
+-fno-prof-auto
+-fprof-auto-top
+-fno-prof-auto
+-fprof-cafs
+-fno-prof-cafs
+-prof
+-ticky
+============== PROGRAM COVERAGE OPTIONS
+-fhpc
+============== C PRE-PROCESSOR OPTIONS
+-cpp
+-D⟨symbol⟩[=⟨value⟩]
+-U⟨symbol⟩
+-I⟨dir⟩
+-U⟨symbol⟩
+============== CODE GENERATION OPTIONS
+-dynamic-too
+-fasm
+-fllvm
+-fbyte-code
+-fexternal-dynamic-refs
+-fllvm
+-fasm
+-fno-code
+-fobject-code
+-fPIC
+-fPIE
+-fwrite-interface
+============== LINKING OPTIONS
+-debug
+-dylib-install-name ⟨path⟩
+-dynamic
+-dynload
+-eventlog
+-fno-embed-manifest
+-fno-gen-manifest
+-fno-shared-implib
+-framework ⟨name⟩
+-framework-path ⟨dir⟩
+-fwhole-archive-hs-libs
+-keep-cafs
+-L ⟨dir⟩
+-l ⟨lib⟩
+-main-is ⟨thing⟩
+-no-hs-main
+-no-rtsopts-suggestions
+-package ⟨name⟩
+-pie
+-rdynamic
+-rtsopts[=⟨none|some|all|ignore|ignoreAll⟩]
+-shared
+-split-sections
+-static
+-staticlib
+-threaded
+-with-rtsopts=⟨opts⟩
+============== PLUGIN OPTIONS
+-fclear-plugins
+-fplugin-opt=⟨module⟩:⟨args⟩
+-fplugin-trustworthy
+-fplugin=⟨module⟩
+-hide-all-plugin-packages
+-plugin-package ⟨pkg⟩
+-plugin-package-id ⟨pkg-id⟩
+============== REPLACING PHASES
+-pgma ⟨cmd⟩
+-pgmc ⟨cmd⟩
+-pgmdll ⟨cmd⟩
+-pgmF ⟨cmd⟩
+-pgmi ⟨cmd⟩
+-pgminstall_name_tool ⟨cmd⟩
+-pgmL ⟨cmd⟩
+-pgml ⟨cmd⟩
+-pgmlc ⟨cmd⟩
+-pgmlibtool ⟨cmd⟩
+-pgmlm ⟨cmd⟩
+-pgmlo ⟨cmd⟩
+-pgmotool ⟨cmd⟩
+-pgmP ⟨cmd⟩
+-pgms ⟨cmd⟩
+-pgmwindres ⟨cmd⟩
+============== FORCING OPTIONS TO PARTICULAR PHASES
+-opta ⟨option⟩
+-optc ⟨option⟩
+-optcxx ⟨option⟩
+-optdll ⟨option⟩
+-optF ⟨option⟩
+-opti ⟨option⟩
+-optL ⟨option⟩
+-optl ⟨option⟩
+-optlc ⟨option⟩
+-optlm ⟨option⟩
+-optlo ⟨option⟩
+-optP ⟨option⟩
+-optwindres ⟨option⟩
+-pgmc-supports-no-pie
+============== PLATFORM-SPECIFIC OPTIONS
+-mbmi2
+-msse2
+-msse4.2
+============== COMPILER DEBUGGING OPTIONS
+-dcmm-lint
+-dcore-lint
+-ddump-asm
+-ddump-asm-expanded
+-ddump-asm-liveness
+-ddump-asm-native
+-ddump-asm-regalloc
+-ddump-asm-regalloc-stages
+-ddump-asm-stats
+-ddump-bcos
+-ddump-cfg-weights
+-ddump-cmm
+-ddump-cmm-caf
+-ddump-cmm-cbe
+-ddump-cmm-cfg
+-ddump-cmm-cps
+-ddump-cmm-from-stg
+-ddump-cmm-info
+-ddump-cmm-proc
+-ddump-cmm-procmap
+-ddump-cmm-raw
+-ddump-cmm-sink
+-ddump-cmm-sp
+-ddump-cmm-split
+-ddump-cmm-switch
+-ddump-cmm-verbose
+-ddump-cmm-verbose-by-proc
+-ddump-core-stats
+-ddump-cse
+-ddump-deriv
+-ddump-ds
+-ddump-ds-preopt
+-ddump-ec-trace
+-ddump-file-prefix=⟨str⟩
+-ddump-foreign
+-ddump-hpc
+-ddump-if-trace
+-ddump-inlinings
+-ddump-json
+-ddump-llvm
+-ddump-mod-map
+-ddump-occur-anal
+-ddump-opt-cmm
+-ddump-parsed
+-ddump-parsed-ast
+-ddump-prep
+-ddump-rn
+-ddump-rn-ast
+-ddump-rn-stats
+-ddump-rn-trace
+-ddump-rtti
+-ddump-rule-firings
+-ddump-rule-rewrites
+-ddump-rules
+-ddump-simpl
+-ddump-simpl-iterations
+-ddump-simpl-stats
+-ddump-spec
+-ddump-splices
+-ddump-stg
+-ddump-stg-final
+-ddump-stg-unarised
+-ddump-str-signatures
+-ddump-stranal
+-ddump-tc
+-ddump-tc-ast
+-ddump-tc-trace
+-ddump-ticked
+-ddump-timings
+-ddump-to-file
+-ddump-types
+-ddump-worker-wrapper
+-dfaststring-stats
+-dhex-word-literals
+-dinitial-unique=⟨s⟩
+-dinline-check=⟨str⟩
+-dno-debug-output
+-ddebug-output
+-dno-typeable-binds
+-dppr-case-as-let
+-dppr-cols=⟨n⟩
+-dppr-debug
+-dppr-user-length
+-drule-check=⟨str⟩
+-dshow-passes
+-dstg-lint
+-dsuppress-all
+-dsuppress-coercions
+-dsuppress-idinfo
+-dsuppress-module-prefixes
+-dsuppress-stg-free-vars
+-dsuppress-ticks
+-dsuppress-timestamps
+-dsuppress-type-applications
+-dsuppress-type-signatures
+-dsuppress-unfoldings
+-dsuppress-uniques
+-dsuppress-var-kinds
+-dth-dec-file
+-dunique-increment=⟨i⟩
+-dverbose-core2core
+-dverbose-stg2stg
+-falignment-sanitisation
+-fcatch-bottoms
+-fllvm-fill-undef-with-garbage
+-fproc-alignment
+-g
+-g⟨n⟩
+============== MISCELLANEOUS COMPILER DEBUGGING OPTIONS
+-fexternal-interpreter
+-fglasgow-exts
+-fno-glasgow-exts
+-ghcversion-file ⟨path to ghcversion.h⟩
+-H ⟨size⟩
+-j[⟨n⟩]

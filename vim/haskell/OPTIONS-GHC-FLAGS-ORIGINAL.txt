@@ -1,11 +1,22 @@
 ================================================================================
-====================== GHC FLAG REFERENCE (ORIGINAL) ===========================
+=================== OPTIONS_GHC FLAG REFERENCE (ORIGINAL) ======================
 == https://downloads.haskell.org/~ghc/8.10.4/docs/html/users_guide/flags.html
 == author: Prem Muthedath, 17 MAR 2023
 
 == the haskell.org link for GHC 8.10.4 given above is the source of all data.
-== this file contains manually edited "raw" data of GHC flags from that link.
-== this data is needed to create a list of OPTIONS_GHC flags for vim pragma completion
+== this file has manually edited "raw" data of OPTIONS_GHC flags from that link.
+
+== this data is eventually needed to create a list of OPTIONS_GHC flags for 
+== haskell OPTIONS_GHC pragma completion in haskell files using vim.
+
+== NOTE: lines starting with `==` (such as this one) in this file are treated 
+== as "comments" here, as well as in some file-parse algorithms we have 
+== elsewhere, even though there is no such thing as a comment in text files. 
+== by "comment" we mean that these lines are helpful headers or remarks 
+== but not part of the OPTIONS_GHC flags data.
+
+== ALSO, PLEASE DO NOT CHANGE THIS FILE IN ANYWAY, INCLUDING ADDING OR DELETING 
+== SPACES OR LINES, BECAUSE ANY CHANGE COULD RESULT IN FAILURE DURING FILE PARSE.
 
 == Prem manually created this file using the following steps:
 ==  1. the haskell.org link for GHC 8.10.4 given above is source of all data
@@ -62,7 +73,7 @@
 -v	dynamic	
 -v⟨n⟩	dynamic	
 ================================================================================
-============== WHICH PAHSES TO RUN
+============== WHICH PHASES TO RUN
 ================================================================================
 ====  Flag                        Type	        Reverse
 ================================================================================

@@ -1,19 +1,30 @@
 ================================================================================
-======================= GHC FLAG REFERENCE (FORMATTED) =========================
+=================== OPTIONS_GHC FLAG REFERENCE (FORMATTED) =====================
 == https://downloads.haskell.org/~ghc/8.10.4/docs/html/users_guide/flags.html
 == the haskell.org link for GHC 8.10.4 given above is the source of all data.
 == author: Prem Muthedath, 17 MAR 2023
 
 == this file essentially has the same data as OPTIONS-GHC-FLAGS-ORIGINAL.txt, 
 == but the data here has been formatted into columns of equal width.
-== data formatted using `OptionsGhcFlagsFormat()` in vim/plugin/util.vim
-== this data is needed to create a list of OPTIONS_GHC flags for vim pragma completion
+== data formatted using `FormatOptionsGhcFlagsFile()` in vim/plugin/util.vim
+
+== this data is needed to create a list of OPTIONS_GHC flags for haskell 
+== OPTIONS_GHC pragma completion in haskell files using vim.
+
+== NOTE: lines starting with `==` (such as this one) in this file are treated 
+== as "comments" here, as well as in some file-parse algorithms we have 
+== elsewhere, even though there is no such thing as a comment in text files. 
+== by "comment" we mean that these lines are helpful headers or remarks 
+== but not part of the OPTIONS_GHC flags data.
+
+== ALSO, PLEASE DO NOT CHANGE THIS FILE IN ANYWAY, INCLUDING ADDING OR DELETING 
+== SPACES OR LINES, BECAUSE ANY CHANGE COULD RESULT IN FAILURE DURING FILE PARSE.
 
 == Prem created this file in the following way:
 ==  1. created this file, as a copy of vim/haskell/OPTIONS-GHC-FLAGS-ORIGINAL.txt
 ==  2. removed non-applicable comments
 ==  3. opened this file in vim
-==  4. ran `OptionsGhcFlagsFormat()` from vim commandline to format contents
+==  4. ran `FormatOptionsGhcFlagsFile()` from vim commandline to format contents
 ==  5. checked data accuracy by comparing contents with haskell.org link above.
 ==  6. added headers, comments, etc for easy read
 
@@ -63,7 +74,7 @@
 -v                                            dynamic
 -v⟨n⟩                                         dynamic
 ================================================================================
-============== WHICH PAHSES TO RUN
+============== WHICH PHASES TO RUN
 ================================================================================
 ====  Flag                                     Type	        Reverse
 ================================================================================
