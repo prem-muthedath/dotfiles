@@ -1,4 +1,6 @@
 " organize your vimrc: https://vimways.org/2018/from-vimrc-to-vim/
+" good comments: /u/ martin tournoij @ https://tinyurl.com/xn6fbrmm (vi.SE)
+" 0 vs ^ vs | vs _ => /u/ roaminl @ https://tinyurl.com/bde9mbrz (reddit)
 " ==============================================================================
 
 " load file containing autocommands first!
