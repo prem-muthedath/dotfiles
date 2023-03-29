@@ -54,7 +54,7 @@ function! FormatOptionsGhcFlagsFile()
   "      which makes reading difficult.
   "         -blah     dynamic        -no-blah
   "         -bazooze     dynamic\s\s
-  "         -foo-dynamic         dynpamic             -no-foo-dynamic
+  "         -foo-dynamic         dynamic             -no-foo-dynamic
   "   2. to get stuff separated into columns, we use `g/pattern/cmds`, which 
   "      searches the entire file & selects every line that matches the pattern 
   "      and then runs `cmds` on each matched line. see :h :global
