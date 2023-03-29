@@ -19,7 +19,7 @@ function! FormatCsFile()
   "
   " NOTES: this function's structure is same as `FormatOptionsGhcFlagsFile()`, 
   " even though the format of input file here is different, so the overall flow 
-  " of extensive comments given for `FormatOPtionsGhcFlagsFile()` applies here.
+  " of extensive comments given for `FormatOptionsGhcFlagsFile()` applies here.
   " see below REFs for :execute and `normal` and `normal!` usage:
   "   1. https://learnvimscriptthehardway.stevelosh.com/chapters/28.html
   "   2. https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
@@ -36,7 +36,7 @@ function! FormatCsFile()
 endfunction
 
 " ==============================================================================
-function! FormatOPtionsGhcFlagsFile()
+function! FormatOptionsGhcFlagsFile()
   " Format OPTIONS-GHC-FLAGS-ORIGINAL.txt file in ~/dotfiles/vim/haskell/
   " sample output: ~/dotfiles/vim/haskell/OPTIONS-GHC-FLAGS-FORMATTED.txt
   " basically, this function formats line data into neatly separated columns.
