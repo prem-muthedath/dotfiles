@@ -21,7 +21,7 @@
 == SPACES OR LINES, BECAUSE ANY CHANGE COULD RESULT IN FAILURE DURING FILE PARSE.
 
 == Prem created this file in the following way:
-==  1. created this file, as a copy of vim/haskell/OPTIONS-GHC-FLAGS-ORIGINAL.txt
+==  1. created this file, as a copy of vim/haskell-data/OPTIONS-GHC-FLAGS-ORIGINAL.txt
 ==  2. removed non-applicable comments
 ==  3. opened this file in vim
 ==  4. ran `FormatOptionsGhcFlagsFile()` from vim commandline to format contents
