@@ -61,70 +61,63 @@ function! FormatOptionsGhcFlagsFile()
   "   3. we use g/pattern/cmds 3 times to format our data. in the first 
   "      g/pattern./cmds, we first remove the spaces between the 1st data column 
   "      (blah, bazooze, -foo-dynamic) and the 2nd column `dynaamic` using:
-  "         execute 's/\s\+\(dynamic\)\(\s*$\|\s\+-\)/\1\2'
-  "      we use \s+\(dynamic\)\(\s*$\|\s\+-\) because we could have lines like:
+  "          execute 's/\s\+\(dynamic\)\(\s*$\|\s\+-\)/\U\1\E\2'
+  "      we use /\s\+\(dynamic\)\(\s*$\|\s\+-\)/ because of lines like:
   "           ^-dynamic   dynamic
   "           ^-rdynamic    dynamic
   "           ^-fi-dynamic    dynamic     -no-fi-dynamic
   "      so to get the middle `dynamic` (the one we want), we search for a 
-  "      `dynamic` always preceeded by \s+ & followed either by \s\+- or by \s*$
+  "      `dynamic` always preceeded by \s+ & followed either by \s\+- or by 
+  "      \s*$. plus, in substitution, we convert `dynamic` to `DYNAMIC`, to make 
+  "      it easier to locate the 'dynamic` we want, always the uppercase one.
   "      after this command, we have:
-  "         -blahdynamic        -no-blah
-  "         -bazoozedynamic\s\s
-  "         -foo-dynamicdynamic             -no-foo-dynamic
+  "         -blahDYNAMIC        -no-blah
+  "         -bazoozeDYNAMIC\s\s
+  "         -foo-dynamicDYNAMIC             -no-foo-dynamic
   "   4. then, continuing with the same g/pattern/, we standardize the spacing 
-  "      between the 2nd column (`dynamic`) and the 3rd column to 3 \s.
-  "         execute 's/\(dynamic\)\s\+\(-\)/\1   \2'
+  "      between the 2nd column (`DYNAMIC`) and the 3rd column to 3 \s.
+  "         execute 's/\(DYNAMIC\)\s\+\(-\)/\1   \2'
   "      after this command, we have:
-  "         -blahdynamic   -no-blah
-  "         -bazoozedynamic\s\s
-  "         -foo-dynamicdynamic   -no-foo-dynamic
-  "   5. still with the same g/pattern/, we chop any trailing \s after `dynamic` 
+  "         -blahDYNAMIC   -no-blah
+  "         -bazoozeDYNAMIC\s\s
+  "         -foo-dynamicDYNAMIC   -no-foo-dynamic
+  "   5. still with the same g/pattern/, we chop any trailing \s after `DYNAMIC` 
   "      (the one merged at 1st column end) when no 3rd column follows it:
-  "         execute 's/\(dynamic\)\s\+$/\1'
+  "         execute 's/\(DYNAMIC\)\s\+$/\1'
   "      after this command, we have:
-  "         -blahdynamic   -no-blah
-  "         -bazoozedynamic
-  "         -foo-dynamicdynamic   -no-foo-dynamic
+  "         -blahDYNAMIC   -no-blah
+  "         -bazoozeDYNAMIC
+  "         -foo-dynamicDYNAMIC   -no-foo-dynamic
   "   6. next, we run the 2nd g/pattern/cmds, first to do pattern search and 
-  "      place the cursor just before `d` in `dynamic` to extract the column #:
+  "      place the cursor just before `D` in `DYNAMIC` to extract the column #:
   "         execute 'normal ' .
-  "                 \ '/^.*\zsdynamic\ze\(\s\+-\|$\)/e-' .  (l:offset) .
-  "                 \ ""\<CR>"
-  "      we've lines like the ones below in the file:
-  "           ^-dynamic   dynamic
-  "           ^-rdynamic    dynamic
-  "      the greedy pattern /^.*\zsdynamic\ze/\(\s\+-\|$\) will match the 
-  "      `dynamic` (the one we want) that is either followed by \s+- or followed 
-  "      by EOL. \zs & \ze define match selection, which here is `dynamic`.
-  "      after this, we've cursor on the CAPS alphabet shown below:
-  "           -blaHdynamic   -no-blah
-  "           -bazoozEdynamic
-  "           -foo-dynamiCdynamic   -no-foo-dynamic
+  "               \ '/^-.*\zsDYNAMIC\ze\(\s\+-\|$\)/e-' .  (l:offset) . "\<CR>"
+  "      \zs & \ze define match selection, which here is `DYNAMIC`.
+  "      `l:offset` = len('DYNAMIC')`
+  "      after this, we've cursor on the leftmost CAPS alphabet as shown below:
+  "           -blaHDYNAMIC   -no-blah
+  "           -bazoozEDYNAMIC
+  "           -foo-dynamiCDYNAMIC   -no-foo-dynamic
   "   7. as step 6 is done on each g/pattern/ matched line, we also concurrently 
   "      update the max col #, the max width of data column 1, so that when we 
   "      get through all matched lines, we will have the final max col #:
   "         let l:maxcol = max([l:maxcol, virtcol('.')])
   "   8. finally, we run the 3rd g/pattern/cmds, first repeating step 
-  "      6 to position the cursor just before `d` in `dynamic`:
+  "      6 to position the cursor just before `D` in `DYNAMIC`:
   "         execute 'normal ' .
-  "                 \ '/^.*\zsdynamic\ze\(\s\+-\|$\)/e-' .  (l:offset) .
-  "                 \ ""\<CR>"
-  "      we've lines like the ones below in the file:
-  "           ^-dynamic   dynamic
-  "           ^-rdynamic    dynamic
-  "      the greedy pattern /^.*\zsdynamic\ze/\(\s\+-\|$\) will match the 
-  "      `dynamic` (the one we want) that is either followed by \s+- or followed 
-  "      by EOL. \zs & \ze define match selection, which here is `dynamic`.
-  "      after this, we've cursor on the CAPS alphabet shown below
-  "         -blaHdynamic   -no-blah
-  "         -bazoozEdynamic
-  "         -foo-dynamiCdynamic   -no-foo-dynamic
+  "               \ '/^-.*\zsDYNAMIC\ze\(\s\+-\|$\)/e-' .  (l:offset) . "\<CR>"
+  "      after this, we've cursor on the leftmost CAPS alphabet as shown below:
+  "           -blaHDYNAMIC   -no-blah
+  "           -bazoozEDYNAMIC
+  "           -foo-dynamiCDYNAMIC   -no-foo-dynamic
   "   9. as step 8 is done on each g/pattern/ matched line, we use the max col # 
-  "      from step 7 to concurrently insert spaces between `dynamic` & the  1eft 
-  "      (1st) column to get the same 1st column width for each matched line.
+  "      from step 7 to concurrently insert spaces between `DYNAMIC` & the  1eft 
+  "      (1st) column to get the same 1st column width for each matched line.  
+  "      concurrently, after space insertion, we also revert 'DYNAMIC' back to 
+  "      'dynamic' for that line.
   "         let l:diff = l:maxcol - virtcol('.') + 3
   "         execute 'normal a' . repeat(" ", l:diff)
+  "         execute 's/DYNAMIC/dynamic/'
   "      after this, we've the following result:
   "         -blah          dynamic   -no-blah
   "         -bazooze       dynamic
@@ -149,25 +142,28 @@ function! FormatOptionsGhcFlagsFile()
   "   3. https://learnvimscriptthehardway.stevelosh.com/chapters/30.html
   " good comments: /u/ martin tournoij @ https://tinyurl.com/xn6fbrmm (vi.SE)
   let l:maxcol=0
-  let l:offset=len('dynamic')
-  let l:pat='normal ' . '/^.*\zsdynamic\ze\(\s\+-\|$\)/e-' . (l:offset) . "\<CR>"
+  let l:offset=len('DYNAMIC')
+  let l:pat='normal ' . '/^-.*\zsDYNAMIC\ze\(\s\+-\|$\)/e-' . (l:offset) . "\<CR>"
   " for all g-matched lines,
-  "   1) merge data column 1 & data column 2 (contains `dynamic`);
+  "   1) merge data columns 1 & 2 (has `dynamic`), switching case of `dynamic`;
   "   2) set 3 \s separation between data columns 2 (now merged) and 3;
   "   3) if no data column 3, trim any trailing \s+ of data column 2 (merged).
+  " https://vim.fandom.com/wiki/Changing_case_with_regular_expressions
   g/^-.*dynamic/
-        \ execute 's/\s\+\(dynamic\)\(\s*$\|\s\+-\)/\1\2'
-        \ | execute 's/\(dynamic\)\s\+\(-\)/\1   \2'
-        \ | execute 's/\(dynamic\)\s\+$/\1'
+        \ execute 's/\s\+\(dynamic\)\(\s*$\|\s\+-\)/\U\1\E\2'
+        \ | execute 's/\(DYNAMIC\)\s\+\(-\)/\1   \2'
+        \ | execute 's/\(DYNAMIC\)\s\+$/\1'
   " get max width of 1st data column
-  g/^-.*dynamic/
+  g/^-.*DYNAMIC/
         \ execute l:pat
         \ | let l:maxcol = max([l:maxcol, virtcol('.')])
-  " have all lines conform to same width for 1st data column.
-  g/^-.*dynamic/
+  " have all matched lines conform to same width for 1st data column.
+  " in each matched line, revert 'DYNAMIC' back to 'dynamic' as well.
+  g/^-.*DYNAMIC/
         \ execute l:pat
         \ | let l:diff = l:maxcol - virtcol('.') + 3
         \ | execute 'normal a' . repeat(" ", l:diff)
+        \ | execute 's/DYNAMIC/dynamic/'
 endfunction
 
 " ==============================================================================
