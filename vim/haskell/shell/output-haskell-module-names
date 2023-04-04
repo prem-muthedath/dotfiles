@@ -148,7 +148,7 @@ find ~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4 -depth 1 -type d  \
 #   2. once we have extracted all the lines having modules names, we need to do 
 #      some clean up.  this involves:
 #
-#       a) etting rid of blanks: sed  '/^[[:space:]]*$/d', where `d` deletes.
+#       a) getting rid of blanks: sed  '/^[[:space:]]*$/d', where `d` deletes.
 #       b) getting rid of leading spaces: sed 's/^[[:space:]]*//'
 #
 #      once we are done with these 2 steps, we've a clean list of module names.
