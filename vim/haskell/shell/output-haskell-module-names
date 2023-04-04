@@ -1,7 +1,9 @@
 #!/bin/bash
 # ==============================================================================
 # bash script that extracts haskell cabal- and ghcup- installed package names 
-# and module names. the script outputs will be in vim/haskell/data/ directory.
+# and module names in Prem's system. the script outputs will be in 
+# vim/haskell/data/ directory. at this time, the generated data corresponds to 
+# GHC 8.10.4.
 #
 # the generated module names are needed for haskell `import` completion in 
 # haskell files using vim omnicompletion.
@@ -9,12 +11,10 @@
 # usage:
 #   1. `cd` to `dotfiles` folder, the root folder for all dotfiles
 #   2. run `./output-haskell-module-names` on the commandline.
-#   3. to see the outputs, view files in vim/haskell/data/ folder named 
-#      `cabal-installed-modules.txt` and `ghcup-installed-modules.txt`.
-#   4. in the process of generating haskel module names, this script also 
-#      generates names of all the packages installed on Prem's system.  you can 
-#      view these files, if you wish, in vim/haskell/data/ folder -- the files 
-#      are `cabal-installed-pkgs.txt` and `ghcup-installed-pkgs.txt`.
+#   3. to see the module names generated, view files in vim/haskell/data/ folder 
+#      named `cabal-installed-modules.txt` and `ghcup-installed-modules.txt`.
+#   4. to see the package names generated, view files in vim/haskell/data/ 
+#      folder named `cabal-installed-pkgs.txt` and `ghcup-installed-pkgs.txt`.
 #
 # author: Prem Muthedath, MAR 2023.
 #
@@ -138,7 +138,7 @@ find ~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4 -depth 1 -type d  \
 #
 #     REF: see /u/ hek2mgl @ https://tinyurl.com/yckatxkn (so)
 #
-#     NOTE: for the last block starting with `# p3`, even though no `*` follows 
+#     NOTE: for the last block starting with `* p3`, even though no `*` follows 
 #     `Modules:`, `sed` still prints these module names out!  This happens 
 #     because when `sed` encounters 'Modules:', it flips the `print` switch on, 
 #     and keeps printing the lines until it finds the '\*' pattern, when it will 
