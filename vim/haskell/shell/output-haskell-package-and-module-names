@@ -36,6 +36,7 @@ rm "${gmods}" ||  echo "failed to remove file \"${gmods}\""
 #   2. print the directories found with null separator (-print0)
 #   3. extract just the directory names (which are package names) with xargs
 #   4. sort package names extracted, ignoring duplicates, blanks, and case.
+#   5. dump the final output, the package names, to a file.
 # REF:
 # 1. `find -type d -depth 1`: /u/ gvkv @ https://tinyurl.com/3f4w6fwj (unix.SE)
 # 2. -print0: /u/ jneville, saul, chepner @ https://tinyurl.com/4pr4es7h (so)
