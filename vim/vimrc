@@ -1,5 +1,9 @@
+" ================================= VIMRC ======================================
+" author: Prem Muthedath
+" ====================== USEFUL LINKS
 " organize your vimrc: https://vimways.org/2018/from-vimrc-to-vim/
 " vim cheat sheet: https://vim.rtorr.com
+" find/replace in files; /u/ nikko bellic @ https://tinyurl.com/3fxk9a62 (vi.SE)
 " good comments: /u/ martin tournoij @ https://tinyurl.com/xn6fbrmm (vi.SE)
 " 0 vs ^ vs | vs _ => /u/ romainl @ https://tinyurl.com/bde9mbrz (reddit)
 " ==============================================================================

@@ -37,8 +37,8 @@ endfunction
 
 " ==============================================================================
 function! FormatOptionsGhcFlagsFile()
-  " Format OPTIONS-GHC-FLAGS-ORIGINAL.txt file in ~/dotfiles/vim/haskell-data/
-  " sample output: ~/dotfiles/vim/haskell-data/OPTIONS-GHC-FLAGS-FORMATTED.txt
+  " Format OPTIONS-GHC-FLAGS-ORIGINAL.txt file in ~/dotfiles/vim/haskell/data/
+  " sample output: ~/dotfiles/vim/haskell/data/OPTIONS-GHC-FLAGS-FORMATTED.txt
   " basically, this function formats line data into neatly separated columns.
   "
   " 19 MAR 2023; author: Prem Muthedath
@@ -168,8 +168,8 @@ endfunction
 
 " ==============================================================================
 function! ParseOptionsGhcFlags() abort
-  " reads vim/haskell-data/OPTIONS-GHC-FLAGS-FORMATTED.txt, extracts OPTIONS_GHC 
-  " flags, & prints them to vim/haskell-data/OPTIONS-GHC-FLAGS-PARSED-LIST.txt.
+  " reads vim/haskell/data/OPTIONS-GHC-FLAGS-FORMATTED.txt, extracts OPTIONS_GHC 
+  " flags, & prints them to vim/haskell/data/OPTIONS-GHC-FLAGS-PARSED-LIST.txt.
   "
   " author: Prem Muthedath, 27 MAR 2023.
   "
@@ -202,8 +202,8 @@ function! ParseOptionsGhcFlags() abort
   " ============================================================================
   " good comments: /u/ martin tournoij @ https://tinyurl.com/xn6fbrmm (vi.SE)
   " define & initialize some local variables.
-  :let l:ifile='vim/haskell-data/OPTIONS-GHC-FLAGS-FORMATTED.txt'
-  :let l:ofile='vim/haskell-data/OPTIONS-GHC-FLAGS-PARSED-LIST.txt'
+  :let l:ifile='vim/haskell/data/OPTIONS-GHC-FLAGS-FORMATTED.txt'
+  :let l:ofile='vim/haskell/data/OPTIONS-GHC-FLAGS-PARSED-LIST.txt'
   :let l:pat1='\s\+dynamic\($\|\s\+\)'
   :let l:pat2=',\s'
   :let l:pat='\(' . l:pat1 . '\)' . '\|' . '\(' . l:pat2 . '\)'
@@ -226,13 +226,13 @@ function! CountOptionsGhcFlags() abort
   " count the number of OPTIONS_GHC flags.
   "
   " this count acts as a rule-of-thumb test for the generated 
-  " vim/haskell-data/OPTIONS-GHC-FLAGS-PARSED-LIST.txt. the total number of lines in 
+  " vim/haskell/data/OPTIONS-GHC-FLAGS-PARSED-LIST.txt. the total number of lines in 
   " that file should match the count reported by this function.
   "
   " code idea from /u/ mMontu @ https://tinyurl.com/y6s8mxpz (so).
   " replaced `v` with `g` here; of course, the patterns apply only for use here.
   "
-  " usage: open vim/haskell-data/OPTIONS-GHC-FLAGS-FORMATTED.txt and then invoke 
+  " usage: open vim/haskell/data/OPTIONS-GHC-FLAGS-FORMATTED.txt and then invoke 
   " :echo CountOptionsGhcFlags() on the vim commandline.
   "
   " NOTE (vim doc):
