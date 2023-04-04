@@ -1,0 +1,177 @@
+#!/bin/bash
+# ==============================================================================
+# bash script that extracts haskell cabal- and ghcup- installed package names 
+# and module names. the script outputs will be in vim/haskell/data/ directory.
+#
+# the generated module names are needed for haskell `import` completion in 
+# haskell files using vim omnicompletion.
+#
+# usage:
+#   1. `cd` to `dotfiles` folder, the root folder for all dotfiles
+#   2. run `./output-haskell-module-names` on the commandline.
+#   3. to see the outputs, view files in vim/haskell/data/ folder named 
+#      `cabal-installed-modules.txt` and `ghcup-installed-modules.txt`.
+#   4. in the process of generating haskel module names, this script also 
+#      generates names of all the packages installed on Prem's system.  you can 
+#      view these files, if you wish, in vim/haskell/data/ folder -- the files 
+#      are `cabal-installed-pkgs.txt` and `ghcup-installed-pkgs.txt`.
+#
+# author: Prem Muthedath, MAR 2023.
+#
+# ==============================================================================
+# declare some needed file paths as read-only.
+declare -r cpkgs='vim/haskell/data/cabal-installed-pkgs.txt'
+declare -r cmods='vim/haskell/data/cabal-installed-modules.txt'
+declare -r gpkgs='vim/haskell/data/ghcup-installed-pkgs.txt'
+declare -r gmods='vim/haskell/data/ghcup-installed-modules.txt'
+
+# remove existing data files, because we want to generate them afresh.
+rm "${cpkgs}" ||  echo "failed to remove file \"${cpkgs}\""
+rm "${cmods}" ||  echo "failed to remove file \"${cmods}\""
+rm "${gpkgs}" ||  echo "failed to remove file \"${gpkgs}\""
+rm "${gmods}" ||  echo "failed to remove file \"${gmods}\""
+# ==============================================================================
+# extract the list of cabal-installed haskell package names.
+# execution steps:
+#   1. search for only directories but do not dive into them (-depth 1)!
+#   2. print the directories found with null separator (-print0)
+#   3. extract just the directory names (which are package names) with xargs
+#   4. sort package names extracted, ignoring duplicates, blanks, and case.
+# REF:
+# 1. `find -type d -depth 1`: /u/ gvkv @ https://tinyurl.com/3f4w6fwj (unix.SE)
+# 2. -print0: /u/ jneville, saul, chepner @ https://tinyurl.com/4pr4es7h (so)
+# 3. extract filename using xargs: /u/ fge @ https://tinyurl.com/be8ffrdw (so)
+# 4. sort -buf: see man sort in mac.
+find ~/.cabal/packages/hackage.haskell.org -depth 1 -type d -print0 |  \
+  # extract just the file name
+  xargs -0 -n 1 basename | \
+  # sort, ignoring duplicates (`-u`), case (`-f`), and blanks (`-b`)
+  sort -buf > "${cpkgs}"
+
+# ==============================================================================
+# extract the list of ghcup-installed haskell package names.
+# execution steps:
+#   1. search for only directories but do not dive into them (-depth 1)!
+#   2. skip `bin`, `include`, & `package.conf.d' non-package directories.
+#   3. print with null separator, extract just the directory names, which are 
+#      the package names, with xargs, sort, and write package names to file.
+# NOTE: sort -buf: sort, ignoring duplicates (`-u`), case (`-f`), & blanks (`-b`)
+# REF:
+# 1. `find -type d -depth 1`: /u/ gvkv @ https://tinyurl.com/3f4w6fwj (unix.SE)
+# 2.  skip dirs in `find` using \! \(-path '*/dir' \):
+#       a) /u/ dimidak, /u/ aclwitt @ https://tinyurl.com/2yu8jsrj (so)
+#       b) man find in mac (see examples)
+# 3. -print0: /u/ jneville, saul, chepner @ https://tinyurl.com/4pr4es7h (so)
+# 4. extract filename using xargs: /u/ fge @ https://tinyurl.com/be8ffrdw (so)
+# 5. sort -buf: see man sort in mac.
+# NOTE: we used '~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4' in `find`, instead of 
+# '~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4/package.conf.d', because `package.conf.d` 
+# does not include certain packages such as html and latex -- not sure why.
+find ~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4 -depth 1 -type d  \
+  \! \( -path '*/bin' \) \! \( -path '*/include' \) \! \( -path '*/package.conf.d' \) \
+  -print0 | xargs -0 -n 1 basename | sort -buf > "${gpkgs}"
+
+# ==============================================================================
+# this function extracts haskell module names associated with the package names 
+# in the specified input file and prints these extracted module names to the 
+# specified output file.  it extracts the module names using `cabal info` and 
+# `sed` commands. it also cleans extracted data, removing leading spaces & blank 
+# lines, before dumping the data to the specified output file.
+#
+# inputs:
+#   $1 => input file containing list of haskell package names.
+#   $2 => output file where list of extracted module names should be dumped.
+#
+# this function does not return any value, nor does it echo anything.  instead, 
+# it dumps its output to the specified output file.
+#
+# we put this code in a function to avoid duplication, because module data 
+# extraction is almost identical for cabal-installed and ghcup-installed pkgs. 
+#
+# REF:
+# 1. `cat` with `xargs`: /u/ Stefan @ https://tinyurl.com/4dxynh3k (unix.SE)
+# 2. also, see (not directly applicable here but still useful) - `echo "$(< 
+#    file)"`: /u/ Stéphane Chazelas @ https://tinyurl.com/2p894vju (unix.SE)
+# 3. print lines between 2 patterns using `sed`: /u/ hek2mgl @ 
+#    https://tinyurl.com/yckatxkn (so)
+# 4. match white space in mac `sed`: /u/ some ideas @ 
+#    https://tinyurl.com/br7cszr4 (superuser.com)
+#
+# PARSING `cabal info` information using `sed`:
+#   1. when you run `cabal info` on a list of package names, say p1, p2, p3, the 
+#      output has the following format:
+#
+#      * p1
+#         Synopsis:
+#         ...
+#         Modules:
+#           M1
+#           M2
+#
+#      * p2
+#         Synopsis:
+#         ...
+#         Modules:
+#           M3
+#           M4
+#
+#      * p3
+#         Synopsis:
+#         ...
+#         Modules:
+#           M5
+#           M6
+#           M7
+#
+#     To parse this information and extract the module names M1, M2, ..., M7, we 
+#     use a `sed` pattern to print only the lines between `^.*Modules:` and 
+#     `^\*`.  everything else is ignored. the exact `sed` command is:
+#
+#         sed -n '/^.*Modules:/,/^\*/{//!p;}'
+#
+#     `sed -n` says print nothing by default, unless you are explicitly asked.
+#
+#     /^.*Modules,/^\*/ => select only lines between these pattern matches.
+#
+#     {//!p;} => print (`p`) only lines that lie between the matched patterns, 
+#     while ignoring (//!) the start & end lines that match the patterns.
+#
+#     REF: see /u/ hek2mgl @ https://tinyurl.com/yckatxkn (so)
+#
+#     NOTE: for the last block starting with `# p3`, even though no `*` follows 
+#     `Modules:`, `sed` still prints these module names out!  This happens 
+#     because when `sed` encounters 'Modules:', it flips the `print` switch on, 
+#     and keeps printing the lines until it finds the '\*' pattern, when it will 
+#     turn off the print switch.  however, in this case, it never finds the '\*` 
+#     pattern because we reach the end of file. see "Ranges by patterns" @ 
+#     https://www.grymoire.com/Unix/Sed.html for an explanation.
+#
+#   2. once we have extracted all the lines having modules names, we need to do 
+#      some clean up.  this involves:
+#
+#       a) etting rid of blanks: sed  '/^[[:space:]]*$/d', where `d` deletes.
+#       b) getting rid of leading spaces: sed 's/^[[:space:]]*//'
+#
+#      once we are done with these 2 steps, we've a clean list of module names.
+#
+#      REF: match white space in mac `sed`: /u/ some ideas @ 
+#      https://tinyurl.com/br7cszr4 (superuser.com)
+extract_module_names()  {
+  local ifile ofile
+  ifile="${1}"
+  ofile="${2}"
+
+  cat "${ifile}" | \
+    xargs cabal info | \
+    sed -n '/^.*Modules:/,/^\*/{//!p;}' | \
+    sed  '/^[[:space:]]*$/d' | \
+    sed 's/^[[:space:]]*//' | \
+    sort -buf > "${ofile}"
+}
+
+# ==============================================================================
+# extract module names into files.
+extract_module_names "${cpkgs}" "${cmods}"
+extract_module_names "${gpkgs}" "${gmods}"
+
+# ==============================================================================
