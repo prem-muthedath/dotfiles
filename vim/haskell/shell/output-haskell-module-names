@@ -1,9 +1,8 @@
 #!/bin/bash
 # ==============================================================================
 # bash script that extracts haskell cabal- and ghcup- installed package names 
-# and module names in Prem's system. the script outputs will be in 
-# vim/haskell/data/ directory. at this time, the generated data corresponds to 
-# GHC 8.10.4.
+# and module names in Prem's system. script outputs will be in vim/haskell/data/ 
+# directory. at this time, the generated data corresponds to GHC 8.10.4.
 #
 # the generated module names are needed for haskell `import` completion in 
 # haskell files using vim omnicompletion.
