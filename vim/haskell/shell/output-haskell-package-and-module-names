@@ -40,6 +40,7 @@ rm "${cgmods}" || echo "failed to remove file \"${cgmods}\""
 # 2. -print0: /u/ jneville, saul, chepner @ https://tinyurl.com/4pr4es7h (so)
 # 3. extract filename using xargs: /u/ fge @ https://tinyurl.com/be8ffrdw (so)
 # 4. sort -buf: see man sort in mac.
+# 5. general intro to xargs: https://shapeshed.com/unix-xargs/
 find ~/.cabal/packages/hackage.haskell.org -depth 1 -type d -print0 |  \
   # extract just the file name
   xargs -0 -n 1 basename | \
@@ -62,6 +63,7 @@ find ~/.cabal/packages/hackage.haskell.org -depth 1 -type d -print0 |  \
 # 3. -print0: /u/ jneville, saul, chepner @ https://tinyurl.com/4pr4es7h (so)
 # 4. extract filename using xargs: /u/ fge @ https://tinyurl.com/be8ffrdw (so)
 # 5. sort -buf: see man sort in mac.
+# 6. general intro to xargs: https://shapeshed.com/unix-xargs/
 # NOTE: we used '~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4' in `find`, instead of 
 # '~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4/package.conf.d', because `package.conf.d` 
 # does not include certain packages such as html and latex -- not sure why.
@@ -95,6 +97,7 @@ find ~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4 -depth 1 -type d  \
 # 4. match white space in mac `sed`: /u/ some ideas @ 
 #    https://tinyurl.com/br7cszr4 (superuser.com)
 # 5. `cabal info` idea from: https://tinyurl.com/ds4kubxe (github)
+# 6. general intro to xargs: https://shapeshed.com/unix-xargs/
 #
 # PARSING `cabal info` information using `sed`:
 #   1. when you run `cabal info` on a list of package names, say p1, p2, p3, the 
@@ -170,6 +173,8 @@ extract_module_names()  {
 
 # ==============================================================================
 # extract both cabal- and ghcup-installed module names into file.
+# https://opensource.com/article/18/5/you-dont-know-bash-intro-bash-arrays
+# for shell equality, see /u/ dawg @ https://tinyurl.com/bxhab8pk (so)
 declare -r ifiles=("${cpkgs}" "${gpkgs}")
 for i in ${ifiles[@]}; do
   if [[ "${i}" == "${cpkgs}" ]]; then
