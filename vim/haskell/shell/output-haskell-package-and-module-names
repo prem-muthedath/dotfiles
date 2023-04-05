@@ -10,8 +10,8 @@
 # usage:
 #   1. `cd` to `dotfiles` folder, the root folder for all dotfiles
 #   2. run `./output-haskell-module-names` on the commandline.
-#   3. to see the module names generated, view files in vim/haskell/data/ folder 
-#      named `cabal-installed-modules.txt` and `ghcup-installed-modules.txt`.
+#   3. to see the module names generated, view file in vim/haskell/data/ folder 
+#      named `cabal-ghcup-installed-modules.txt`.
 #   4. to see the package names generated, view files in vim/haskell/data/ 
 #      folder named `cabal-installed-pkgs.txt` and `ghcup-installed-pkgs.txt`.
 #
@@ -20,15 +20,13 @@
 # ==============================================================================
 # declare some needed file paths as read-only.
 declare -r cpkgs='vim/haskell/data/cabal-installed-pkgs.txt'
-declare -r cmods='vim/haskell/data/cabal-installed-modules.txt'
 declare -r gpkgs='vim/haskell/data/ghcup-installed-pkgs.txt'
-declare -r gmods='vim/haskell/data/ghcup-installed-modules.txt'
+declare -r cgmods='vim/haskell/data/cabal-ghcup-installed-modules.txt'
 
 # remove existing data files, because we want to generate them afresh.
-rm "${cpkgs}" ||  echo "failed to remove file \"${cpkgs}\""
-rm "${cmods}" ||  echo "failed to remove file \"${cmods}\""
-rm "${gpkgs}" ||  echo "failed to remove file \"${gpkgs}\""
-rm "${gmods}" ||  echo "failed to remove file \"${gmods}\""
+rm "${cpkgs}"  || echo "failed to remove file \"${cpkgs}\""
+rm "${gpkgs}"  || echo "failed to remove file \"${gpkgs}\""
+rm "${cgmods}" || echo "failed to remove file \"${cgmods}\""
 # ==============================================================================
 # extract the list of cabal-installed haskell package names.
 # execution steps:
@@ -73,17 +71,17 @@ find ~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4 -depth 1 -type d  \
 
 # ==============================================================================
 # this function extracts haskell module names associated with the package names 
-# in the specified input file and prints these extracted module names to the 
-# specified output file.  it extracts the module names using `cabal info` and 
-# `sed` commands. it also cleans extracted data, removing leading spaces & blank 
-# lines, before dumping the data to the specified output file.
+# in the specified input file and prints (appends) these extracted module names 
+# to the specified output file.  it extracts the module names using `cabal info` 
+# and `sed` commands. it also cleans extracted data, removing leading spaces & 
+# blank lines, before dumping the data to the specified output file.
 #
 # inputs:
 #   $1 => input file containing list of haskell package names.
 #   $2 => output file where list of extracted module names should be dumped.
 #
 # this function does not return any value, nor does it echo anything.  instead, 
-# it dumps its output to the specified output file.
+# it appends its output to the specified output file.
 #
 # we put this code in a function to avoid duplication, because module data 
 # extraction is almost identical for cabal-installed and ghcup-installed pkgs. 
@@ -96,6 +94,7 @@ find ~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4 -depth 1 -type d  \
 #    https://tinyurl.com/yckatxkn (so)
 # 4. match white space in mac `sed`: /u/ some ideas @ 
 #    https://tinyurl.com/br7cszr4 (superuser.com)
+# 5. `cabal info` idea from: https://tinyurl.com/ds4kubxe (github)
 #
 # PARSING `cabal info` information using `sed`:
 #   1. when you run `cabal info` on a list of package names, say p1, p2, p3, the 
@@ -143,7 +142,7 @@ find ~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4 -depth 1 -type d  \
 #     because when `sed` encounters 'Modules:', it flips the `print` switch on, 
 #     and keeps printing the lines until it finds the '\*' pattern, when it will 
 #     turn off the print switch.  however, in this case, it never finds the '\*` 
-#     pattern because we reach the end of file. see "Ranges by patterns" @ 
+#     pattern because we reach the end of the file. see "Ranges by patterns" @ 
 #     https://www.grymoire.com/Unix/Sed.html for an explanation.
 #
 #   2. once we have extracted all the lines having modules names, we need to do 
@@ -166,12 +165,18 @@ extract_module_names()  {
     sed -n '/^.*Modules:/,/^\*/{//!p;}' | \
     sed  '/^[[:space:]]*$/d' | \
     sed 's/^[[:space:]]*//' | \
-    sort -buf > "${ofile}"
+    sort -buf >> "${ofile}"
 }
 
 # ==============================================================================
-# extract module names into files.
-extract_module_names "${cpkgs}" "${cmods}"
-extract_module_names "${gpkgs}" "${gmods}"
-
+# extract both cabal- and ghcup-installed module names into file.
+declare -r ifiles=("${cpkgs}" "${gpkgs}")
+for i in ${ifiles[@]}; do
+  if [[ "${i}" == "${cpkgs}" ]]; then
+    echo "+++++++++++++++ cabal-installed modules" > "${cgmods}"
+  else
+    echo "+++++++++++++++ ghcup-installed modules" >> "${cgmods}"
+  fi
+  extract_module_names "${i}" "${cgmods}"
+done
 # ==============================================================================
