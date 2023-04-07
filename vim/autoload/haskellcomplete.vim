@@ -26,11 +26,11 @@ function! haskellcomplete#Complete(findstart, base)
     while l:start > 0 && l:line[start -1] !~ '\s'
       let l:start -= 1
     endwhile
-    if l:line =~ '^\s*{-#\s\+LANGUAGE\s\+'
+    if l:line =~# '^\s*{-#\s\+LANGUAGE\s\+'
       let b:complete = 'LANGUAGE-EXTENSION'
-    elseif l:line =~ '^\s*{-#\s\+OPTIONS_GHC\s\+'
+    elseif l:line =~# '^\s*{-#\s\+OPTIONS_GHC\s\+'
       let b:complete = 'OPTIONS-GHC'
-    elseif l:line =~ '^import\s\+'
+    elseif l:line =~# '^import\s\+'
       let b:complete = 'IMPORT'
     endif
     return l:start
@@ -41,7 +41,7 @@ function! haskellcomplete#Complete(findstart, base)
       return s:allValues()
     endif
     for m in s:allValues()
-      if m =~ '^' .. a:base
+      if m =~# '^' .. a:base
         call add(l:res, m)
       endif
     endfor
