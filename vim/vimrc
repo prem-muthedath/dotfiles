@@ -220,6 +220,8 @@ nnoremap <silent> _pc :call popup_clear()<CR>
 " this code should eventually be moved to a separate file in vim/plugin.
 " author: Prem Muthedath
 function! InsertHaskellPragma(arg)
+  " on `..` use, see :h expr-..
+  " `normal!`: https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
   let l:pragma = '{-# ' .. a:arg .. ' #-}'
   let l:cmdstr = 'normal! gI' .. l:pragma .. "\<Esc>" .. 'gE' .. 'a ' .. "\<Esc>" .. 'l'
   if getline('.') !~ '^$'
