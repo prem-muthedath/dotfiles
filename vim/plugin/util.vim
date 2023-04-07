@@ -24,15 +24,16 @@ function! FormatCsFile()
   "   1. https://learnvimscriptthehardway.stevelosh.com/chapters/28.html
   "   2. https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
   "   3. https://learnvimscriptthehardway.stevelosh.com/chapters/30.html
+  " on `..` use, see :h expr-..
   let l:maxcol=0
   g/vim:/
-        \ execute 'normal ' . '/^.*vim:/e' . "\<CR>"
+        \ execute 'normal! ' .. '/^.*vim:/e' .. "\<CR>"
         \ | let l:maxcol = max([l:maxcol, virtcol('.')])
   g/vim:/
         \ execute 's/\(^\S\+\.vim:\)[^=]*\(comment\|com\)/\1\2'
-        \ | execute 'normal ' . '/^.*vim:/e' . "\<CR>"
+        \ | execute 'normal! ' .. '/^.*vim:/e' .. "\<CR>"
         \ | let l:diff = l:maxcol - virtcol('.') + 3
-        \ | execute 'normal a' . repeat(" ", l:diff)
+        \ | execute 'normal! a' .. repeat(" ", l:diff)
 endfunction
 
 " ==============================================================================
@@ -90,8 +91,8 @@ function! FormatOptionsGhcFlagsFile()
   "         -foo-dynamicDYNAMIC   -no-foo-dynamic
   "   6. next, we run the 2nd g/pattern/cmds, first to do pattern search and 
   "      place the cursor just before `D` in `DYNAMIC` to extract the column #:
-  "         execute 'normal ' .
-  "               \ '/^-.*\zsDYNAMIC\ze\(\s\+-\|$\)/e-' .  (l:offset) . "\<CR>"
+  "         execute 'normal! ' ..
+  "             \ '/^-.*\zsDYNAMIC\ze\(\s\+-\|$\)/e-' ..  (l:offset) .. "\<CR>"
   "      \zs & \ze define match selection, which here is `DYNAMIC`.
   "      `l:offset` = len('DYNAMIC')`
   "      after this, we've cursor on the leftmost CAPS alphabet as shown below:
@@ -104,8 +105,8 @@ function! FormatOptionsGhcFlagsFile()
   "         let l:maxcol = max([l:maxcol, virtcol('.')])
   "   8. finally, we run the 3rd g/pattern/cmds, first repeating step 
   "      6 to position the cursor just before `D` in `DYNAMIC`:
-  "         execute 'normal ' .
-  "               \ '/^-.*\zsDYNAMIC\ze\(\s\+-\|$\)/e-' .  (l:offset) . "\<CR>"
+  "         execute 'normal! ' ..
+  "             \ '/^-.*\zsDYNAMIC\ze\(\s\+-\|$\)/e-' ..  (l:offset) .. "\<CR>"
   "      after this, we've cursor on the leftmost CAPS alphabet as shown below:
   "           -blaHDYNAMIC   -no-blah
   "           -bazoozEDYNAMIC
@@ -116,7 +117,7 @@ function! FormatOptionsGhcFlagsFile()
   "      concurrently, after space insertion, we also revert 'DYNAMIC' back to 
   "      'dynamic' for that line.
   "         let l:diff = l:maxcol - virtcol('.') + 3
-  "         execute 'normal a' . repeat(" ", l:diff)
+  "         execute 'normal! a' .. repeat(" ", l:diff)
   "         execute 's/DYNAMIC/dynamic/'
   "      after this, we've the following result:
   "         -blah          dynamic   -no-blah
@@ -141,9 +142,10 @@ function! FormatOptionsGhcFlagsFile()
   "   2. https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
   "   3. https://learnvimscriptthehardway.stevelosh.com/chapters/30.html
   " good comments: /u/ martin tournoij @ https://tinyurl.com/xn6fbrmm (vi.SE)
+  " on `..` use, see :h expr-..
   let l:maxcol=0
   let l:offset=len('DYNAMIC')
-  let l:pat='normal ' . '/^-.*\zsDYNAMIC\ze\(\s\+-\|$\)/e-' . (l:offset) . "\<CR>"
+  let l:pat='normal! ' .. '/^-.*\zsDYNAMIC\ze\(\s\+-\|$\)/e-' .. (l:offset) .. "\<CR>"
   " for all g-matched lines,
   "   1) merge data columns 1 & 2 (has `dynamic`), switching case of `dynamic`;
   "   2) set 3 \s separation between data columns 2 (now merged) and 3;
@@ -162,7 +164,7 @@ function! FormatOptionsGhcFlagsFile()
   g/^-.*DYNAMIC/
         \ execute l:pat
         \ | let l:diff = l:maxcol - virtcol('.') + 3
-        \ | execute 'normal a' . repeat(" ", l:diff)
+        \ | execute 'normal! a' .. repeat(" ", l:diff)
         \ | execute 's/DYNAMIC/dynamic/'
 endfunction
 
@@ -179,7 +181,8 @@ function! ParseOptionsGhcFlags() abort
   "   1. https://learnvimscriptthehardway.stevelosh.com/chapters/28.html
   "   2. https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
   "   3. https://learnvimscriptthehardway.stevelosh.com/chapters/30.html
-  " line =~ '\(^=\+[[:upper:]- ]\+$\)\|\(^-.*$\)' selects lines of type:
+  " line =~# '\(^=\+[[:upper:]-_. [:digit:]]\+$\)\|\(^-.*$\)' selects lines:
+  "   ^============== OPTIONS_GHC FLAGS FOR GHC 8.10.4
   "   ^============== VERBOSITY OPTIONS
   "   ^-fshow-type-of-hole-fits               dynamic   -fno-type-of-hole-fits
   "   ^-funclutter-valid-hole-fits            dynamic
@@ -201,17 +204,19 @@ function! ParseOptionsGhcFlags() abort
   "            \ | :call writefile(l:lines, l:ofile, 'sa')
   " ============================================================================
   " good comments: /u/ martin tournoij @ https://tinyurl.com/xn6fbrmm (vi.SE)
+  " on `==#` -> https://learnvimscriptthehardway.stevelosh.com/chapters/22.html
+  " on `..` use, see :h expr-..
   " define & initialize some local variables.
   :let l:ifile='vim/haskell/data/OPTIONS-GHC-FLAGS-FORMATTED.txt'
   :let l:ofile='vim/haskell/data/OPTIONS-GHC-FLAGS-PARSED-LIST.txt'
   :let l:pat1='\s\+dynamic\($\|\s\+\)'
   :let l:pat2=',\s'
-  :let l:pat='\(' . l:pat1 . '\)' . '\|' . '\(' . l:pat2 . '\)'
+  :let l:pat='\(' .. l:pat1 .. '\)' .. '\|' .. '\(' .. l:pat2 .. '\)'
   " delete existing output file, if any, because we're going to overwrite it.
   :call delete(l:ofile)
   " read the input file, parse each line, and print results to output file.
   :for line in readfile(l:ifile)
-    :if line =~ '\(^=\+[[:upper:]- ]\+$\)\|\(^-.*$\)'
+    :if line =~# '\(^=\+[[:upper:]-_. [:digit:]]\+$\)\|\(^-.*$\)'
       :let l:lines=split(line, l:pat)
       :call writefile(l:lines, l:ofile, 'sa')
     :endif
@@ -246,12 +251,13 @@ function! CountOptionsGhcFlags() abort
   " to have the match start just before "foo".
   " ============================================================================
   " good comments: /u/ martin tournoij @ https://tinyurl.com/xn6fbrmm (vi.SE)
+  " on `==#` -> https://learnvimscriptthehardway.stevelosh.com/chapters/22.html
   let l:count=0
   " count 'comma' lines such as:
   "   ^-keep-hscpp-file, -keep-hscpp-files  dynamic
   "   ^-O, -O1                              dynamic   -O0
   g/\v^-.*,\s/
-    \ if getline('.') =~ '\s\+dynamic\s\+-'
+    \ if getline('.') =~# '\s\+dynamic\s\+-'
     \ | let l:count+=3
     \ | else
     \ | let l:count+=2
@@ -266,7 +272,7 @@ function! CountOptionsGhcFlags() abort
   g/\v%(^-.*,\s)@!^-.*dynamic\s+-/let l:count+=2
   " count headers of the form: ^========= VERBOSITY OPTIONS
   " NOTE: bcoz '=' has special meaning in very magic, we used \= to denote '='
-  g/\v^\=+[[:upper:]- ]+$/let l:count+=1
+  g/\v^\=+[[:upper:]-_. [:digit:]]+$/let l:count+=1
   return l:count
 endfunction
 

@@ -1,3 +1,4 @@
+============== OPTIONS_GHC FLAGS FOR GHC 8.10.4
 ============== VERBOSITY OPTIONS
 -fabstract-refinement-hole-fits
 -fno-abstract-refinement-hole-fits
