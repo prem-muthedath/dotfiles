@@ -11,7 +11,7 @@
 #   1. `cd` to `dotfiles` folder, the root folder for all dotfiles
 #   2. run `./output-haskell-module-names` on the commandline.
 #   3. to see the module names generated, view file in vim/haskell/data/ folder 
-#      named `cabal-ghcup-installed-modules.txt`.
+#      named `ghcup-cabal-installed-modules.txt`.
 #   4. to see the package names generated, view files in vim/haskell/data/ 
 #      folder named `cabal-installed-pkgs.txt` and `ghcup-installed-pkgs.txt`.
 #
@@ -21,12 +21,12 @@
 # declare some needed file paths as read-only.
 declare -r cpkgs='vim/haskell/data/cabal-installed-pkgs.txt'
 declare -r gpkgs='vim/haskell/data/ghcup-installed-pkgs.txt'
-declare -r cgmods='vim/haskell/data/cabal-ghcup-installed-modules.txt'
+declare -r gcmods='vim/haskell/data/ghcup-cabal-installed-modules.txt'
 
 # remove existing data files, because we want to generate them afresh.
 rm "${cpkgs}"  || echo "failed to remove file \"${cpkgs}\""
 rm "${gpkgs}"  || echo "failed to remove file \"${gpkgs}\""
-rm "${cgmods}" || echo "failed to remove file \"${cgmods}\""
+rm "${gcmods}" || echo "failed to remove file \"${gcmods}\""
 # ==============================================================================
 # extract the list of cabal-installed haskell package names.
 # execution steps:
@@ -175,13 +175,20 @@ extract_module_names()  {
 # extract both cabal- and ghcup-installed module names into file.
 # https://opensource.com/article/18/5/you-dont-know-bash-intro-bash-arrays
 # for shell equality, see /u/ dawg @ https://tinyurl.com/bxhab8pk (so)
-declare -r ifiles=("${cpkgs}" "${gpkgs}")
+# REF: `sed -E` extended regular expression in mac os: see /u/ kusalananda @ 
+# https://tinyurl.com/23rw9p3w (unix.SE).
+# Notes:
+#   1. we use `sed -E` here because we need `+` usage in the pattern.
+#   2. BRE does not support `+` and `?`
+#   3. also, with ERE, we can use ( and ), whereas with BRE, we need \( and \)
+declare -r ifiles=("${gpkgs}" "${cpkgs}")
+ghcver=$(ghc --version | sed -E 's/^.*version ([[:digit:].]+).*$/(GHC \1)/')
 for i in ${ifiles[@]}; do
-  if [[ "${i}" == "${cpkgs}" ]]; then
-    echo "+++++++++++++++ cabal-installed modules" > "${cgmods}"
+  if [[ "${i}" == "${gpkgs}" ]]; then
+    echo "+++++++++++++++ ghcup-installed modules" "${ghcver}" > "${gcmods}"
   else
-    echo "+++++++++++++++ ghcup-installed modules" >> "${cgmods}"
+    echo "+++++++++++++++ cabal-installed modules" "${ghcver}" >> "${gcmods}"
   fi
-  extract_module_names "${i}" "${cgmods}"
+  extract_module_names "${i}" "${gcmods}"
 done
 # ==============================================================================

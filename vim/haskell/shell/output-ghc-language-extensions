@@ -1,0 +1,39 @@
+#!/bin/bash
+# ==============================================================================
+# bash script that outputs language extensions of ghc installed on Prem's 
+# system. the script writes the language extensions, sorted alphabetically, to 
+# vim/haskell/data/GHC-LANGUAGE-EXTENSIONS-SORTED-LIST.txt.
+#
+# the generated language extensions will be used for haskell pragma completion 
+# in haskell files using vim omnicompletion.
+#
+# usage:
+#   1. `cd` to `dotfiles` folder, the root folder for all dotfiles.
+#   2. run `./output-ghc-language-extensions` on the commandline.
+#   3. to see the generated language extensions, view file in vim/haskell/data 
+#      folder named GHC-LANGUAGE-EXTENSIONS-SORTED-LIST.txt
+#
+# author: Prem Muthedath, APR 2023.
+#
+# ==============================================================================
+# declare needed file path as read-only.
+declare -r lextns='vim/haskell/data/GHC-LANGUAGE-EXTENSIONS-SORTED-LIST.txt'
+
+# remove existing data file, because we want to generate it afresh.
+rm "${lextns}" || echo "failed to remove file \"${lextns}\""
+
+# write header containing GHC version to file
+# REF: `sed -E` extended regular expression in mac os: see /u/ kusalananda @ 
+# https://tinyurl.com/23rw9p3w (unix.SE).
+# Notes:
+#   1. we use `sed -E` here because we need `+` usage in the pattern.
+#   2. BRE does not support `+` and `?`
+#   3. also, with ERE, we can use ( and ), whereas with BRE, we need \( and \)
+ghc --version | \
+  sed -E 's/^.*version ([[:digit:].]+).*$/========== GHC \1 Language Extensions/' > "${lextns}" 
+# append language extensions, sorted alphabetically by ignoring case (f), blanks 
+# (b), and duplicates (u), to file.
+# REF: /u/ yairchu @ https://tinyurl.com/yb6574hz (so)
+ghc --supported-extensions | sort -buf >> "${lextns}"
+
+# ==============================================================================
