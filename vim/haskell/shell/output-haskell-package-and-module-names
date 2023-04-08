@@ -34,14 +34,16 @@ rm "${gcmods}" || echo "failed to remove file \"${gcmods}\""
 #   1. `sed -n` says print nothing by default, unless you are explicitly asked.
 #   2. here, because of `/p`, sed only prints when there is a substitution.
 #   3. we use `sed -E` here because we need `+` usage in the pattern.
-declare -r ghcupver=$(ghcup --version | \
-  sed -E 's/^.*version ([[:digit:]v.]+)$/ghcup \1/')
-declare -r cabappver=$(cabal --version | \
-  sed -nE 's/(cabal-install) version ([[:digit:].]+)$/\1 \2/p')
-declare -r cablibver=$(cabal --version | \
-  sed -nE 's/^.* version ([[:digit:].]+).*(Cabal).*$/\2 \1/p')
-declare -r ghcver=$(ghc --version | \
-  sed -E 's/^.*version ([[:digit:].]+).*$/GHC \1/')
+#   4. for "$()", command substitution, see /u/ gypsycosmonaut, /u/ Stéphane 
+#      Chazelas @ https://tinyurl.com/4dxynh3k (unix.SE)
+declare -r ghcupver="$(ghcup --version | \
+  sed -E 's/^.*version ([[:digit:]v.]+)$/ghcup \1/')"
+declare -r cabappver="$(cabal --version | \
+  sed -nE 's/(cabal-install) version ([[:digit:].]+)$/\1 \2/p')"
+declare -r cablibver="$(cabal --version | \
+  sed -nE 's/^.* version ([[:digit:].]+).*(Cabal).*$/\2 \1/p')"
+declare -r ghcver="$(ghc --version | \
+  sed -E 's/^.*version ([[:digit:].]+).*$/GHC \1/')"
 # ==============================================================================
 # extract the list of cabal-installed haskell package names.
 # execution steps:
