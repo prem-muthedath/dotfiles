@@ -1,4 +1,4 @@
-+++++++++++++++ ghcup-installed modules (GHC 8.10.4)
++++++++++++++++ ghcup-installed modules (ghcup v0.1.14, GHC 8.10.4)
 Annotations
 ApiAnnotation
 Ar
@@ -1251,7 +1251,7 @@ X86.Instr
 X86.Ppr
 X86.RegInfo
 X86.Regs
-+++++++++++++++ cabal-installed modules (GHC 8.10.4)
++++++++++++++++ cabal-installed modules (cabal-install 3.4.0.0, Cabal 3.4.0.0, GHC 8.10.4)
 Control.Applicative.Backwards
 Control.Applicative.Lift
 Control.Comonad
