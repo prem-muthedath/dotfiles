@@ -53,18 +53,16 @@ endfunc
 
 " ==============================================================================
 " returns all omnicompletion values associated with the completion flag.
-" NOTE: returned values correspond to GHC 8.10.4
-" for glob()`use, see /u/ martin tournoij @ https://tinyurl.com/2t7e3asj (so)
 " on `==#`, see https://learnvimscriptthehardway.stevelosh.com/chapters/22.html
-" on `..` use, see :h expr-..
+" immutable global variables, such as g:phask_ops_ghc_parsed_ofile, come from 
+" vim/plugin/haskell-pragmas-and-import-completion.vim.
 function! s:allValues()
-  let l:dpath = glob('~/dotfiles/vim/haskell/data/')
   if b:complete ==# "LANGUAGE-EXTENSION"
-    return readfile(l:dpath .. 'GHC-LANGUAGE-EXTENSIONS-SORTED-LIST.txt')
+    return readfile(g:phask_lang_extns_ofile)
   elseif b:complete ==# "OPTIONS-GHC"
-    return readfile(l:dpath .. 'OPTIONS-GHC-FLAGS-PARSED-LIST.txt')
+    return readfile(g:phask_ops_ghc_parsed_ofile)
   elseif b:complete ==# "IMPORT"
-    return readfile(l:dpath .. 'cabal-ghcup-installed-modules.txt')
+    return readfile(g:phask_imp_modules_ofile)
   else
     return []
   endif

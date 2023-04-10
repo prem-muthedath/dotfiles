@@ -232,5 +232,12 @@ endfunction
 nnoremap  _lp :call InsertHaskellPragma("LANGUAGE") <CR>
 nnoremap  _op :call InsertHaskellPragma("OPTIONS_GHC") <CR>
 
+function! DoThis()
+  :execute ":vsp" g:phask_ops_ghc_formatted_iofile
+  :let cnt = CountOptionsGhcFlags()
+  :quit
+  :return cnt
+endfunction
+
 " https://google.com
 " ==============================================================================

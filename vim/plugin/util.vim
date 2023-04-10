@@ -207,8 +207,8 @@ function! ParseOptionsGhcFlags() abort
   " on `==#` -> https://learnvimscriptthehardway.stevelosh.com/chapters/22.html
   " on `..` use, see :h expr-..
   " define & initialize some local variables.
-  :let l:ifile='vim/haskell/data/OPTIONS-GHC-FLAGS-FORMATTED.txt'
-  :let l:ofile='vim/haskell/data/OPTIONS-GHC-FLAGS-PARSED-LIST.txt'
+  :let l:ifile=g:phask_ops_ghc_formatted_iofile
+  :let l:ofile=g:phask_ops_ghc_parsed_ofile
   :let l:pat1='\s\+dynamic\($\|\s\+\)'
   :let l:pat2=',\s'
   :let l:pat='\(' .. l:pat1 .. '\)' .. '\|' .. '\(' .. l:pat2 .. '\)'
