@@ -192,7 +192,7 @@ inoremap <silent><expr> hc <SID>haskellCompletion("hc")
 "   4. so if you do `<CR>` outside of the coc pop up, you'll get the usual <CR>.
 inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 
-" coc-vim: documentation on hover.
+" coc-vim:    documentation on hover.
 " used right now just for haskell.
 " code from: https://github.com/neoclide/coc.nvim
 function! ShowDocumentation()
@@ -215,29 +215,9 @@ nnoremap <silent> K :call ShowDocumentation()<CR>
 " see also https://github.com/neoclide/coc.nvim
 nnoremap <silent> _pc :call popup_clear()<CR>
 " ==============================================================================
-" haskell pragma completion code.
-" this code at this time is still experimental.
-" this code should eventually be moved to a separate file in vim/plugin.
-" author: Prem Muthedath
-function! InsertHaskellPragma(arg)
-  " on `..` use, see :h expr-..
-  " `normal!`: https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
-  let l:pragma = '{-# ' .. a:arg .. ' #-}'
-  let l:cmdstr = 'normal! gI' .. l:pragma .. "\<Esc>" .. 'gE' .. 'a ' .. "\<Esc>" .. 'l'
-  if getline('.') !~ '^$'
-    :execute 'normal! o' .. "\<Esc>"
-  endif
-  :execute l:cmdstr | :startinsert
-endfunction
-nnoremap  _lp :call InsertHaskellPragma("LANGUAGE") <CR>
-nnoremap  _op :call InsertHaskellPragma("OPTIONS_GHC") <CR>
-
-function! DoThis()
-  :execute ":vsp" g:phask_ops_ghc_formatted_iofile
-  :let cnt = CountOptionsGhcFlags()
-  :quit
-  :return cnt
-endfunction
+" start haskell pragma completion.
+nnoremap  _lp :call StartHaskellPragma("LANGUAGE") <CR>
+nnoremap  _op :call StartHaskellPragma("OPTIONS_GHC") <CR>
 
 " https://google.com
 " ==============================================================================

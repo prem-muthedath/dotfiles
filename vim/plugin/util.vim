@@ -181,9 +181,11 @@ function! ParseOptionsGhcFlags() abort
   "   1. https://learnvimscriptthehardway.stevelosh.com/chapters/28.html
   "   2. https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
   "   3. https://learnvimscriptthehardway.stevelosh.com/chapters/30.html
-  " line =~# '\(^=\+[[:upper:]-_. [:digit:]]\+$\)\|\(^-.*$\)' selects lines:
-  "   ^============== OPTIONS_GHC FLAGS FOR GHC 8.10.4
+  " line =~# '^=\+\s*+\+[[:upper:]-_. [:digit:]]\++\+\s*$' selects the header:
+  "   ^== ++++++++++++ OPTIONS_GHC FLAGS FOR GHC 8.10.4 ++++++++++++
+  " line =~# '^=\+[[:upper:]- ]\+$' selects lines such as:
   "   ^============== VERBOSITY OPTIONS
+  " line =~# ^-.*$' selects lines such as:
   "   ^-fshow-type-of-hole-fits               dynamic   -fno-type-of-hole-fits
   "   ^-funclutter-valid-hole-fits            dynamic
   "   ^-keep-llvm-file, -keep-llvm-files      dynamic
@@ -197,11 +199,7 @@ function! ParseOptionsGhcFlags() abort
   " l:pat => is used in splitting lines by l:pat1 or l:pat2 or both.
   " NOTES:
   "   1. split() > 1 delimeter: /u/ amadan @ https://tinyurl.com/mt4pr9hp (so)
-  "   2. previous version of code used below g-pattern instead of for-loop and 
-  "      `line =~ '..'` pattern match.
-  "         g/\(^=\+[[:upper:]- ]\+$\)\|\(^-.*$\)/
-  "            \ let l:lines=split(getline('.'), l:pat)
-  "            \ | :call writefile(l:lines, l:ofile, 'sa')
+  "   2. see :h substitute()
   " ============================================================================
   " good comments: /u/ martin tournoij @ https://tinyurl.com/xn6fbrmm (vi.SE)
   " on `==#` -> https://learnvimscriptthehardway.stevelosh.com/chapters/22.html
@@ -216,14 +214,20 @@ function! ParseOptionsGhcFlags() abort
   :call delete(l:ofile)
   " read the input file, parse each line, and print results to output file.
   :for line in readfile(l:ifile)
-    :if line =~# '\(^=\+[[:upper:]-_. [:digit:]]\+$\)\|\(^-.*$\)'
+    " header: ^== ++++++++++++ OPTIONS_GHC FLAGS FOR GHC 8.10.4 ++++++++++++
+    :if line =~# '^=\+\s*+\+[[:upper:]-_. [:digit:]]\++\+\s*$'
+      " change to: ^++++++++++++ OPTIONS_GHC FLAGS FOR GHC 8.10.4 ++++++++++++
+      :let line = substitute(line, '^=\+\s*', '', '')
+      :call writefile([l:line], l:ofile, 'sa')
+    " lines such as: ^============== VERBOSITY OPTIONS
+    :elseif line =~# '^=\+[[:upper:]- ]\+$'
+      :call writefile([l:line], l:ofile, 'sa')
+    " data lines (w/t or w/o comma) such as: ^-O, -O1     dynamic   -O0
+    :elseif line =~# '^-.*$'
       :let l:lines=split(line, l:pat)
       :call writefile(l:lines, l:ofile, 'sa')
     :endif
   :endfor
-  " open input and output files, so the user can visually verify things!
-  :execute ':vsp' l:ifile
-  :execute ':sp' l:ofile
 endfunction
 
 " ==============================================================================
@@ -272,7 +276,11 @@ function! CountOptionsGhcFlags() abort
   g/\v%(^-.*,\s)@!^-.*dynamic\s+-/let l:count+=2
   " count headers of the form: ^========= VERBOSITY OPTIONS
   " NOTE: bcoz '=' has special meaning in very magic, we used \= to denote '='
-  g/\v^\=+[[:upper:]-_. [:digit:]]+$/let l:count+=1
+  g/\v^\=+[[:upper:]- ]+$/let l:count+=1
+  "count headers of the form:
+  "   ^== ++++++++++++ OPTIONS_GHC FLAGS FOR GHC 8.10.4 ++++++++++++
+  " NOTE: bcoz '=' has special meaning in very magic, we used \= to denote '='
+  g/\v^\=+\s*\++[[:upper:]-_. [:digit:]]+\++\s*$/let l:count+=1
   return l:count
 endfunction
 
