@@ -6,7 +6,8 @@
 
 == this file essentially has the same data as OPTIONS-GHC-FLAGS-ORIGINAL.txt, 
 == but the data here has been formatted into columns of equal width.
-== data formatted using `FormatOptionsGhcFlagsFile()` in vim/plugin/util.vim
+== data formatted using `FormatOptionsGhcFlagsFile()` in 
+vim/plugin/haskell-pragma-and-import-completion.vim.
 
 == this data is needed to create a list of OPTIONS_GHC flags for haskell 
 == OPTIONS_GHC pragma completion in haskell files using vim.
