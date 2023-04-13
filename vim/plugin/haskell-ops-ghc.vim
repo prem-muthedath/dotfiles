@@ -1,6 +1,8 @@
-" All code in one place for haskell pragma generation and completion.
+" code for haskell OPTIONS_GHC pragma completion.
 "
-" history: created APR 2023.
+" history:
+"   created APR 2023.
+"   old parts of this code were in util file before.
 " author: Prem Muthedath
 
 " ==============================================================================
@@ -13,85 +15,133 @@ const g:phask_data_dir = g:pdotfiles_dir .. 'vim/haskell/data/'
 const g:phask_ops_ghc_orig_ifile = g:phask_data_dir .. 'OPTIONS-GHC-FLAGS-ORIGINAL.txt'
 const g:phask_ops_ghc_formatted_header_ifile = g:phask_data_dir .. 'OPTIONS-GHC-FLAGS-FORMATTED--HEADER.txt'
 const g:phask_ops_ghc_formatted_iofile = g:phask_data_dir .. 'OPTIONS-GHC-FLAGS-FORMATTED.txt'
-
 const g:phask_ops_ghc_parsed_ofile = g:phask_data_dir .. 'OPTIONS-GHC-FLAGS-PARSED-LIST.txt'
+
 const g:phask_lang_extns_ofile = g:phask_data_dir .. 'GHC-LANGUAGE-EXTENSIONS-SORTED-LIST.txt'
 const g:phask_imp_modules_ofile = g:phask_data_dir .. 'ghcup-cabal-installed-modules.txt'
 
-const g:phask_cabal_inst_pkgs_ofile = g:phask_data_dir .. 'cabal-installed-pkgs.txt'
-const g:phask_ghcup_inst_pkgs_ofile = g:phask_data_dir .. 'ghcup-installed-pkgs.txt'
+" const g:phask_cabal_inst_pkgs_ofile = g:phask_data_dir .. 'cabal-installed-pkgs.txt'
+" const g:phask_ghcup_inst_pkgs_ofile = g:phask_data_dir .. 'ghcup-installed-pkgs.txt'
 
 " ==============================================================================
-" haskell pragma completion (in normal mode).
-"  1. if current line is blank, inserts haskell pragma block at line start, 
-"     positions the cursor inside the pragma block, and switches to insert mode.
-"  2. else, adds a blank line right below, and does step 1 on the blank line.
-"  3. this function takes 1 arg, the pragma string "LANGUAGE" or "OPTIONS_GHC".
-" this code at this time is still experimental.
-" author: Prem Muthedath
-function! StartHaskellPragma(arg)
-  " on `..` use, see :h expr-..
-  " `normal!`: https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
-  let l:pragma = '{-# ' .. a:arg .. ' #-}'
-  let l:cmdstr = 'normal! gI' .. l:pragma .. "\<Esc>" .. 'gE' .. 'a ' .. "\<Esc>" .. 'l'
-  if getline('.') !~ '^$'
-    :execute 'normal! o' .. "\<Esc>"
-  endif
-  :execute l:cmdstr | :startinsert
-endfunction
-
+" these functions below work together to format and generate OPTIONS_GHC flags.
 " ==============================================================================
-" these functions work together to format and generate OPTIONS_GHC flags.
-function! GenerateOpsGhcFlags() abort
+" ==============================================================================
+" working with helper functions, does the following:
+"   1. generates a freshly formatted OPTIONS-GHC-FLAGS file;
+"   2. parses the formatted file for OPTIONS_GHC flags and relevant headers;
+"   3. dumps parsed data, which also contain headers for easy reading, to 
+"      OPTIONS-GHC-FLAGS-PARSED-LIST.txt;
+"   4. runs a quick-and-dirty test on the generated (parsed) file, and if the 
+"      test fails, propagates the thrown exception.
+"
+" usage: open vimrc & invoke :call GenerateOptionsGhcFlags() on vim commandline.
+function! GenerateOptionsGhcFlags() abort
+  " do we have a valid root directory?
   :if g:pdotfiles_dir ==# ""
-    :throw 'the required root directory `~/dotfiles/` DOES NOT EXIST.'
+    :throw 'the required root directory `~/dotfile/` DOES NOT EXIST.'
   :endif
-  :call CreateFormattedOpsGhcFile()
-  :call ParseOptionsGhcFlags()
-  :let l:res = TestOpsGhcFlagsCount()
+  " generate a newly formatted OPTIONS-GHC file for parsing OPTIONS_GHC flags.
+  :call s:format()
+  " delete old parsed OPTIONS-GHC flags file, if any, b'coz we'll overwrite it.
+  :call delete(g:phask_ops_ghc_parsed_ofile)
+  " get the parsed list of all OPTIONS_GHC flags and relevant headers.
+  :let l:flags = s:parseFlags()
+  " dump the parsed data to file.
+  :call writefile(l:flags, g:phask_ops_ghc_parsed_ofile, 's')
+  " run a quick test on the parsed data, making sure we've got all the info.
+  " Note: the testing function throws an error if the test fails.
+  :call s:testFlagCount()
   :redraw!
-  :return l:res
 endfunction
 
-function! CreateFormattedOpsGhcFile() abort
+" ==============================================================================
+" helper function. generates a freshly formatted OPTIONS-GHC file.
+"
+" usage: this is a helper function not directly invoked by the user.  instead, 
+" another top-level function in this file invokes this function as part of its 
+" work of gnnerating a parsed OPTIONS_GHC flags file.
+function! s:format() abort
+  " open the OPTIONS-GHC formatted file.  if none exists, vim opens a new file.
   :execute ":vsp" g:phask_ops_ghc_formatted_iofile
+  " delete all file content.
   :1,$d
+  " import all contents of the original (unformatted) OPTIONS-GHC file.
+  " for file insertion, see https://vim.fandom.com/wiki/Insert_a_file
   :execute ":1r" g:phask_ops_ghc_orig_ifile
+  " delete all imported header lines appearing at the top.
   :1;/^=\+\s*+\+ OPTIONS_GHC FLAGS/-1d
+  " replace the deleted headers with imported headers from a template file.
+  " `:0r`, see /u/ stefan van den akker @ https://tinyurl.com/mr238hmd (so)
   :execute ":0r" g:phask_ops_ghc_formatted_header_ifile
-  :call FormatOptionsGhcFlagsFile()
+  " format the file into neatly separated columns.
+  :call s:formatFile()
+  " move the cursor to the top of the file.
   :execute 'normal! gg'
+  " save the file.
   :write
+  " close the file.
   :quit
 endfunction
 
-function! TestOpsGhcFlagsCount() abort
+" ==============================================================================
+" runs a quick-and-dirty test on the generated parsed OPTIONS-GHC flags file, 
+" checking if the number of lines in that file match an expected count. if the 
+" test fails, meaning there is a mismatch in line count, throws an exception.
+"
+" usage: this is a helper function not directly invoked by the end user.  
+" instead, a top-lelevl function in this file invokes this function as part of 
+" its work of verifying the generated (parsed) OPTIONS_GHC flags file.
+function! s:testFlagCount() abort
+  " open OPTIONS-GHC-FLAGS-FORMATTED file
   :execute ":vsp" g:phask_ops_ghc_formatted_iofile
-  :let ecnt = CountOptionsGhcFlags()
+  " count lines that a parse of OPTIONS_GHC flags in this file would generate.
+  " this count will be the "expected" count.
+  :let l:ecnt = s:countFlags()
+  " close the file.
   :quit
+  " now open the generated parsed OPTIONS-GHC flags file.
   :execute ":vsp" g:phask_ops_ghc_parsed_ofile
-  :let acnt = line('$')
+  " count the lines in this file. this will be the "actual" count.
+  " on `line('$')`, see /u/ kev @ https://tinyurl.com/5axjp3dm (so)
+  :let l:acnt = line('$')
+  " close the file.
   :quit
-  :return {'actual' : acnt, 'expected' : ecnt, 'flag' : acnt == ecnt ? 'PASS' : 'FAIL' }
+  " stuff the counts as well as the test status in a dictionary.
+  " on dictionary use, see https://developer.ibm.com/tutorials/l-vim-script-4/
+  :let l:res = {'actual' : l:acnt, 'expected' : l:ecnt, 'flag' : l:acnt == l:ecnt ? 'PASS' : 'FAIL' }
+  " if there is a test failure, throw an exception to alert the caller.
+  :if (l:res).flag ==# 'FAIL'
+    :throw "test failed -- incorrect options-ghc flags parsed: " .. string(l:res)
+  :endif
 endfunction
 
-function! DisplayFormattedAndGeneratedOpsGhcFlags() abort
+" ==============================================================================
+" display formatted and parsed OPTIONS-GHC-FLAGS files.
+" useful for users who want to preview the files visually.
+" usage: open vim and run :call DisplayOptionsGhcFiles() on the vim commandline.
+function! DisplayOptionsGhcFiles() abort
   :execute ':vsp' g:phask_ops_ghc_formatted_iofile
   :execute ":sp" g:phask_ops_ghc_parsed_ofile
 endfunction
 
 " ==============================================================================
-function! FormatOptionsGhcFlagsFile()
-  " Format OPTIONS-GHC-FLAGS-ORIGINAL.txt file in ~/dotfiles/vim/haskell/data/
+function! s:formatFile()
+  " Formats a OPTIONS-GHC-FLAGS file.
   " sample output: ~/dotfiles/vim/haskell/data/OPTIONS-GHC-FLAGS-FORMATTED.txt
   " basically, this function formats line data into neatly separated columns.
   "
   " 19 MAR 2023; author: Prem Muthedath
   "
-  " well, how do you use this function?
-  "   (a) first make a copy of OPTIONS-GHC-FLAGS-ORIGINAL.txt;
-  "   (b) then open that copy in vim;
-  "   (c) then invoke :call FormatOptionsGhcFlagsFile() from vim commandline.
+  " usage: well, how do you use this function?
+  "   well, this helper function is not directly invoked by the end user.  
+  "   instead, it is invoked by a top-level function that does the following:
+  "   (a) first makes a copy of OPTIONS-GHC-FLAGS-ORIGINAL.txt;
+  "   (c) then opens that copy in vim;
+  "   (d) then does some editing, replacing some existing comments and headers;
+  "   (e) then invokes this function on the edited copy;
+  "   (f) this function then formats the file into neatly separated columns;
+  "   (g) the invoking function then saves the changes and closes the file.
   "
   " NOTES:
   "   1. in our case we've data lines of the form shown below. as you can see, 
@@ -213,13 +263,16 @@ function! FormatOptionsGhcFlagsFile()
 endfunction
 
 " ==============================================================================
-function! ParseOptionsGhcFlags() abort
-  " reads vim/haskell/data/OPTIONS-GHC-FLAGS-FORMATTED.txt, extracts OPTIONS_GHC 
-  " flags, & prints them to vim/haskell/data/OPTIONS-GHC-FLAGS-PARSED-LIST.txt.
+function! s:parseFlags() abort
+  " reads OPTIONS-GHC-FLAGS-FORMATTED.txt, extracts OPTIONS_GHC flags, and 
+  " returns the extracted flags as a list.
   "
   " author: Prem Muthedath, 27 MAR 2023.
   "
-  " usage: open vimrc and run :call ParseOptionsGhcFlags() on the commandline.
+  " usage: this helper function is not directly invoked by the end user.  
+  " instead, a top-level function, or another function, involved in generating 
+  " OPTIONS_GHC flags invokes this routine.  that top-level function, which is 
+  " in this file, calls this function, & dumps results of the call to a file.
   "
   " see below REFs for :execute and `normal` and `normal!` usage:
   "   1. https://learnvimscriptthehardway.stevelosh.com/chapters/28.html
@@ -248,45 +301,51 @@ function! ParseOptionsGhcFlags() abort
   " good comments: /u/ martin tournoij @ https://tinyurl.com/xn6fbrmm (vi.SE)
   " on `==#` -> https://learnvimscriptthehardway.stevelosh.com/chapters/22.html
   " on `..` use, see :h expr-..
-  " define & initialize some local variables.
-  :let l:ifile=g:phask_ops_ghc_formatted_iofile
-  :let l:ofile=g:phask_ops_ghc_parsed_ofile
+  " on `list`, see https://developer.ibm.com/tutorials/l-vim-script-3/ define & 
+  " initialize some local variables.
+  :let l:flags=[]
   :let l:pat1='\s\+dynamic\($\|\s\+\)'
   :let l:pat2=',\s'
   :let l:pat='\(' .. l:pat1 .. '\)' .. '\|' .. '\(' .. l:pat2 .. '\)'
-  " delete existing output file, if any, because we're going to overwrite it.
-  :call delete(l:ofile)
-  " read the input file, parse each line, and print results to output file.
-  :for line in readfile(l:ifile)
+  " read formatted OPTIONS-GHC-FLAGS file, parse each line, & return results.
+  :for line in readfile(g:phask_ops_ghc_formatted_iofile)
     " header: ^== ++++++++++++ OPTIONS_GHC FLAGS FOR GHC 8.10.4 ++++++++++++
     :if line =~# '^=\+\s*+\+[[:upper:]-_. [:digit:]]\++\+\s*$'
       " change to: ^++++++++++++ OPTIONS_GHC FLAGS FOR GHC 8.10.4 ++++++++++++
       :let line = substitute(line, '^=\+\s*', '', '')
-      :call writefile([l:line], l:ofile, 'sa')
+      :call add(l:flags, line)
     " lines such as: ^============== VERBOSITY OPTIONS
     :elseif line =~# '^=\+[[:upper:]- ]\+$'
-      :call writefile([l:line], l:ofile, 'sa')
+      :call add(l:flags, line)
     " data lines (w/t or w/o comma) such as: ^-O, -O1     dynamic   -O0
     :elseif line =~# '^-.*$'
       :let l:lines=split(line, l:pat)
-      :call writefile(l:lines, l:ofile, 'sa')
+      :call extend(l:flags, l:lines)
     :endif
   :endfor
+  :return l:flags
 endfunction
 
 " ==============================================================================
-function! CountOptionsGhcFlags() abort
-  " count the number of OPTIONS_GHC flags.
+function! s:countFlags() abort
+  " counts lines an expected correct parse of OPTIONS-GHC flags would generate.  
+  " this count involves:
+  "   1. count of OPTIONS_GHC flags;
+  "   2. count of headers that a correct parse would include.
+  " the total count reported is the sum of (1) & (2).
+  "
+  " NOTE: see `usage` for more details.
   "
   " this count acts as a rule-of-thumb test for the generated 
-  " vim/haskell/data/OPTIONS-GHC-FLAGS-PARSED-LIST.txt. the total number of lines in 
-  " that file should match the count reported by this function.
+  " vim/haskell/data/OPTIONS-GHC-FLAGS-PARSED-LIST.txt. the total number of 
+  " lines in that file should match the count reported by this function.
   "
   " code idea from /u/ mMontu @ https://tinyurl.com/y6s8mxpz (so).
   " replaced `v` with `g` here; of course, the patterns apply only for use here.
   "
-  " usage: open vim/haskell/data/OPTIONS-GHC-FLAGS-FORMATTED.txt and then invoke 
-  " :echo CountOptionsGhcFlags() on the vim commandline.
+  " usage: this is a helper function not directly called by end user.  instead, 
+  " another function opens vim/haskell/data/OPTIONS-GHC-FLAGS-FORMATTED.txt and 
+  " runs this function on that file. that invoking function is in this file.
   "
   " NOTE (vim doc):
   " \@! matches with zero width if the preceding atom does NOT match at the 

@@ -21,13 +21,8 @@ vim/plugin/haskell-pragma-and-import-completion.vim.
 == ALSO, PLEASE DO NOT CHANGE THIS FILE IN ANYWAY, INCLUDING ADDING OR DELETING 
 == SPACES OR LINES, BECAUSE ANY CHANGE COULD RESULT IN FAILURE DURING FILE PARSE.
 
-== Prem created this file in the following way:
-==  1. created this file, as a copy of vim/haskell/data/OPTIONS-GHC-FLAGS-ORIGINAL.txt
-==  2. removed non-applicable comments
-==  3. opened this file in vim
-==  4. ran `FormatOptionsGhcFlagsFile()` from vim commandline to format contents
-==  5. checked data accuracy by comparing contents with haskell.org link above.
-==  6. added headers, comments, etc for easy read
+== Prem created this file by running :call GenerateOptionsGhcFlags() on the 
+== vim commandline. that function does all the work that Prem did manually before.
 
 == NOTE: for changes to flags since GHC 8.0, see
 == https://downloads.haskell.org/ghc/latest/docs/users_guide/using-warnings.html

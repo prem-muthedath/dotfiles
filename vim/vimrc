@@ -216,6 +216,24 @@ nnoremap <silent> K :call ShowDocumentation()<CR>
 nnoremap <silent> _pc :call popup_clear()<CR>
 " ==============================================================================
 " start haskell pragma completion.
+" ==============================================================================
+" haskell pragma completion (in normal mode).
+"  1. if current line is blank, inserts haskell pragma block at line start, 
+"     positions the cursor inside the pragma block, and switches to insert mode.
+"  2. else, adds a blank line right below, and does step 1 on the blank line.
+"  3. this function takes 1 arg, the pragma string "LANGUAGE" or "OPTIONS_GHC".
+" this code at this time is still experimental.
+" author: Prem Muthedath
+function! StartHaskellPragma(arg)
+  " on `..` use, see :h expr-..
+  " `normal!`: https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
+  let l:pragma = '{-# ' .. a:arg .. ' #-}'
+  let l:cmdstr = 'normal! gI' .. l:pragma .. "\<Esc>" .. 'gE' .. 'a ' .. "\<Esc>" .. 'l'
+  if getline('.') !~ '^$'
+    :execute 'normal! o' .. "\<Esc>"
+  endif
+  :execute l:cmdstr | :startinsert
+endfunction
 nnoremap  _lp :call StartHaskellPragma("LANGUAGE") <CR>
 nnoremap  _op :call StartHaskellPragma("OPTIONS_GHC") <CR>
 
