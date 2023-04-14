@@ -60,7 +60,7 @@ fi
 #   2. BRE does not support `+` and `?`
 #   3. also, with ERE, we can use ( and ), whereas with BRE, we need \( and \)
 ghc --version | \
-  sed -E 's/^.*version ([[:digit:].]+).*$/========== GHC \1 Language Extensions/' > "${ofile}"
+  sed -E 's/^.*version ([[:digit:].]+).*$/========== GHC \1 Language Extensions/' >> "${ofile}"
 # append language extensions, sorted alphabetically by ignoring case (f), blanks 
 # (b), and duplicates (u), to file.
 # REF: /u/ yairchu @ https://tinyurl.com/yb6574hz (so)
