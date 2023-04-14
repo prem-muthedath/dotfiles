@@ -11,6 +11,7 @@
 " on `..` use, see :h expr-..
 const g:pdotfiles_dir = glob('~/dotfiles/')
 const g:phask_data_dir = g:pdotfiles_dir .. 'vim/haskell/data/'
+const g:phask_shell_dir = g:pdotfiles_dir .. 'vim/haskell/shell/'
 
 const g:phask_ops_ghc_orig_ifile = g:phask_data_dir .. 'OPTIONS-GHC-FLAGS-ORIGINAL.txt'
 const g:phask_ops_ghc_formatted_header_ifile = g:phask_data_dir .. 'OPTIONS-GHC-FLAGS-FORMATTED--HEADER.txt'
@@ -20,26 +21,43 @@ const g:phask_ops_ghc_parsed_ofile = g:phask_data_dir .. 'OPTIONS-GHC-FLAGS-PARS
 const g:phask_lang_extns_ofile = g:phask_data_dir .. 'GHC-LANGUAGE-EXTENSIONS-SORTED-LIST.txt'
 const g:phask_imp_modules_ofile = g:phask_data_dir .. 'ghcup-cabal-installed-modules.txt'
 
-" const g:phask_cabal_inst_pkgs_ofile = g:phask_data_dir .. 'cabal-installed-pkgs.txt'
-" const g:phask_ghcup_inst_pkgs_ofile = g:phask_data_dir .. 'ghcup-installed-pkgs.txt'
+const g:phask_cabal_inst_pkgs_ofile = g:phask_data_dir .. 'cabal-installed-pkgs.txt'
+const g:phask_ghcup_inst_pkgs_ofile = g:phask_data_dir .. 'ghcup-installed-pkgs.txt'
+
+" ==============================================================================
+" generates GHC language extensions, alphabetically sorted and stored in a file.
+" this function invokes a shell script that actually does the job.
+" i decided to have this function in vim, so that we've 1 place to do the job.
+function! GenerateLanguageExtns() abort
+  " on shellescape(), see /u/ tommcdo @ https://tinyurl.com/394b562j (vi.SE)
+  :let l:bscr = shellescape(g:phask_shell_dir .. 'output-ghc-language-extensions')
+  " on system(), see https://www.baeldung.com/linux/vim-shell-commands-silence
+  " system() returns both stdout and stderr; here, we don't care about stdout, 
+  " but if there is a failure, we would like to capture the stderr.
+  :let l:res = system(l:bscr .. ' ' .. shellescape(g:phask_lang_extns_ofile))
+  :if v:shell_error
+  : throw "Language Extensions Generation Failure: " .. l:res
+  :endif
+  :return l:res
+endfunction
 
 " ==============================================================================
 " these functions below work together to format and generate OPTIONS_GHC flags.
 " ==============================================================================
 " ==============================================================================
-" working with helper functions, does the following:
-"   1. generates a freshly formatted OPTIONS-GHC-FLAGS file;
-"   2. parses the formatted file for OPTIONS_GHC flags and relevant headers;
+" a controller- or director-type function that generates OPTIONS_GHC flags.
+" it works with helper functions in a step-wise manner to get the job done:
+"   1. first generates a freshly formatted OPTIONS-GHC-FLAGS file;
+"   2. then parses the formatted file for OPTIONS_GHC flags, relevant headers;
 "   3. dumps parsed data, which also contain headers for easy reading, to 
 "      OPTIONS-GHC-FLAGS-PARSED-LIST.txt;
-"   4. runs a quick-and-dirty test on the generated (parsed) file, and if the 
-"      test fails, propagates the thrown exception.
-"
+"   4. finally, runs a quick-and-dirty test on the generated (parsed) file, and 
+"      if the test fails, propagates the thrown exception.
 " usage: open vimrc & invoke :call GenerateOptionsGhcFlags() on vim commandline.
 function! GenerateOptionsGhcFlags() abort
   " do we have a valid root directory?
   :if g:pdotfiles_dir ==# ""
-    :throw 'the required root directory `~/dotfile/` DOES NOT EXIST.'
+  : throw 'the required root directory `~/dotfile/` DOES NOT EXIST.'
   :endif
   " generate a newly formatted OPTIONS-GHC file for parsing OPTIONS_GHC flags.
   :call s:format()

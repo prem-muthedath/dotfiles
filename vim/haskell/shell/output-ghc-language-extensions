@@ -1,7 +1,13 @@
 #!/bin/bash
+# NOTE: use of set-e has gotchas: https://mywiki.wooledge.org/BashFAQ/105
+# set -e usage: /u/ shizzmo @ https://tinyurl.com/3xaupkr7 (so)
+set -euo pipefail  # http://redsymbol.net/articles/unofficial-bash-strict-mode/
 # ==============================================================================
 # bash script that outputs language extensions of ghc installed on Prem's 
 # system. the script writes the language extensions, sorted alphabetically, to 
+# an output file, specified as an argument (the only argument) to the script.  
+# if you provide no argument or just an empty string as argument, however, the 
+# script will write the language extensions to the default output file, which is 
 # vim/haskell/data/GHC-LANGUAGE-EXTENSIONS-SORTED-LIST.txt.
 #
 # the generated language extensions will be used for haskell pragma completion 
@@ -9,18 +15,41 @@
 #
 # usage:
 #   1. `cd` to `dotfiles` folder, the root folder for all dotfiles.
-#   2. run `./output-ghc-language-extensions` on the commandline.
-#   3. to see the generated language extensions, view file in vim/haskell/data 
-#      folder named GHC-LANGUAGE-EXTENSIONS-SORTED-LIST.txt
+#   2. run the following command on the commandline:
+#       `./vim/haskell/shell/output-ghc-language-extensions`
+#   3. you can also specify an output file as an argument to the command in (2).
+#   4. to see the generated language extensions, view the default file in 
+#      vim/haskell/data folder named GHC-LANGUAGE-EXTENSIONS-SORTED-LIST.txt or 
+#      the file you have specified in step 3.
 #
 # author: Prem Muthedath, APR 2023.
 #
 # ==============================================================================
-# declare needed file path as read-only.
-declare -r lextns='vim/haskell/data/GHC-LANGUAGE-EXTENSIONS-SORTED-LIST.txt'
+# declare needed file paths as read-only.
+# ${lextns} is the default output file
+# ${ofile} holds the output file name; it's value is user-specified through $1.
+# if $1 is null or empty, ${ofile} value is set to ${lextns}.
+# for ${1:-}, see: http://redsymbol.net/articles/unofficial-bash-strict-mode/
+# see also parameter expansion @ https://tinyurl.com/ywyt9z5b (GNU)
+declare -r lextns="${HOME}/dotfiles/vim/haskell/data/GHC-LANGUAGE-EXTENSIONS-SORTED-LIST.txt"
+declare -r ofile=${1:-"${lextns}"}
 
-# remove existing data file, because we want to generate it afresh.
-rm "${lextns}" || echo "failed to remove file \"${lextns}\""
+# on `=`, see /u/ dawg, /u/ john kugleman @ https://tinyurl.com/bxhab8pk (so)
+# see /u/ gilles, /u/ michael homer @ https://tinyurl.com/2p8d2yww (unix.SE)
+if [[ "${ofile}" = *[$' \t\n?:']* ]]; then
+  echo "ERROR: output filename  \"${ofile}\" can NOT contain spaces, ?, :, tabs or newlines."
+  exit 1
+fi
+
+# compare specified output file with default; if not same, issue a warning.
+# on `=`, see /u/ dawg, /u/ john kugleman @ https://tinyurl.com/bxhab8pk (so)
+if [[ "${ofile}" != "${lextns}" ]]; then
+  echo "WARNING: specified output file \"${ofile}\" is NOT same as the default one: \"${lextns}\"."
+fi
+
+# create (if it doesn't exist) or overwrite output file; ':' is no-op command
+# https://askubuntu.com/questions/831414/what-is-the-difference-between-touch-file-and-file
+: > "${ofile}"
 
 # write header containing GHC version to file
 # REF: `sed -E` extended regular expression in mac os: see /u/ kusalananda @ 
@@ -30,10 +59,12 @@ rm "${lextns}" || echo "failed to remove file \"${lextns}\""
 #   2. BRE does not support `+` and `?`
 #   3. also, with ERE, we can use ( and ), whereas with BRE, we need \( and \)
 ghc --version | \
-  sed -E 's/^.*version ([[:digit:].]+).*$/========== GHC \1 Language Extensions/' > "${lextns}" 
+  sed -E 's/^.*version ([[:digit:].]+).*$/========== GHC \1 Language Extensions/' > "${ofile}"
 # append language extensions, sorted alphabetically by ignoring case (f), blanks 
 # (b), and duplicates (u), to file.
 # REF: /u/ yairchu @ https://tinyurl.com/yb6574hz (so)
-ghc --supported-extensions | sort -buf >> "${lextns}"
+ghc --supported-extensions | sort -buf >> "${ofile}"
+echo "GHC Language Extensions successfully written to \"${ofile}\"."
+exit 0
 
 # ==============================================================================
