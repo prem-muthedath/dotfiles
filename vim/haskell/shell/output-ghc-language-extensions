@@ -47,8 +47,9 @@ if [[ "${ofile}" != "${lextns}" ]]; then
   echo "WARNING: specified output file \"${ofile}\" is NOT same as the default one: \"${lextns}\"."
 fi
 
-# create (if it doesn't exist) or overwrite output file; ':' is no-op command
+# create (if it doesn't exist) or overwrite output files; ':' is no-op command
 # https://askubuntu.com/questions/831414/what-is-the-difference-between-touch-file-and-file
+: > "${lextns}"
 : > "${ofile}"
 
 # write header containing GHC version to file
