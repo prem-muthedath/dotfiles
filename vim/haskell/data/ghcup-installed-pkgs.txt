@@ -1,3 +1,4 @@
++++++++++++++++ ghcup-installed packages (ghcup v0.1.14, GHC 8.10.4)
 array-0.5.4.0
 base-4.14.1.0
 binary-0.8.8.0

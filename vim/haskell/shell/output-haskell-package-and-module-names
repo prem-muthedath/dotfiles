@@ -33,7 +33,11 @@ rm "${gcmods}" || echo "failed to remove file \"${gcmods}\""
 # Notes:
 #   1. `sed -n` says print nothing by default, unless you are explicitly asked.
 #   2. here, because of `/p`, sed only prints when there is a substitution.
-#   3. we use `sed -E` here because we need `+` usage in the pattern.
+#   3. REF: `sed -E` extended regular expression in mac os: see /u/ kusalananda 
+#      @ https://tinyurl.com/23rw9p3w (unix.SE).
+#       a) we use `sed -E` here because we need `+` usage in the pattern.
+#       b) BRE does not support `+` and `?`
+#     ` c) with ERE, we can use ( and ), whereas with BRE, we need \( and \)
 #   4. for "$()", command substitution, see /u/ gypsycosmonaut, /u/ Stéphane 
 #      Chazelas @ https://tinyurl.com/4dxynh3k (unix.SE)
 declare -r ghcupver="$(ghcup --version | \
@@ -44,8 +48,30 @@ declare -r cablibver="$(cabal --version | \
   sed -nE 's/^.* version ([[:digit:].]+).*(Cabal).*$/\2 \1/p')"
 declare -r ghcver="$(ghc --version | \
   sed -E 's/^.*version ([[:digit:].]+).*$/GHC \1/')"
+
 # ==============================================================================
-# extract the list of cabal-installed haskell package names.
+# utility functions for header creation.
+
+# define `plus`, a common header component; all headers start with $plus.
+declare -r plus="+++++++++++++++"
+
+# header for ghcup data, which may be ghcup-installed packages or modules.
+# takes 1 argument: typically, 'ghcup-installed-something' string.
+ghcup_header() {
+  echo "${plus}" "${1}" "(${ghcupver}," "${ghcver})"
+}
+
+# header for cabal data, which may be cabal-installed packages or modules.
+# takes 1 argument: typically, 'cabal-installed-something' string.
+cabal_header() {
+  echo "${plus}" "${1}" "(${cabappver}," "${cablibver}," "${ghcver})"
+}
+
+# ==============================================================================
+# first, add a header for cabal-installed packages.
+echo "$(cabal_header 'cabal-installed packages')" > "${cpkgs}"
+
+# next, extract the list of cabal-installed haskell package names.
 # execution steps:
 #   1. search for only directories but do not dive into them (-depth 1)!
 #   2. print the directories found with null separator (-print0)
@@ -62,10 +88,13 @@ find ~/.cabal/packages/hackage.haskell.org -depth 1 -type d -print0 |  \
   # extract just the file name
   xargs -0 -n 1 basename | \
   # sort, ignoring duplicates (`-u`), case (`-f`), and blanks (`-b`)
-  sort -buf > "${cpkgs}"
+  sort -buf >> "${cpkgs}"
 
 # ==============================================================================
-# extract the list of ghcup-installed haskell package names.
+# first, add a header for ghcup-installed packages.
+echo "$(ghcup_header 'ghcup-installed packages')" > "${gpkgs}"
+
+# next, extract the list of ghcup-installed haskell package names.
 # execution steps:
 #   1. search for only directories but do not dive into them (-depth 1)!
 #   2. skip `bin`, `include`, & `package.conf.d' non-package directories.
@@ -86,7 +115,7 @@ find ~/.cabal/packages/hackage.haskell.org -depth 1 -type d -print0 |  \
 # does not include certain packages such as html and latex -- not sure why.
 find ~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4 -depth 1 -type d  \
   \! \( -path '*/bin' \) \! \( -path '*/include' \) \! \( -path '*/package.conf.d' \) \
-  -print0 | xargs -0 -n 1 basename | sort -buf > "${gpkgs}"
+  -print0 | xargs -0 -n 1 basename | sort -buf >> "${gpkgs}"
 
 # ==============================================================================
 # this function extracts haskell module names associated with the package names 
@@ -106,7 +135,8 @@ find ~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4 -depth 1 -type d  \
 # extraction is almost identical for cabal-installed and ghcup-installed pkgs. 
 #
 # REF:
-# 1. `cat` with `xargs`: /u/ Stefan @ https://tinyurl.com/4dxynh3k (unix.SE)
+# 1. `cat` with `xargs`: /u/ Stefan @ https://tinyurl.com/4dxynh3k (unix.SE).  
+#    NOTE: we no longer use `cat`; instead we use `sed` now to pipe to `xargs`.
 # 2. also, see (not directly applicable here but still useful) - `echo "$(< 
 #    file)"`: /u/ Stéphane Chazelas @ https://tinyurl.com/2p894vju (unix.SE)
 # 3. print lines between 2 patterns using `sed`: /u/ hek2mgl @ 
@@ -180,7 +210,26 @@ extract_module_names()  {
   ifile="${1}"
   ofile="${2}"
 
-  cat "${ifile}" | \
+  # we first use `sed` to make sure we clip off any non-package name data, which 
+  # typically is a fle heading, such as:
+  #
+  #   ^++++++++++++++++ ghcup-installed_packages (ghcup v0.1.14, GHC 8.10.4)
+  #
+  # the first `sed` below does this job by printing (`p`) only those lines that 
+  # do not start with `+`, `.`, `*`, or ' '; the `-n` option forces `sed` to not 
+  # print anythng by default, while the `p` flag tells `sed` to print only those 
+  # lines that match the pattern.
+  #
+  # REF: `sed -E` extended regular expression in mac os: see /u/ kusalananda @ 
+  # https://tinyurl.com/23rw9p3w (unix.SE).
+  #   a) we use `sed -E` here because we need `+` usage in the pattern.
+  #   b) BRE does not support `+` and `?`
+  #   c) with ERE, we can use ( and ), whereas with BRE, we need \( and \)
+  #
+  # the first `sed` data then is piped to `xargs` to generate the `cabal` info.  
+  # we then pipe that output to a series of `sed` commands, as described above.
+
+  sed -nE '/^[^+.* ]+/p' "${ifile}" | \
     xargs cabal info | \
     sed -n '/^.*Modules:/,/^\*/{//!p;}' | \
     sed  '/^[[:space:]]*$/d' | \
@@ -192,21 +241,14 @@ extract_module_names()  {
 # extract both cabal- and ghcup-installed module names into file.
 # https://opensource.com/article/18/5/you-dont-know-bash-intro-bash-arrays
 # for shell equality, see /u/ dawg @ https://tinyurl.com/bxhab8pk (so)
-# REF: `sed -E` extended regular expression in mac os: see /u/ kusalananda @ 
-# https://tinyurl.com/23rw9p3w (unix.SE).
-# Notes:
-#   1. we use `sed -E` here because we need `+` usage in the pattern.
-#   2. BRE does not support `+` and `?`
-#   3. also, with ERE, we can use ( and ), whereas with BRE, we need \( and \)
 declare -r ifiles=("${gpkgs}" "${cpkgs}")
 for i in ${ifiles[@]}; do
   if [[ "${i}" == "${gpkgs}" ]]; then
-    echo "+++++++++++++++ ghcup-installed modules" \
-      "(${ghcupver},"  "${ghcver})" > "${gcmods}"
+    echo "$(ghcup_header 'ghcup-installed modules')" > "${gcmods}"
   else
-    echo "+++++++++++++++ cabal-installed modules" \
-      "(${cabappver}," "${cablibver}," "${ghcver})" >> "${gcmods}"
+    echo "$(cabal_header 'cabal-installed modules')" >> "${gcmods}"
   fi
   extract_module_names "${i}" "${gcmods}"
 done
+
 # ==============================================================================
