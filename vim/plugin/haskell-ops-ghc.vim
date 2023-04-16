@@ -83,11 +83,14 @@ function! s:format() abort
   " open the OPTIONS-GHC formatted file.  if none exists, vim opens a new file.
   :execute ":vsp" g:phask_ops_ghc_formatted_iofile
   " delete all file content.
-  :1,$d
+  " see /u/ martin tournoij @ https://tinyurl.com/4m5a3d5f (vi.SE)
+  " see also :h range
+  :1,$:delete
   " import all contents of the original (unformatted) OPTIONS-GHC file.
   " for file insertion, see https://vim.fandom.com/wiki/Insert_a_file
   :execute ":1r" g:phask_ops_ghc_orig_ifile
   " delete all imported header lines appearing at the top.
+  " see :help range
   :1;/^=\+\s*+\+ OPTIONS_GHC FLAGS/-1d
   " replace the deleted headers with imported headers from a template file.
   " `:0r`, see /u/ stefan van den akker @ https://tinyurl.com/mr238hmd (so)
@@ -120,7 +123,7 @@ function! s:testFlagCount() abort
   :quit
   " now open the generated parsed OPTIONS-GHC flags file.
   :execute ":vsp" g:phask_ops_ghc_parsed_ofile
-  " count the lines in this file. this will be the "actual" count.
+  " count the lines in the parsed output file. this will be the "actual" count.
   " on `line('$')`, see /u/ kev @ https://tinyurl.com/5axjp3dm (so)
   :let l:acnt = line('$')
   " close the file.
@@ -130,7 +133,7 @@ function! s:testFlagCount() abort
   :let l:res = {'actual' : l:acnt, 'expected' : l:ecnt, 'flag' : l:acnt == l:ecnt ? 'PASS' : 'FAIL' }
   " if there is a test failure, throw an exception to alert the caller.
   :if (l:res).flag ==# 'FAIL'
-    :throw "test failed -- incorrect options-ghc flags parsed: " .. string(l:res)
+  : throw "test failed -- incorrect options-ghc flags parsed: " .. string(l:res)
   :endif
 endfunction
 
@@ -328,18 +331,18 @@ function! s:parseFlags() abort
   " read formatted OPTIONS-GHC-FLAGS file, parse each line, & return results.
   :for line in readfile(g:phask_ops_ghc_formatted_iofile)
     " header: ^== ++++++++++++ OPTIONS_GHC FLAGS FOR GHC 8.10.4 ++++++++++++
-    :if line =~# '^=\+\s*+\+[[:upper:]-_. [:digit:]]\++\+\s*$'
+  : if line =~# '^=\+\s*+\+[[:upper:]-_. [:digit:]]\++\+\s*$'
       " change to: ^++++++++++++ OPTIONS_GHC FLAGS FOR GHC 8.10.4 ++++++++++++
-      :let line = substitute(line, '^=\+\s*', '', '')
-      :call add(l:flags, line)
+  :   let line = substitute(line, '^=\+\s*', '', '')
+  :   call add(l:flags, line)
     " lines such as: ^============== VERBOSITY OPTIONS
-    :elseif line =~# '^=\+[[:upper:]- ]\+$'
-      :call add(l:flags, line)
+  : elseif line =~# '^=\+[[:upper:]- ]\+$'
+  :   call add(l:flags, line)
     " data lines (w/t or w/o comma) such as: ^-O, -O1     dynamic   -O0
-    :elseif line =~# '^-.*$'
-      :let l:lines=split(line, l:pat)
-      :call extend(l:flags, l:lines)
-    :endif
+  : elseif line =~# '^-.*$'
+  :   let l:lines=split(line, l:pat)
+  :   call extend(l:flags, l:lines)
+  : endif
   :endfor
   :return l:flags
 endfunction
