@@ -29,15 +29,20 @@ const g:phask_ghcup_inst_pkgs_ofile = g:phask_data_dir .. 'ghcup-installed-pkgs.
 " this function invokes a shell script that actually does the job.
 " i decided to have this function in vim, so that we've 1 place to do the job.
 function! GenerateLanguageExtns() abort
+  " define the bash script.
   " on shellescape(), see /u/ tommcdo @ https://tinyurl.com/394b562j (vi.SE)
   :let l:bscr = shellescape(g:phask_shell_dir .. 'output-ghc-language-extensions')
-  " on system(), see https://www.baeldung.com/linux/vim-shell-commands-silence
-  " system() returns both stdout and stderr; here, we don't care about stdout, 
-  " but if there is a failure, we would like to capture the stderr.
+  " invoke the bash script, passing it the name of the output file.  capture the 
+  " `system()` output, which in this case would be stderr, as stdout is none.
+  "   1. system() => https://www.baeldung.com/linux/vim-shell-commands-silence
+  "   2. system() returns both stdout and stderr; here, we don't care about 
+  "      stdout, but if there is a failure, we would like to capture the stderr.
   :let l:res = system(l:bscr .. ' ' .. shellescape(g:phask_lang_extns_ofile))
+  " if the bash script errors, capture and throw the error.
   :if v:shell_error
   : throw "Language Extensions Generation Failure: " .. l:res
   :endif
+  " this return is for testing only, meaning eventually it should be removed.
   :return l:res
 endfunction
 
@@ -78,7 +83,7 @@ endfunction
 "
 " usage: this is a helper function not directly invoked by the user.  instead, 
 " another top-level function in this file invokes this function as part of its 
-" work of gnnerating a parsed OPTIONS_GHC flags file.
+" work of generating a parsed OPTIONS_GHC flags file.
 function! s:format() abort
   " open the OPTIONS-GHC formatted file.  if none exists, vim opens a new file.
   :execute ":vsp" g:phask_ops_ghc_formatted_iofile
@@ -176,7 +181,7 @@ function! s:formatFile()
   "      and then runs `cmds` on each matched line. see :h :global
   "   3. we use g/pattern/cmds 3 times to format our data. in the first 
   "      g/pattern./cmds, we first remove the spaces between the 1st data column 
-  "      (blah, bazooze, -foo-dynamic) and the 2nd column `dynaamic` using:
+  "      (blah, bazooze, -foo-dynamic) and the 2nd column `dynamic` using:
   "          execute 's/\s\+\(dynamic\)\(\s*$\|\s\+-\)/\U\1\E\2'
   "      we use /\s\+\(dynamic\)\(\s*$\|\s\+-\)/ because of lines like:
   "           ^-dynamic   dynamic
