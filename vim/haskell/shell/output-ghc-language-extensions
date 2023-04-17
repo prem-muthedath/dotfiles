@@ -65,7 +65,7 @@ ghc --version | \
 # (b), and duplicates (u), to file.
 # REF: /u/ yairchu @ https://tinyurl.com/yb6574hz (so)
 ghc --supported-extensions | sort -buf >> "${ofile}"
-echo "GHC Language Extensions successfully written to \"${ofile}\"."
+echo -n "GHC Language Extensions successfully written to \"${ofile}\"."
 exit 0
 
 # ==============================================================================

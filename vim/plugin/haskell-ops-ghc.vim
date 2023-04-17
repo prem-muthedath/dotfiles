@@ -1,13 +1,22 @@
-" code for haskell OPTIONS_GHC pragma completion.
+" code for generating:
+"   a) complete list of haskell OPTIONS_GHC flags;
+"   b) all installed GHC Language Extensions;
+"   c) names of all modules installed on Prem's system.
+"
+" generated data stored in files (see 'usage' below).
+"
+" usage:
+" open vim and run `:call GenerateHaskellImportPragmaData()` on vim commandline.  
+" locations of generated data echoed in vim commandline.
 "
 " history:
 "   created APR 2023.
 "   old parts of this code were in util file before.
 " author: Prem Muthedath
-
+"
 " ==============================================================================
 " define directory and file paths as immutable values.
-" for glob()`use, see /u/ martin tournoij @ https://tinyurl.com/2t7e3asj (so)
+" for glob()` use, see /u/ martin tournoij @ https://tinyurl.com/2t7e3asj (so)
 " on `..` use, see :h expr-..
 const g:pdotfiles_dir = glob('~/dotfiles/')
 const g:phask_data_dir = g:pdotfiles_dir .. 'vim/haskell/data/'
@@ -21,29 +30,106 @@ const g:phask_ops_ghc_parsed_ofile = g:phask_data_dir .. 'OPTIONS-GHC-FLAGS-PARS
 const g:phask_lang_extns_ofile = g:phask_data_dir .. 'GHC-LANGUAGE-EXTENSIONS-SORTED-LIST.txt'
 const g:phask_imp_modules_ofile = g:phask_data_dir .. 'ghcup-cabal-installed-modules.txt'
 
-const g:phask_cabal_inst_pkgs_ofile = g:phask_data_dir .. 'cabal-installed-pkgs.txt'
-const g:phask_ghcup_inst_pkgs_ofile = g:phask_data_dir .. 'ghcup-installed-pkgs.txt'
+" ==============================================================================
+" top-level function that generates all OPTIONS_GHC flags, all GHC Language 
+" Extensions, & all installed haskell module names. all generated data stored in 
+" files; file locations echoed in vim commandline when you run this function. 
+" this function serves as a 1-stop place to generate all the above haskell data.
+"
+" this function aborts if any of the functions it invokes throws an exception.
+"
+" usage:
+" open vim and run `:call GenerateHaskellImportPragmaData()` on vim commandline.
+function! GenerateHaskellImportPragmaData() abort
+  " NOTE: we call `GenerateOptionsGhcFlags()` first to avoid a redraw of vim 
+  " commandline that wipes out previous messages. if we instead had a different 
+  " call sequence, the redraw in `GenerateOptionsGhcFlags()` would wipe out the 
+  " vim commandline messages from previous function calls, so users will not be 
+  " able to see all the messages in the vim commandline that this function call 
+  " would generate.  this call sequence is strictly for visual purposes only; 
+  " the data generated will be the same no matter what the call sequence is.
+  :call GenerateOptionsGhcFlags()
+  :call GenerateGHCLanguageExtns()
+  :call GenerateInstalledHaskellModuleNames()
+endfunction
+
+" ==============================================================================
+" generates ghcup- and cabal-installed module names, sorted & stored in a file.
+" this function invokes a helper function (introduced to avoid code duplication) 
+" that in turn invokes a specified shell script that actually does the job.
+"
+" the invoked shell script, by the way, first generates (and stores in files) 
+" ghcup- and cabal-installed package names, which are then used to generate the 
+" module names. over here, we only care about the final product, the generated 
+" module names, and not the generated package names, the intermediate stuff. 
+" this is the reason we only specify the output file for the generated module 
+" names.  since we do not specify the names of package data files, the script 
+" uses default files specified in its code to store the generated package names.
+"
+" this function propagates any script error thrown as an exception.
+"
+" usage:
+" in vim, run `:call GenerateInstalledHaskellModuleNames()` on vim commandline.
+"
+" even though a shell script does the actual job, i decided to have this 
+" function in vim, so that we've 1 place to initiate the job.
+" for use of '\', see :h line-continuation
+function! GenerateInstalledHaskellModuleNames() abort
+  :call s:generateData(
+      "\ bash script name
+      \'output-haskell-package-and-module-names',
+      "\ output file where the script will dump module names
+      \ g:phask_imp_modules_ofile,
+      "\ error message in case of script failure
+      \ "Installed Module Names Generation Failure")
+endfunction
 
 " ==============================================================================
 " generates GHC language extensions, alphabetically sorted and stored in a file.
-" this function invokes a shell script that actually does the job.
-" i decided to have this function in vim, so that we've 1 place to do the job.
-function! GenerateLanguageExtns() abort
+" this function invokes a helper function (introduced to avoid code duplication) 
+" that in turn invokes a specified shell script that actually does the job.
+"
+" this function propagates any script error thrown as an exception.
+"
+" usage:
+" in vim, run `:call GenerateGHCLanguageExtns()` on vim commandline.
+"
+" even though a shell script does the actual job, i decided to have this 
+" function in vim, so that we've 1 place to initiate the job.
+" for use of '\', see :h line-continuation
+function! GenerateGHCLanguageExtns() abort
+  :call s:generateData(
+      "\ bash script name
+      \'output-ghc-language-extensions',
+      "\ output file where the script will dump GHC Language Extensions
+      \ g:phask_lang_extns_ofile,
+      "\ error message in case of script failure
+      \ "GHC Language Extensions Generation Failure")
+endfunction
+
+" ==============================================================================
+" helper function that invokes the specified shell script, passing it the 
+" specified ouput file, to generate whatever data the script generates. if the 
+" script errors, this function captures the stderr and throws it.
+"
+" usage: this function not directly invoked by the end user; instead, top-level 
+" functions in this file invoke it as part of their work. this function collects 
+" common code in 1 place, avoiding code duplication.
+function! s:generateData(script, ofile, err_msg)
   " define the bash script.
-  " on shellescape(), see /u/ tommcdo @ https://tinyurl.com/394b562j (vi.SE)
-  :let l:bscr = shellescape(g:phask_shell_dir .. 'output-ghc-language-extensions')
+  " on shellescape(), see /u/ tommcdo @ https://tinyurl.com/394b562j (vi.se)
+  :let l:bscr = shellescape(g:phask_shell_dir .. a:script)
   " invoke the bash script, passing it the name of the output file.  capture the 
   " `system()` output, which in this case would be stderr, as stdout is none.
   "   1. system() => https://www.baeldung.com/linux/vim-shell-commands-silence
   "   2. system() returns both stdout and stderr; here, we don't care about 
   "      stdout, but if there is a failure, we would like to capture the stderr.
-  :let l:res = system(l:bscr .. ' ' .. shellescape(g:phask_lang_extns_ofile))
+  :let l:res = system(l:bscr .. ' ' .. shellescape(a:ofile))
   " if the bash script errors, capture and throw the error.
   :if v:shell_error
-  : throw "Language Extensions Generation Failure: " .. l:res
+  : throw a:err_msg .. ": " .. l:res
   :endif
-  " this return is for testing only, meaning eventually it should be removed.
-  :return l:res
+  :echo l:res
 endfunction
 
 " ==============================================================================
@@ -58,6 +144,9 @@ endfunction
 "      OPTIONS-GHC-FLAGS-PARSED-LIST.txt;
 "   4. finally, runs a quick-and-dirty test on the generated (parsed) file, and 
 "      if the test fails, propagates the thrown exception.
+"   5. this function propagates all exceptions thrown from functions it invokes; 
+"      also, this function throws any error it detects.
+"
 " usage: open vimrc & invoke :call GenerateOptionsGhcFlags() on vim commandline.
 function! GenerateOptionsGhcFlags() abort
   " do we have a valid root directory?
@@ -65,7 +154,8 @@ function! GenerateOptionsGhcFlags() abort
   : throw 'the required root directory `~/dotfile/` DOES NOT EXIST.'
   :endif
   " generate a newly formatted OPTIONS-GHC file for parsing OPTIONS_GHC flags.
-  :call s:format()
+  " `:silent` suppresses messages from `s:format()` in vim coomandline.
+  :silent :call s:format()
   " delete old parsed OPTIONS-GHC flags file, if any, b'coz we'll overwrite it.
   :call delete(g:phask_ops_ghc_parsed_ofile)
   " get the parsed list of all OPTIONS_GHC flags and relevant headers.
@@ -74,8 +164,15 @@ function! GenerateOptionsGhcFlags() abort
   :call writefile(l:flags, g:phask_ops_ghc_parsed_ofile, 's')
   " run a quick test on the parsed data, making sure we've got all the info.
   " Note: the testing function throws an error if the test fails.
-  :call s:testFlagCount()
-  :redraw!
+  " `:silent` suppresses messages from `s:testFlagCount()` in vim coomandline.
+  :silent :call s:testFlagCount()
+  " if you see an error, throw an exception.
+  :if v:errmsg != ""
+  : throw "error in GenerateOptionsGhcFlags(): " .. v:errmsg
+  :endif
+  " we force a redraw; else, `:echo` command message disappears! see :help :echo
+  :redraw
+  :echo "OPTIONS_GHC Flags successfully written to " .. g:phask_ops_ghc_parsed_ofile
 endfunction
 
 " ==============================================================================
@@ -135,17 +232,18 @@ function! s:testFlagCount() abort
   :quit
   " stuff the counts as well as the test status in a dictionary.
   " on dictionary use, see https://developer.ibm.com/tutorials/l-vim-script-4/
-  :let l:res = {'actual' : l:acnt, 'expected' : l:ecnt, 'flag' : l:acnt == l:ecnt ? 'PASS' : 'FAIL' }
+  :let l:res = {'actual' : l:acnt, 'expected' : l:ecnt, 'flag' : l:acnt == l:ecnt ? 'PASS' : 'FAIL'}
   " if there is a test failure, throw an exception to alert the caller.
   :if (l:res).flag ==# 'FAIL'
-  : throw "test failed -- incorrect options-ghc flags parsed: " .. string(l:res)
+  : throw "test failed -- incorrect OPTIONS_GHC flags parsed: " .. string(l:res)
   :endif
 endfunction
 
 " ==============================================================================
 " display formatted and parsed OPTIONS-GHC-FLAGS files.
 " useful for users who want to preview the files visually.
-" usage: open vim and run :call DisplayOptionsGhcFiles() on the vim commandline.
+"
+" usage: open vim and run `:call DisplayOptionsGhcFiles()` on vim commandline.
 function! DisplayOptionsGhcFiles() abort
   :execute ':vsp' g:phask_ops_ghc_formatted_iofile
   :execute ":sp" g:phask_ops_ghc_parsed_ofile

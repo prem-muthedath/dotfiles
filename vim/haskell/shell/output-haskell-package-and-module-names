@@ -1,32 +1,67 @@
 #!/bin/bash
+# NOTE: use of set-e has gotchas: https://mywiki.wooledge.org/BashFAQ/105
+# set -e usage: /u/ shizzmo @ https://tinyurl.com/3xaupkr7 (so)
+set -euo pipefail  # http://redsymbol.net/articles/unofficial-bash-strict-mode/
 # ==============================================================================
 # bash script that extracts haskell cabal- and ghcup- installed package names 
-# and module names in Prem's system. script outputs will be in vim/haskell/data/ 
-# directory. at this time, the generated data corresponds to GHC 8.10.4.
+# and module names in Prem's system. the script outputs generated package names 
+# to files in vim/haskell/data/ directory, and these output files are specified 
+# within the script itself. on the other hand, the script outputs generated 
+# module names to a user-specified output file, and this output file name is 
+# passed to the script as an argument (it's only argument) during script 
+# invocation.  if you provide no argument or just an empty string as an 
+# argument, however, the script will write the generated module names to the 
+# default output file: vim/haskell/data/ghcup-cabal-installed-modules.txt.
 #
 # the generated module names are needed for haskell `import` completion in 
 # haskell files using vim omnicompletion.
 #
 # usage:
 #   1. `cd` to `dotfiles` folder, the root folder for all dotfiles
-#   2. run `./output-haskell-module-names` on the commandline.
-#   3. to see the module names generated, view file in vim/haskell/data/ folder 
-#      named `ghcup-cabal-installed-modules.txt`.
-#   4. to see the package names generated, view files in vim/haskell/data/ 
+#   2. run `./output-haskell-package-and-module-names` on the commandline.
+#   3. you can also specify an output file for generated module names as an 
+#      argument to the command in (2).
+#   4. to see module names generated, view file in vim/haskell/data/ named 
+#      `ghcup-cabal-installed-modules.txt` or the file you've  specified in (3).
+#   5. to see the package names generated, view files in vim/haskell/data/ 
 #      folder named `cabal-installed-pkgs.txt` and `ghcup-installed-pkgs.txt`.
 #
 # author: Prem Muthedath, MAR 2023.
 #
 # ==============================================================================
 # declare some needed file paths as read-only.
-declare -r cpkgs='vim/haskell/data/cabal-installed-pkgs.txt'
-declare -r gpkgs='vim/haskell/data/ghcup-installed-pkgs.txt'
-declare -r gcmods='vim/haskell/data/ghcup-cabal-installed-modules.txt'
+# ${cpkgs}  -- default output file for cabal-installed package names.
+# ${gpkgs}  -- default output file for ghcup-installed package names.
+# ${gcmods} -- default output file for ghcup- and cabal-installed module names.
+# ${ofile}  -- user-specified (thru $1) output file for generated module names.
+#
+# if $1 is null or empty, ${ofile} value is set to ${gcmods}.
+# for ${1:-}, see: http://redsymbol.net/articles/unofficial-bash-strict-mode/
+# see also parameter expansion @ https://tinyurl.com/ywyt9z5b (GNU)
+declare -r cpkgs="${HOME}/dotfiles/vim/haskell/data/cabal-installed-pkgs.txt"
+declare -r gpkgs="${HOME}/dotfiles/vim/haskell/data/ghcup-installed-pkgs.txt"
+declare -r gcmods="${HOME}/dotfiles/vim/haskell/data/ghcup-cabal-installed-modules.txt"
+declare -r ofile=${1:-"${gcmods}"}
 
-# remove existing data files, because we want to generate them afresh.
-rm "${cpkgs}"  || echo "failed to remove file \"${cpkgs}\""
-rm "${gpkgs}"  || echo "failed to remove file \"${gpkgs}\""
-rm "${gcmods}" || echo "failed to remove file \"${gcmods}\""
+# on `=`, see /u/ dawg, /u/ john kugleman @ https://tinyurl.com/bxhab8pk (so)
+# see /u/ gilles, /u/ michael homer @ https://tinyurl.com/2p8d2yww (unix.SE)
+if [[ "${ofile}" = *[$' \t\n?:']* ]]; then
+  echo "ERROR: output filename  \"${ofile}\" can NOT contain spaces, ?, :, tabs or newlines."
+  exit 1
+fi
+
+# compare specified output file with default; if not same, issue a warning.
+# on `=`, see /u/ dawg, /u/ john kugleman @ https://tinyurl.com/bxhab8pk (so)
+if [[ "${ofile}" != "${gcmods}" ]]; then
+  echo "WARNING: specified output file \"${ofile}\" is NOT same as the default one: \"${gcmods}\"."
+fi
+
+# create (if it doesn't exist) or overwrite output files; ':' is no-op command
+# https://askubuntu.com/questions/831414/what-is-the-difference-between-touch-file-and-file
+: > "${cpkgs}"
+: > "${gpkgs}"
+: > "${gcmods}"
+: > "${ofile}"
 
 # capture ghcup, cabal-install, Cabal, GHC version numbers.
 # Cabal vs cabal-nstall: see /user824425/ @ https://tinyurl.com/ycybts72 (so)
@@ -90,6 +125,8 @@ find ~/.cabal/packages/hackage.haskell.org -depth 1 -type d -print0 |  \
   # sort, ignoring duplicates (`-u`), case (`-f`), and blanks (`-b`)
   sort -buf >> "${cpkgs}"
 
+echo "cabal-installed package names successfully written to \"${cpkgs}\"."
+
 # ==============================================================================
 # first, add a header for ghcup-installed packages.
 echo "$(ghcup_header 'ghcup-installed packages')" > "${gpkgs}"
@@ -116,6 +153,8 @@ echo "$(ghcup_header 'ghcup-installed packages')" > "${gpkgs}"
 find ~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4 -depth 1 -type d  \
   \! \( -path '*/bin' \) \! \( -path '*/include' \) \! \( -path '*/package.conf.d' \) \
   -print0 | xargs -0 -n 1 basename | sort -buf >> "${gpkgs}"
+
+echo "ghcup-installed package names successfully written to \"${gpkgs}\"."
 
 # ==============================================================================
 # this function extracts haskell module names associated with the package names 
@@ -206,9 +245,9 @@ find ~/.ghcup/ghc/8.10.4/lib/ghc-8.10.4 -depth 1 -type d  \
 #      REF: match white space in mac `sed`: /u/ some ideas @ 
 #      https://tinyurl.com/br7cszr4 (superuser.com)
 extract_module_names()  {
-  local ifile ofile
-  ifile="${1}"
-  ofile="${2}"
+  local i_file o_file
+  i_file="${1}"
+  o_file="${2}"
 
   # we first use `sed` to make sure we clip off any non-package name data, which 
   # typically is a fle heading, such as:
@@ -229,12 +268,12 @@ extract_module_names()  {
   # the first `sed` data then is piped to `xargs` to generate the `cabal` info.  
   # we then pipe that output to a series of `sed` commands, as described above.
 
-  sed -nE '/^[^+.* ]+/p' "${ifile}" | \
+  sed -nE '/^[^+.* ]+/p' "${i_file}" | \
     xargs cabal info | \
     sed -n '/^.*Modules:/,/^\*/{//!p;}' | \
     sed  '/^[[:space:]]*$/d' | \
     sed 's/^[[:space:]]*//' | \
-    sort -buf >> "${ofile}"
+    sort -buf >> "${o_file}"
 }
 
 # ==============================================================================
@@ -250,5 +289,7 @@ for i in ${ifiles[@]}; do
   fi
   extract_module_names "${i}" "${gcmods}"
 done
+echo -n "ghcup- and cabal-installed module names successfully written to \"${gcmods}\"."
+exit 0
 
 # ==============================================================================
