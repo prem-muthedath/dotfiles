@@ -1,9 +1,16 @@
 " code for generating:
-"   a) complete list of haskell OPTIONS_GHC flags;
-"   b) all installed GHC Language Extensions;
-"   c) names of all modules installed on Prem's system.
+"   a) complete list of haskell OPTIONS_GHC flags (used in haskell pragma);
+"   b) all installed GHC Language Extensions (used in haskell pragma);
+"   c) names of all modules installed on Prem's system (used in module import).
 "
 " generated data stored in files (see 'usage' below).
+"
+" why do we need this data?
+" generated data used for haskell pragma and module import completion in haskell 
+" files using vim omnicompletion. see vim/autoload/haskellcomplete.vim
+"
+" basically, this code generates all data needed for haskell pragma and module 
+" name (in import) completion in haskell files in vim.
 "
 " usage:
 " open vim and run `:call GenerateHaskellImportPragmaData()` on vim commandline.  
