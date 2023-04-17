@@ -12,8 +12,8 @@
 " basically, this code generates all data needed for haskell pragma and module 
 " name (in import) completion in haskell files in vim.
 "
-" usage:
-" open vim and run `:call GenerateHaskellImportPragmaData()` on vim commandline.  
+" usage (to generate all data in 1 shot):
+" open vim and run `:call GenerateHaskellPragmaImportData()` on vim commandline.  
 " locations of generated data echoed in vim commandline.
 "
 " history:
@@ -46,8 +46,8 @@ const g:phask_imp_modules_ofile = g:phask_data_dir .. 'ghcup-cabal-installed-mod
 " this function aborts if any of the functions it invokes throws an exception.
 "
 " usage:
-" open vim and run `:call GenerateHaskellImportPragmaData()` on vim commandline.
-function! GenerateHaskellImportPragmaData() abort
+" open vim and run `:call GenerateHaskellPragmaImportData()` on vim commandline.
+function! GenerateHaskellPragmaImportData() abort
   " NOTE: we call `GenerateOptionsGhcFlags()` first to avoid a redraw of vim 
   " commandline that wipes out previous messages. if we instead had a different 
   " call sequence, the redraw in `GenerateOptionsGhcFlags()` would wipe out the 
@@ -82,7 +82,7 @@ endfunction
 " function in vim, so that we've 1 place to initiate the job.
 " for use of '\', see :h line-continuation
 function! GenerateInstalledHaskellModuleNames() abort
-  :call s:generateData(
+  :call s:generateScriptData(
       "\ bash script name
       \'output-haskell-package-and-module-names',
       "\ output file where the script will dump module names
@@ -105,7 +105,7 @@ endfunction
 " function in vim, so that we've 1 place to initiate the job.
 " for use of '\', see :h line-continuation
 function! GenerateGHCLanguageExtns() abort
-  :call s:generateData(
+  :call s:generateScriptData(
       "\ bash script name
       \'output-ghc-language-extensions',
       "\ output file where the script will dump GHC Language Extensions
@@ -122,7 +122,7 @@ endfunction
 " usage: this function not directly invoked by the end user; instead, top-level 
 " functions in this file invoke it as part of their work. this function collects 
 " common code in 1 place, avoiding code duplication.
-function! s:generateData(script, ofile, err_msg)
+function! s:generateScriptData(script, ofile, err_msg)
   " define the bash script.
   " on shellescape(), see /u/ tommcdo @ https://tinyurl.com/394b562j (vi.se)
   :let l:bscr = shellescape(g:phask_shell_dir .. a:script)
