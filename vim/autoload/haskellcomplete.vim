@@ -55,7 +55,7 @@ endfunc
 " returns all omnicompletion values associated with the completion flag.
 " on `==#`, see https://learnvimscriptthehardway.stevelosh.com/chapters/22.html
 " immutable global variables, such as g:phask_ops_ghc_parsed_ofile, come from 
-" vim/plugin/haskell-pragmas-and-import-completion.vim.
+" vim/plugin/haskell-pragma-import.vim.
 function! s:allValues()
   if b:complete ==# "LANGUAGE-EXTENSION"
     return readfile(g:phask_lang_extns_ofile)

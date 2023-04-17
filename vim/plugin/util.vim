@@ -17,10 +17,10 @@ function! FormatCsFile()
   "   2) then open the copy in vim;
   "   3) and invoke :call FormatCsFile() from vim commandline.
   "
-  " NOTES: this function's structure is same as `FormatOptionsGhcFlagsFile()` in 
-  " vim/plugin/haskell-pragma-and-import-completion.vim, even though the format 
-  " of input file here is different, so the overall flow of extensive comments 
-  " given for `FormatOptionsGhcFlagsFile()` applies here.
+  " NOTES: this function's structure is same as `s:formatFile()` in 
+  " vim/plugin/haskell-pragma-import.vim, even though the format of input file 
+  " here is different, so the overall flow of extensive comments given for 
+  " `s:formatFile()` applies here.
   " see below REFs for :execute and `normal` and `normal!` usage:
   "   1. https://learnvimscriptthehardway.stevelosh.com/chapters/28.html
   "   2. https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
