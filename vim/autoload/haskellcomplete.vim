@@ -5,7 +5,7 @@
 "
 " this code is modeled after:
 "   1. sample code given in :help compl-omni, :h complete-functions
-"   2. code by /u/ statox @ https://tinyurl.com/3fxk9a62 (vi.SE)
+"   2. code by /u/ statox @ https://tinyurl.com/xn6fbrmm (vi.SE)
 "   3. default haskell omnicompletion in vim 8.2 by /u/ dundargoc @ 
 "      https://tinyurl.com/242xb23x (github)
 "
@@ -32,6 +32,8 @@ function! haskellcomplete#Complete(findstart, base)
       let b:complete = 'OPTIONS-GHC'
     elseif l:line =~# '^import\s\+'
       let b:complete = 'IMPORT'
+    else
+      let b:complete = ""
     endif
     return l:start
   else
@@ -47,8 +49,6 @@ function! haskellcomplete#Complete(findstart, base)
     endfor
     return l:res
   endif
-  " reset the flag value; otherwise, we risk carrying on with the old value.
-  let b:complete = ""
 endfunc
 
 " ==============================================================================

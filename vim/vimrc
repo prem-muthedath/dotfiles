@@ -234,8 +234,10 @@ function! StartHaskellPragma(arg)
   endif
   :execute l:cmdstr | :startinsert
 endfunction
-nnoremap  _lp :call StartHaskellPragma("LANGUAGE") <CR>
-nnoremap  _op :call StartHaskellPragma("OPTIONS_GHC") <CR>
+" mappings just for haskell files.
+" see //u/ ingo karkat @ https://tinyurl.com/49fmshs6 (vi.SE)
+autocmd FileType haskell nnoremap  _lp :call StartHaskellPragma("LANGUAGE") <CR>
+autocmd FileType haskell nnoremap  _op :call StartHaskellPragma("OPTIONS_GHC") <CR>
 
 " https://google.com
 " ==============================================================================
