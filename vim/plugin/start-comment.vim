@@ -34,29 +34,29 @@ function! StartComment() abort
     " 1. blank line:
     "     CURSOR at ^   -> originally
     "     CURSOR at ^   -> after 'normal 0'
-    "     "CURSOR       -> after 'normal 0' . '_tc'
-    "     "CURSOR       -> after 'normal 0' . '_tc' . '=='
+    "     "CURSOR       -> after 'normal 0' .. '_tc'
+    "     "CURSOR       -> after 'normal 0' .. '_tc' .. '=='
     "     " CURSOR      -> after :startinsert!
     " 2. comment line:
     "     " blahh       -> originally, CURSOR somewhere on this line
     "     " CURSOR      -> after 'normal o' (new line right below `" blahh`)
-    "     CUR"SOR       -> after 'normal o' . "\<Esc>"
-    "     " CURSOR      -> after 'normal o' . "\<Esc>" . 'A' . ' '
-    "     "CURSOR       -> after 'normal o' . "\<Esc>" . 'A' . ' ' .  "\<Esc>"
+    "     CUR"SOR       -> after 'normal o' .. "\<Esc>"
+    "     " CURSOR      -> after 'normal o' .. "\<Esc>" .. 'A' .. ' '
+    "     "CURSOR       -> after 'normal o' .. "\<Esc>" .. 'A' .. ' ' ..  "\<Esc>"
     "     " CURSOR      -> after :startinsert!
     " 3. non-comment line:
     "     blahh         -> originally, CURSOR somewhere on this line
     "     CURSOR @ ^    -> after 'normal o' (new line right below `blahh`)
-    "     CURSOR @ ^    -> after 'normal o' . "\<Esc>"
-    "     "CURSOR       -> after 'normal o' . "\<Esc>" . '_tc'
-    "     "CURSOR       -> after 'normal o' . "\<Esc>" . '_tc' . '=='
+    "     CURSOR @ ^    -> after 'normal o' .. "\<Esc>"
+    "     "CURSOR       -> after 'normal o' .. "\<Esc>" .. '_tc'
+    "     "CURSOR       -> after 'normal o' .. "\<Esc>" .. '_tc' .. '=='
     "     " CURSOR      -> after :startinsert!
     " ==========================================================================
-    let l:samelinecmt   = 'normal 0' . '_tc' . '=='
+    let l:samelinecmt   = 'normal 0' .. '_tc' .. '=='
     " pattern to test if line is comment; for vim file, this would be: ^\s*".*$
-    let l:comment       = '^'. '\s*' . escape(Cs()[0], ' *\') . '.*$'
-    let l:nextlineOcmt  = 'normal o' . "\<Esc>" . 'A' . ' ' . "\<Esc>"
-    let l:nextlinecmt   = 'normal o' . "\<Esc>" . '_tc' . '=='
+    let l:comment       = '^' .. '\s*' .. escape(Cs()[0], ' *\') .. '.*$'
+    let l:nextlineOcmt  = 'normal o' .. "\<Esc>" .. 'A' .. ' ' .. "\<Esc>"
+    let l:nextlinecmt   = 'normal o' .. "\<Esc>" .. '_tc' .. '=='
     let l:execstr       =
             \ getline('.') =~ l:emptyline ? l:samelinecmt :
             \ getline('.') =~ l:comment ? l:nextlineOcmt : l:nextlinecmt
@@ -106,15 +106,15 @@ function! StartComment() abort
     "          * blah*/
     "
     "         /* abc
-    "          CUR*SOR  -> after 'normal o' .  "\<Esc>"
+    "          CUR*SOR  -> after 'normal o' ..  "\<Esc>"
     "          * blah*/
     "
     "         /* abc
-    "          * CURSOR -> after 'normal o' .  "\<Esc>" . 'A' . ' '
+    "          * CURSOR -> after 'normal o' ..  "\<Esc>" .. 'A' .. ' '
     "          * blah*/
     "
     "         /* abc
-    "          *CURSOR  -> after 'normal o' .  "\<Esc>" . 'A' . ' ' .  "\<Esc>"
+    "          *CURSOR  -> after 'normal o' ..  "\<Esc>" .. 'A' .. ' ' ..  "\<Esc>"
     "          * blah*/
     "
     "         /* abc
@@ -122,7 +122,7 @@ function! StartComment() abort
     "          * blah*/
     " ==========================================================================
     let l:cursorshift   = len(Cs()[0]) + 1
-    let l:samelinecmt   = 'normal 0' . '_tc' . '==' . '^' . l:cursorshift . 'l'
+    let l:samelinecmt   = 'normal 0' .. '_tc' .. '==' .. '^' .. l:cursorshift .. 'l'
     " ==========================================================================
     " pattern to test if line is a "part" comment, what does this mean?
     "   1. "part" comment means that the line has a comment symbol (for C, /* or 
@@ -232,18 +232,18 @@ function! StartComment() abort
     "    insert a comment line below only works for "part" comment lines.
     " ==========================================================================
     let l:partcomment   = '^'
-                          \ . '\%('
-                            \ . '.*'
-                            \ . escape(Cs()[2], ' *\')
-                          \ . '\)\@!'
-                          \ . '\s*'
-                          \ . '\('
-                            \ . escape(Cs()[0], ' *\')
-                            \ . '\|'
-                            \ . escape(Cs()[1], ' *\')
-                          \ . '\)'
-    let l:nextlineOcmt  = 'normal o' . "\<Esc>" . 'A' . ' ' . "\<Esc>"
-    let l:nextlinecmt   = 'normal o' . "\<Esc>" . '_tc' . '==' . '^' . l:cursorshift . 'l'
+                          \ .. '\%('
+                            \ .. '.*'
+                            \ .. escape(Cs()[2], ' *\')
+                          \ .. '\)\@!'
+                          \ .. '\s*'
+                          \ .. '\('
+                            \ .. escape(Cs()[0], ' *\')
+                            \ .. '\|'
+                            \ .. escape(Cs()[1], ' *\')
+                          \ .. '\)'
+    let l:nextlineOcmt  = 'normal o' .. "\<Esc>" .. 'A' .. ' ' .. "\<Esc>"
+    let l:nextlinecmt   = 'normal o' .. "\<Esc>" .. '_tc' .. '==' .. '^' .. l:cursorshift .. 'l'
     " see :help :starinsert
     if getline('.') =~ l:emptyline
       :execute l:samelinecmt | :startinsert
