@@ -24,6 +24,9 @@
 "     d) if we come across a file whose comment string, denoted by Cs(), is 
 "        neither 1-part nor 3-part, then throw an error.
 " ==============================================================================
+  " on `..` use, see :h expr-..
+  " `normal!`: https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
+" ==============================================================================
 function! StartComment() abort
   let l:emptyline = '^$'
   if len(Cs()) == 1       " 1-part comment (for example, vim comment)
@@ -39,10 +42,10 @@ function! StartComment() abort
     "     " CURSOR      -> after :startinsert!
     " 2. comment line:
     "     " blahh       -> originally, CURSOR somewhere on this line
-    "     " CURSOR      -> after 'normal o' (new line right below `" blahh`)
-    "     CUR"SOR       -> after 'normal o' .. "\<Esc>"
-    "     " CURSOR      -> after 'normal o' .. "\<Esc>" .. 'A' .. ' '
-    "     "CURSOR       -> after 'normal o' .. "\<Esc>" .. 'A' .. ' ' ..  "\<Esc>"
+    "     " CURSOR      -> after 'normal! o' (new line right below `" blahh`)
+    "     CUR"SOR       -> after 'normal! o' .. "\<Esc>"
+    "     " CURSOR      -> after 'normal! o' .. "\<Esc>" .. 'A' .. ' '
+    "     "CURSOR       -> after 'normal! o' .. "\<Esc>" .. 'A' .. ' ' ..  "\<Esc>"
     "     " CURSOR      -> after :startinsert!
     " 3. non-comment line:
     "     blahh         -> originally, CURSOR somewhere on this line
@@ -55,7 +58,7 @@ function! StartComment() abort
     let l:samelinecmt   = 'normal 0' .. '_tc' .. '=='
     " pattern to test if line is comment; for vim file, this would be: ^\s*".*$
     let l:comment       = '^' .. '\s*' .. escape(Cs()[0], ' *\') .. '.*$'
-    let l:nextlineOcmt  = 'normal o' .. "\<Esc>" .. 'A' .. ' ' .. "\<Esc>"
+    let l:nextlineOcmt  = 'normal! o' .. "\<Esc>" .. 'A' .. ' ' .. "\<Esc>"
     let l:nextlinecmt   = 'normal o' .. "\<Esc>" .. '_tc' .. '=='
     let l:execstr       =
             \ getline('.') =~ l:emptyline ? l:samelinecmt :
@@ -102,19 +105,19 @@ function! StartComment() abort
     "          * blah*/
     "
     "         /* abc
-    "          * CURSOR -> after 'normal o'
+    "          * CURSOR -> after 'normal! o'
     "          * blah*/
     "
     "         /* abc
-    "          CUR*SOR  -> after 'normal o' ..  "\<Esc>"
+    "          CUR*SOR  -> after 'normal! o' ..  "\<Esc>"
     "          * blah*/
     "
     "         /* abc
-    "          * CURSOR -> after 'normal o' ..  "\<Esc>" .. 'A' .. ' '
+    "          * CURSOR -> after 'normal! o' ..  "\<Esc>" .. 'A' .. ' '
     "          * blah*/
     "
     "         /* abc
-    "          *CURSOR  -> after 'normal o' ..  "\<Esc>" .. 'A' .. ' ' ..  "\<Esc>"
+    "          *CURSOR  -> after 'normal! o' ..  "\<Esc>" .. 'A' .. ' ' ..  "\<Esc>"
     "          * blah*/
     "
     "         /* abc
@@ -228,7 +231,7 @@ function! StartComment() abort
     "       sub-expression. so you can not refer to the text matched by this 
     "       group using \1. see /u/ luc hermitte @ https://tinyurl.com/mr6uvsj6 
     "       (vi.SE), :help \(
-    " 4. we restricted ourselves to "part" comment, because using 'normal o' to 
+    " 4. we restricted ourselves to "part" comment, because using 'normal! o' to 
     "    insert a comment line below only works for "part" comment lines.
     " ==========================================================================
     let l:partcomment   = '^'
@@ -242,7 +245,7 @@ function! StartComment() abort
                             \ .. '\|'
                             \ .. escape(Cs()[1], ' *\')
                           \ .. '\)'
-    let l:nextlineOcmt  = 'normal o' .. "\<Esc>" .. 'A' .. ' ' .. "\<Esc>"
+    let l:nextlineOcmt  = 'normal! o' .. "\<Esc>" .. 'A' .. ' ' .. "\<Esc>"
     let l:nextlinecmt   = 'normal o' .. "\<Esc>" .. '_tc' .. '==' .. '^' .. l:cursorshift .. 'l'
     " see :help :starinsert
     if getline('.') =~ l:emptyline
