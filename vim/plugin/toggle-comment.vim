@@ -19,7 +19,7 @@ function! s:emptyllendpat() abort
   " for 1-part comment:
   "   -- '$a' -> matches nothing, as we don't need to match 'end' of line
   if len(Cs()) > 1
-    return '^\s*$' . '\|^\s*' . s:esc(Cs()[2])
+    return '^\s*$' .. '\|^\s*' .. s:esc(Cs()[2])
   endif
   return '$a'
 endfunction
@@ -50,9 +50,9 @@ function! s:uncomment1(first) abort
   " to wholly uncomment, or begin to uncomment, the line.
   call s:uncomment(a:first)
   " NOTE:
-    " '\%' . virtcol('.') .'v'        => ex: \%23v implies virtual col 23.
-    " '\%' . virtcol('.') .'v\s'      => matches \s in the virt col.
-    " 's/\%' . virtcol('.') . 'v\s//' => replaces \s with '' in the virt col.
+    " '\%' .. virtcol('.') .. 'v'        => ex: \%23v implies virtual col 23.
+    " '\%' .. virtcol('.') .. 'v\s'      => matches \s in the virt col.
+    " 's/\%' .. virtcol('.') .. 'v\s//'  => replaces \s with '' in the virt col.
     " see :help ordinary-atom
     "
     " why use `silent!` which ignores all errors?  well, the virtual col that 
@@ -62,7 +62,7 @@ function! s:uncomment1(first) abort
     " col contains \s, deletion succeeds and all is well, but when there is no 
     " \s, deletion throws up an error, which is then suppressed by `silent!`, 
     " allowing us to ignore the error (& the virtual col).
-  silent! execute 's/\%' . virtcol('.') . 'v\s//'
+  silent! execute 's/\%' .. virtcol('.') .. 'v\s//'
 endfunction
 
 function! s:uncomment(first) abort
@@ -104,13 +104,13 @@ function! s:uncomment(first) abort
   "       search syntax: /{pattern}/{offset}<CR>; see :help search-commands.
   "
   "   3. the `pattern` in (2) is of the form:
-  "         /"\\%" . line('.') . 'l' . '^' . '\s*' . comment-string/
+  "       /"\\%" .. line('.') .. 'l' .. '^' .. '\s*' .. comment-string/
   "
-  "         / .. /                  => part of search syntax
-  "         "\\%" . line('.'). 'l'` => search current line in file; `l` => line
-  "         '^'                     => search from start-of-line
-  "         '\s*'                   => match for 0+ \s that immediately follow
-  "         comment-string (cs)     => then match for cs that immediately follow
+  "       / .. /                     => part of search syntax
+  "       "\\%" .. line('.') .. 'l'` => search curr line in file; `l` => line
+  "       '^'                        => search from start-of-line
+  "       '\s*'                      => match for 0+ \s that immediately follow
+  "       comment-string (cs)        => match for cs that immediately follow
   "
   "   4. next, pattern match offset with `e-`; see :help search-offset.
   "
@@ -122,13 +122,13 @@ function! s:uncomment(first) abort
   "      string. what we want instead is to always position the cursor on the 
   "      first (leftmost) character of the comment string. this is done using:
   "
-  "         'e-' . (width(comment-string) - 1)
+  "         'e-' .. (width(comment-string) - 1)
   "
   "   5. finally we've a "\<CR>" to complete the search syntax.  so the entire 
   "      thing looks like (NOTE: '/' => search syntax; `cs`: comment string):
   "
-  "       `normal 0' . '/' . "\\%" . line('.') . 'l' .  '^\s*' . cs . '/'
-  "                  . 'e-' . ((width(cs) - 1) . "\<CR>"
+  "       `normal 0' .. '/' .. "\\%" .. line('.') .. 'l' .. '^\s*' .. cs .. '/'
+  "                  \ .. 'e-' .. ((width(cs) - 1) .. "\<CR>"
   "
   " STEP (b) DETAILS:
   "   after step (a), we've the cursor on the 1st (leftmost) character of the 
@@ -143,25 +143,25 @@ function! s:uncomment(first) abort
   "   the pseudocode is below (NOTE: `cs`: comment string; the # of characters 
   "   in `cs`, given by `width(cs)`, gives the count of deletions):
   "
-  "         'normal ' . width(cs) . '"_x'
+  "         'normal ' .. width(cs) .. '"_x'
   "=============================================================================
   " NOTE: previous code version (same except for silent & cosmetic formatting):
-  " execute 'normal 0/' . "\\%" . line('.') . 'l^\s*' . s:esc(a:first) . '/e-' .
-  "       \ (strdisplaywidth(a:first)-1) . "\<CR>"
+  " execute 'normal 0/' .. "\\%" .. line('.') .. 'l^\s*' .. s:esc(a:first) ..
+  "          \ '/e-' .. (strdisplaywidth(a:first)-1) .. "\<CR>"
   "=============================================================================
   " NOTE:
   "   1. "\\%" = '\%'; /u/ luc hermitte @ https://tinyurl.com/4wn5wphn (vi.SE)
   "   2. on use of `\` for line continuation, see :help line-continuation
   "   3. we added `silent` to silence the search message in the command line.
   silent execute 'normal 0'
-              \ . '/'
-                    \ . '\%' . line('.') . 'l'
-                    \ . '^'
-                    \ . '\s*' . s:esc(a:first)
-              \ . '/'
-              \ . 'e-' .  (strdisplaywidth(a:first)-1)
-              \ . "\<CR>"
-  execute 'normal ' . (strdisplaywidth(a:first)) . '"_x'
+              \ .. '/'
+                    \ .. '\%' .. line('.') .. 'l'
+                    \ .. '^'
+                    \ .. '\s*' .. s:esc(a:first)
+              \ .. '/'
+              \ .. 'e-' .. (strdisplaywidth(a:first)-1)
+              \ .. "\<CR>"
+  execute 'normal ' .. (strdisplaywidth(a:first)) .. '"_x'
 endfunction
 
 function! s:uncommentend(second) abort
@@ -176,8 +176,8 @@ function! s:uncommentend(second) abort
     " search pattern: /{pattern}[/]<CR>; see :help search-commands
     "===========================================================================
     " NOTE: previous code version (same except for silent & cosmetic format):
-    "    execute 'normal 0/' .  "\\%" .  line('.') . 'l' .
-    "       \ s:esc(a:second) . '\s*$' . "\<CR>"
+    "    execute 'normal 0/' ..  "\\%" ..  line('.') .. 'l' ..
+    "       \ s:esc(a:second) .. '\s*$' .. "\<CR>"
     "===========================================================================
     " NOTE:
     "   1. we assume block comments are not nested and follow the standard in 
@@ -200,16 +200,16 @@ function! s:uncommentend(second) abort
     "      position on a match the 1st (leftmost) character of cs.
     "   4. we added `silent` to silence the search message in the command line.
     silent execute 'normal 0'
-              \ . '/'
-                    \ . "\\%" . line('.') . 'l'
-                    \ . s:esc(a:second)
-              \ . '/'
-              \ . "\<CR>"
-    execute 'normal ' . (strdisplaywidth(a:second)) . '"_x'
+              \ .. '/'
+                    \ .. "\\%" .. line('.') .. 'l'
+                    \ .. s:esc(a:second)
+              \ .. '/'
+              \ .. "\<CR>"
+    execute 'normal ' .. (strdisplaywidth(a:second)) .. '"_x'
     " NOTE:
-      " '\%' . virtcol('.') .'v'        => ex: \%23v implies virtual col 23.
-      " '\%' . virtcol('.') .'v\s'      => matches \s in the virt col.
-      " 's/\%' . virtcol('.') . 'v\s//' => replaces \s with '' in the virt col.
+      " '\%' .. virtcol('.') .. 'v'        => ex: \%23v implies virtual col 23.
+      " '\%' .. virtcol('.') .. 'v\s'      => matches \s in the virt col.
+      " 's/\%' .. virtcol('.') .. 'v\s//'  => replaces \s with '' in virt col.
       " see :help ordinary-atom
       "
       " why use `silent!` which ignores all errors?  well, the virtual col that 
@@ -228,19 +228,19 @@ function! s:uncommentend(second) abort
       "
       " without `silent!`, example 1 will pass, but example 2 will throw an 
       " error. but with `silent!`, both (1) & (2) will be fine.
-    silent! execute 's/\%' . virtcol('.') . 'v\s//'
+    silent! execute 's/\%' .. virtcol('.') .. 'v\s//'
   endif
 endfunction
 
 function! s:comment(col, first) abort
   " Comment the line + insert 1 space immediately after the comment symbol
-  execute 'normal ' . a:col . '|i' . a:first . " \<Esc>"
+  execute 'normal ' .. a:col .. '|i' .. a:first .. " \<Esc>"
 endfunction
 
 function! s:commentend(second) abort
   " Comment line end, if needed, & insert 1 space before the comment symbol
   if len(a:second)
-    execute 'normal A' . ' ' . a:second . "\<Esc>"
+    execute 'normal A' .. ' ' .. a:second .. "\<Esc>"
   endif
 endfunction
 
@@ -262,11 +262,11 @@ endfunction
 
 function! s:updatestr(first, second) abort
   " Return call-string for s:updateline()
-  return 'call s:updateline(l:block_data' .
-        \ ',' .
-        \ a:first .
-        \ ', ' .
-        \ a:second .
+  return 'call s:updateline(l:block_data' ..
+        \ ',' ..
+        \ a:first ..
+        \ ', ' ..
+        \ a:second ..
         \ ')'
 endfunction
 
@@ -289,11 +289,11 @@ function! s:blockupdate(flag) abort
   elseif a:flag == 'f'
     return s:updatestr('Cs()[0]', '""')
   elseif a:flag == 'm'
-    return s:updatestr('" " . Cs()[1]', '""')
+    return s:updatestr('" " .. Cs()[1]', '""')
   elseif a:flag == 'el'
-    return s:updatestr('" " . Cs()[2]', '""')
+    return s:updatestr('" " .. Cs()[2]', '""')
   elseif a:flag == 'l'
-    return s:updatestr('" " . Cs()[1]', 'Cs()[2]')
+    return s:updatestr('" " .. Cs()[1]', 'Cs()[2]')
   else
     throw "s:blockupdate() -> no valid flag found"
   endif
@@ -325,9 +325,9 @@ function! s:scanline(block_data, commentpat) abort
   normal! ^
   if getline('.') =~ '^\s*$'
     let a:block_data["action"] = "comment"
-  elseif getline('.') =~ '^\s*' . a:commentpat . ' '
+  elseif getline('.') =~ '^\s*' .. a:commentpat .. ' '
     let l:line_action = "uncomment-1"
-  elseif getline('.') =~ '^\s*' . a:commentpat . '\($\|\S\)'
+  elseif getline('.') =~ '^\s*' .. a:commentpat .. '\($\|\S\)'
     let l:line_action = "uncomment"
   elseif a:block_data["action"] != "comment"
     let a:block_data["action"] = "comment"
@@ -353,12 +353,12 @@ function! s:commentpat(linewise) abort
   if a:linewise
     return s:esc(Cs()[0])
   endif
-  return '\(' . s:esc(join(Cs(), '|')) . '\)'
+  return '\(' .. s:esc(join(Cs(), '|')) .. '\)'
 endfunction
 
 function! s:scanstr(linewise) abort
   " Return s:scanline() call-string for current buffer
-  return 'call s:scanline(l:block_data, s:commentpat(' . a:linewise . '))'
+  return 'call s:scanline(l:block_data, s:commentpat(' .. a:linewise .. '))'
 endfunction
 
 function! ToggleComments() range abort
@@ -415,24 +415,22 @@ function! ToggleComments() range abort
     set formatoptions-=a          " turn off autoindent
     let l:block_data = { "action" : "", "insert_col" : 1000 }
     if a:firstline == a:lastline
-      execute a:firstline . s:scanstr(1)
-      execute a:firstline . s:lineupdate()
+      execute a:firstline .. s:scanstr(1)
+      execute a:firstline .. s:lineupdate()
     else
-      execute a:firstline . ',' . a:lastline . s:scanstr(0)
-      execute a:firstline . s:blockupdate('f')
+      execute a:firstline .. ',' .. a:lastline .. s:scanstr(0)
+      execute a:firstline .. s:blockupdate('f')
       if a:lastline > a:firstline + 1
-        execute (a:firstline+1) . ',' . (a:lastline-1) . s:blockupdate('m')
+        execute (a:firstline+1) .. ',' .. (a:lastline-1) .. s:blockupdate('m')
       endif
       if getline(a:lastline) =~ s:emptyllendpat()
-        execute a:lastline . s:blockupdate('el')
+        execute a:lastline .. s:blockupdate('el')
       else
-        execute a:lastline . s:blockupdate('l')
+        execute a:lastline .. s:blockupdate('l')
       endif
     endif
   finally
     set formatoptions+=a
   endtry
 endfunction
-
-
 
