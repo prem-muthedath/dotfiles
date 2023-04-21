@@ -7,7 +7,6 @@
 
 " ==============================================================================
   " on `..` use, see :h expr-..
-  " `normal!`: https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
 " ==============================================================================
 function! SyntaxAttr()
      let synid = ""

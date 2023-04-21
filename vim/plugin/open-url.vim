@@ -71,7 +71,7 @@
 
 function! OpenUrlUnderCursor()
     let l:path="/Applications/Safari.app"
-    execute "normal BvEy"
+    execute "normal! BvEy"
     let l:url=fnameescape(matchstr(@0, '[a-z]*:\/\/[^ >,;]*'))
     if l:url != ""
         silent exec "!open -a " .. l:path .. " " .. l:url | redraw!
