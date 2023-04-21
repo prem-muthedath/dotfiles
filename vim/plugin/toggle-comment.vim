@@ -11,6 +11,10 @@
 " history: created, edited 13 JUL -- 29 AUG 2018.
 " author: Prem Muthedath.
 
+" ==============================================================================
+  " on `..` use, see :h expr-..
+  " `normal!`: https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
+" ==============================================================================
 function! s:emptyllendpat() abort
   " Return regex pattern for end of an empty last line (ll) in comment block
   " for 3-part comment:
@@ -24,6 +28,7 @@ function! s:emptyllendpat() abort
   return '$a'
 endfunction
 
+" ==============================================================================
 function! s:uncomment1(first) abort
   " Uncomment the line + remove 1 space, if any, that immediately follows
   "
@@ -65,6 +70,7 @@ function! s:uncomment1(first) abort
   silent! execute 's/\%' .. virtcol('.') .. 'v\s//'
 endfunction
 
+" ==============================================================================
 function! s:uncomment(first) abort
   " Uncomment the line but do not delete any spaces.
   "
@@ -98,7 +104,7 @@ function! s:uncomment(first) abort
   "
   " STEP (a) DETAILS:
   "   the entire step (a) is executed in normal mode. details below.
-  "   1. `normal 0` -> get to the first character in the line;
+  "   1. `normal! 0` -> get to the first character in the line;
   "   2. search for the comment symbol pattern in the current line.
   "
   "       search syntax: /{pattern}/{offset}<CR>; see :help search-commands.
@@ -127,7 +133,7 @@ function! s:uncomment(first) abort
   "   5. finally we've a "\<CR>" to complete the search syntax.  so the entire 
   "      thing looks like (NOTE: '/' => search syntax; `cs`: comment string):
   "
-  "       `normal 0' .. '/' .. "\\%" .. line('.') .. 'l' .. '^\s*' .. cs .. '/'
+  "       `normal! 0' .. '/' .. "\\%" .. line('.') .. 'l' .. '^\s*' .. cs .. '/'
   "                  \ .. 'e-' .. ((width(cs) - 1) .. "\<CR>"
   "
   " STEP (b) DETAILS:
@@ -143,17 +149,17 @@ function! s:uncomment(first) abort
   "   the pseudocode is below (NOTE: `cs`: comment string; the # of characters 
   "   in `cs`, given by `width(cs)`, gives the count of deletions):
   "
-  "         'normal ' .. width(cs) .. '"_x'
+  "         'normal! .. width(cs) .. '"_x'
   "=============================================================================
   " NOTE: previous code version (same except for silent & cosmetic formatting):
-  " execute 'normal 0/' .. "\\%" .. line('.') .. 'l^\s*' .. s:esc(a:first) ..
+  " execute 'normal! 0/' .. "\\%" .. line('.') .. 'l^\s*' .. s:esc(a:first) ..
   "          \ '/e-' .. (strdisplaywidth(a:first)-1) .. "\<CR>"
   "=============================================================================
   " NOTE:
   "   1. "\\%" = '\%'; /u/ luc hermitte @ https://tinyurl.com/4wn5wphn (vi.SE)
   "   2. on use of `\` for line continuation, see :help line-continuation
   "   3. we added `silent` to silence the search message in the command line.
-  silent execute 'normal 0'
+  silent execute 'normal! 0'
               \ .. '/'
                     \ .. '\%' .. line('.') .. 'l'
                     \ .. '^'
@@ -161,9 +167,10 @@ function! s:uncomment(first) abort
               \ .. '/'
               \ .. 'e-' .. (strdisplaywidth(a:first)-1)
               \ .. "\<CR>"
-  execute 'normal ' .. (strdisplaywidth(a:first)) .. '"_x'
+  execute 'normal! ' .. (strdisplaywidth(a:first)) .. '"_x'
 endfunction
 
+" ==============================================================================
 function! s:uncommentend(second) abort
   " Remove closing comment, if needed, & 1 immediate preceeding \s, if any
   "
@@ -176,7 +183,7 @@ function! s:uncommentend(second) abort
     " search pattern: /{pattern}[/]<CR>; see :help search-commands
     "===========================================================================
     " NOTE: previous code version (same except for silent & cosmetic format):
-    "    execute 'normal 0/' ..  "\\%" ..  line('.') .. 'l' ..
+    "    execute 'normal! 0/' ..  "\\%" ..  line('.') .. 'l' ..
     "       \ s:esc(a:second) .. '\s*$' .. "\<CR>"
     "===========================================================================
     " NOTE:
@@ -199,13 +206,13 @@ function! s:uncommentend(second) abort
     "      spaces, so the 1st thing vim matches on is cs, making vim's cursor 
     "      position on a match the 1st (leftmost) character of cs.
     "   4. we added `silent` to silence the search message in the command line.
-    silent execute 'normal 0'
+    silent execute 'normal! 0'
               \ .. '/'
                     \ .. "\\%" .. line('.') .. 'l'
                     \ .. s:esc(a:second)
               \ .. '/'
               \ .. "\<CR>"
-    execute 'normal ' .. (strdisplaywidth(a:second)) .. '"_x'
+    execute 'normal! ' .. (strdisplaywidth(a:second)) .. '"_x'
     " NOTE:
       " '\%' .. virtcol('.') .. 'v'        => ex: \%23v implies virtual col 23.
       " '\%' .. virtcol('.') .. 'v\s'      => matches \s in the virt col.
@@ -232,18 +239,21 @@ function! s:uncommentend(second) abort
   endif
 endfunction
 
+" ==============================================================================
 function! s:comment(col, first) abort
   " Comment the line + insert 1 space immediately after the comment symbol
-  execute 'normal ' .. a:col .. '|i' .. a:first .. " \<Esc>"
+  execute 'normal! ' .. a:col .. '|i' .. a:first .. " \<Esc>"
 endfunction
 
+" ==============================================================================
 function! s:commentend(second) abort
   " Comment line end, if needed, & insert 1 space before the comment symbol
   if len(a:second)
-    execute 'normal A' .. ' ' .. a:second .. "\<Esc>"
+    execute 'normal! A' .. ' ' .. a:second .. "\<Esc>"
   endif
 endfunction
 
+" ==============================================================================
 function! s:updateline(block_data, first, second) abort
   " Execute 'block action' -- comment/uncomment -- on current line
   if a:block_data["action"] == "uncomment-1"
@@ -260,6 +270,7 @@ function! s:updateline(block_data, first, second) abort
   endif
 endfunction
 
+" ==============================================================================
 function! s:updatestr(first, second) abort
   " Return call-string for s:updateline()
   return 'call s:updateline(l:block_data' ..
@@ -270,6 +281,7 @@ function! s:updatestr(first, second) abort
         \ ')'
 endfunction
 
+" ==============================================================================
 function! s:blockupdate(flag) abort
   " Using s:updatestr(), generate call-string for block comment/uncomment
   "   -- for 1-part comment, Cs()=1, treat block as series of line comments
@@ -299,6 +311,7 @@ function! s:blockupdate(flag) abort
   endif
 endfunction
 
+" ==============================================================================
 function! s:lineupdate() abort
   " Generate, using updatestr(), call-string for linewise comment/uncomment
   " call-string based on Cs(), i.e., 1-part or 3-part comment
@@ -310,6 +323,7 @@ function! s:lineupdate() abort
   return s:updatestr('Cs()[0]', 'Cs()[2]')
 endfunction
 
+" ==============================================================================
 function! s:scanline(block_data, commentpat) abort
   " Scan current line and, if relevant, update block data with line info
   " line info has 2 pieces:
@@ -340,11 +354,13 @@ function! s:scanline(block_data, commentpat) abort
   endif
 endfunction
 
+" ==============================================================================
 function! s:esc(str) abort
   " Wrapper function that returns escaped value -- needed in regex patterns
   return escape(a:str, "\/*|")
 endfunction
 
+" ==============================================================================
 function! s:commentpat(linewise) abort
   " For current buffer, return comment symbol(s) as a regex pattern
   "   -- for 1-part comment, same regex for both linewise & block comment
@@ -356,11 +372,13 @@ function! s:commentpat(linewise) abort
   return '\(' .. s:esc(join(Cs(), '|')) .. '\)'
 endfunction
 
+" ==============================================================================
 function! s:scanstr(linewise) abort
   " Return s:scanline() call-string for current buffer
   return 'call s:scanline(l:block_data, s:commentpat(' .. a:linewise .. '))'
 endfunction
 
+" ==============================================================================
 function! ToggleComments() range abort
   " Uniformly toggle comments for a block (i.e., a range of lines)
   " Rules:
@@ -434,3 +452,4 @@ function! ToggleComments() range abort
   endtry
 endfunction
 
+" ==============================================================================
