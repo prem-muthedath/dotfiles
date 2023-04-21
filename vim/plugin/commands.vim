@@ -1,6 +1,9 @@
 " user-defined commands.
 " author: Prem muthedath
 
+" ==============================================================================
+  " on `..` use, see :h expr-..
+" ==============================================================================
 " open url under cursor; plugin: OpenUrl
 command! OpenUrl call OpenUrlUnderCursor()
 
@@ -15,9 +18,9 @@ function! s:toggleCommentHl(comment_hl) abort
   redir END
 
   if l:current =~# a:comment_hl
-    execute "colorscheme " . g:colors_name
+    execute "colorscheme " .. g:colors_name
   else
-    execute "highlight Comment " . a:comment_hl
+    execute "highlight Comment " .. a:comment_hl
   endif
 endfunction
 command! ToggleCommentHl call s:toggleCommentHl('ctermfg=245')
