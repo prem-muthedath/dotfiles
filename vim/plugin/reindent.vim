@@ -10,15 +10,20 @@
 "   -- reindent works only if you select > 1 line.
 "   NOTE: <CR>  = carriage return => CTRL-M = ^M
 "         <Esc> = escape          => CTRL-[ = ^[
-"         execute  "normal i" => execute "normal i" . "\<CR>" . "\<Esc>"
-"         sequence: enter insert mode, then <CR>, then escape to normal mode.
+"         execute  "normal! i" => execute "normal! i" .. "\<CR>" .. "\<Esc>"
+"         sequence: enter insert mode, then <CR>, then escape to normal! mode.
 "         REF: :help key-notation
+" ==============================================================================
+  " on `..` use, see :h expr-..
+  " `normal!`: https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
+" ==============================================================================
 function! s:reindentline() abort
   " Reindent the next line"
-  execute "normal J"
-  execute "normal i"
+  execute "normal! J"
+  execute "normal! i"
 endfunction
 
+" ==============================================================================
 function! Reindent() range abort
   " Reindent a range of lines"
   if a:firstline == line('$')
@@ -30,12 +35,12 @@ function! Reindent() range abort
       set formatoptions-=r
       set formatoptions-=j
       execute
-            \ a:firstline .
-            \ ',' .
-            \ (a:lastline-1) .
+            \ a:firstline ..
+            \ ',' ..
+            \ (a:lastline-1) ..
             \ 'call s:reindentline()'
     catch /.*/
-      echom "Reindent() -> caught error: " . v:exception
+      echom "Reindent() -> caught error: " .. v:exception
     finally
       set formatoptions+=r
       set formatoptions+=j
@@ -43,4 +48,5 @@ function! Reindent() range abort
   endif
 endfunction
 
+" ==============================================================================
 
