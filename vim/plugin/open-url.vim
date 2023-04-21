@@ -1,6 +1,9 @@
 " #######################################################
 " this function opens the url under the cursor in safari
 " #######################################################
+  " on `..` use, see :h expr-..
+  " `normal!`: https://learnvimscriptthehardway.stevelosh.com/chapters/29.html
+" #######################################################
 " to view an url:
 "       -- in vimrc, create a key binding (suggested), such as:
 "             nmap <Leader>o :call OpenUrlUnderCursor()<CR>
@@ -22,17 +25,17 @@
 "       (vim.1045645.n5.nabble.com)
 "
 "    2. in exec command argument string, added space before &
-"       after . (string concatenation operator), for easier read
+"       after .. (string concatenation operator), for easier read
 "    3. removed redundant quotes in the exec command argument string:
-"       changed " '" . url . "'" to " " . url, as url is already
+"       changed " '" .. url .. "'" to " " .. url, as url is already
 "       a string, so it doesn't need to be quoted again
 "
 " few comments on the code:
 "    1. exec -- a vim command -- takes a string argument, sometimes
-"       written using the . operator, a string concatenater.
-"       exec uses . operator to create one single string argument.
+"       written using the .. operator, a string concatenater.
+"       exec uses .. operator to create one single string argument.
 "       for example, if your url is "google.com", you'll get:
-"           exec "open -a " . "/Applications/Safari.app " . "google.com"
+"           exec "open -a " .. "/Applications/Safari.app " .. "google.com"
 "       which will become:
 "           exec "open -a /Applications/Safari.app google.com"
 "    2. open -a -> open is an OS X command; -a option opens an application
@@ -71,8 +74,8 @@ function! OpenUrlUnderCursor()
     execute "normal BvEy"
     let l:url=fnameescape(matchstr(@0, '[a-z]*:\/\/[^ >,;]*'))
     if l:url != ""
-        silent exec "!open -a " . l:path . " " . l:url | redraw!
-        echo "opened ". l:url
+        silent exec "!open -a " .. l:path .. " " .. l:url | redraw!
+        echo "opened " .. l:url
     else
         echo "No URL under cursor."
     endif
