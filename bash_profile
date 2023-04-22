@@ -11,6 +11,8 @@
 # 3. ~/.bash_profile is symlinked to ~/dotfiles/bash-profile
 #    so that we can git version this and other key dotfiles.
 #    ref: /u/ sehe comments on /u/ tuxdude @ https://goo.gl/hjXAkw (so)
+#
+# author: Prem Muthedath
 #########################################################################
 
 ################ TERMINAL CLEARING
@@ -73,7 +75,7 @@ export NC='\033[0m'         # no color
 #		(c) source ~/.bash_profile
 #
 # GOAL:
-# 1. Apple's process can -- and do -- result in dups & unexpected path order.
+# 1. Apple's process can -- and does -- result in dups & unexpected path order.
 # 2. we want to avoid that as much as possible by ensuring that loading/sourcing 
 #    ~/.bash_profile always gives a valid PATH.
 # 3. but our custom process may fail for unexpected reasons, so we want to also 
@@ -89,13 +91,13 @@ export NC='\033[0m'         # no color
 # DESIGN:
 # whenever you load/source ~/.bash_profile, we call `setpath()` in 
 # ~/.bash_profile to set PATH.  `setpath()`, by design, does the following:
-# 1. initializes PATH, no what matter what, to system path, the core PATH Apple 
-#    sets from /etc/profile during first-time bash_profile load. to do this PATH 
-#    initialization, calls `~/dotfiles/bash/bin/pathhelper` executable. since 
-#    PATH is initialized/reset to system path whenever you load/source
-#    ~/.bash_profile, instead of reusing PATH value from existing session, as 
-#    Apple does, PATH is built afresh from scratch every time, avoiding dups & 
-#    bad path order.  see pathhelper file for details.
+# 1. initializes PATH, no matter what, to system path, the core PATH Apple sets 
+#    from /etc/profile during first-time bash_profile load. to do this PATH 
+#    initialization, `setpath()` calls `~/dotfiles/bash/bin/pathhelper` 
+#    executable. since PATH is always initialized/reset to system path whenever 
+#    you load/source ~/.bash_profile, instead of reusing PATH value from 
+#    existing session, as Apple does, PATH is now built afresh from scratch 
+#    every time, avoiding dups & bad path order; see pathhelper file for info.
 # 2. if (1) succeeds, PREPENDS each user-defined custom path to PATH by calling 
 #    `addpath()`.  `addpath()` ensures the following:
 #       a) no duplicates -- before prepending to PATH -- see b) -- the 
