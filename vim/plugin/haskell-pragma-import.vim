@@ -122,7 +122,7 @@ endfunction
 " usage: this function not directly invoked by the end user; instead, top-level 
 " functions in this file invoke it as part of their work. this function collects 
 " common code in 1 place, avoiding code duplication.
-function! s:generateScriptData(script, ofile, err_msg)
+function! s:generateScriptData(script, ofile, err_msg) abort
   " define the bash script.
   " on shellescape(), see /u/ tommcdo @ https://tinyurl.com/394b562j (vi.se)
   :let l:bscr = shellescape(g:phask_shell_dir .. a:script)
@@ -257,7 +257,7 @@ function! DisplayOptionsGhcFiles() abort
 endfunction
 
 " ==============================================================================
-function! s:formatFile()
+function! s:formatFile() abort
   " Formats a OPTIONS-GHC-FLAGS file.
   " sample output: ~/dotfiles/vim/haskell/data/OPTIONS-GHC-FLAGS-FORMATTED.txt
   " basically, this function formats line data into neatly separated columns.
